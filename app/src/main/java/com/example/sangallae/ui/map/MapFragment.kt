@@ -1,4 +1,4 @@
-package com.example.sangallae.ui.dashboard
+package com.example.sangallae.ui.map
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,19 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sangallae.R
 
-class DashboardFragment : Fragment() {
+class MapFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var mapViewModel: MapViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        dashboardViewModel =
-                ViewModelProvider(this).get(DashboardViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        val textView: TextView = root.findViewById(R.id.text_dashboard)
-        dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
+        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_map, container, false)
+        val textView: TextView = root.findViewById(R.id.text_map)
+        mapViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root
