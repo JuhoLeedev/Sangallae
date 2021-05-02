@@ -19,6 +19,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause.*
 import com.kakao.sdk.common.util.Utility
@@ -26,6 +28,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var mOAuthLoginInstance : OAuthLogin
     lateinit var mContext: Context
 
-    var loginResult:LoginPostResult? = null
+ //   var loginResult:LoginPostResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,14 +134,16 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-
-    // [START firebaseAuthWithGoogle]
+    private lateinit var auth: FirebaseAuth
+    // [START firebaseAuthWithGoogle] 구글
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
         var retrofit = Retrofit.Builder()
             .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         var loginPost: LoginPost = retrofit.create(LoginPost::class.java)
+
+
 
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         firebaseAuth!!.signInWithCredential(credential)
@@ -150,41 +155,43 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
 
-                    //토큰
-                    val mUser = FirebaseAuth.getInstance().currentUser
-                    mUser.getIdToken(true)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                var googleToken = task.result!!.token
-                                // Send token to your backend via HTTPS
-                                if (googleToken != null) {
-                                    Log.d("googleToken",googleToken)
-
-                                    loginPost.requestLogin(googleToken).enqueue(object:
-                                        Callback<LoginPostResult> {
-                                        override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
-                                        //실패시
-                                            Log.e("LoginResult", "Response error")
-                                        }
-                                        override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
-                                        //정상응답 옴
-                                            loginResult = response.body()
-                                            Log.d("LoginResult", loginResult.toString())
-                                        }
-                                    })
-
-                                }
-                                else{
-                                    Log.d("googleToken","null")
-                                }
-
-
-
-                            } else {
-                                // Handle error -> task.getException();
-                                Log.e("googleToken","error")
-                            }
-                        }
+//
+//                    auth = Firebase.auth
+//                    Log.d("googleToken", auth.toString())
+//                    //토큰
+//                    val mUser = FirebaseAuth.getInstance().currentUser
+//                    mUser.getIdToken(true)
+//                        .addOnCompleteListener { task ->
+//                            if (task.isSuccessful) {
+//                                var googleToken = task.result!!.token
+//
+//                                // Send token to your backend via HTTPS
+//                                if (googleToken != null) {
+//                                    Log.d("googleToken",googleToken)
+//
+//                                    //서버에 보냄
+//                                    loginPost.requestLogin(googleToken).enqueue(object:
+//                                        Callback<LoginPostResult> {
+//                                        override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
+//                                        //실패시
+//                                            Log.e("LoginResult", "Response error")
+//                                        }
+//                                        override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
+//                                        //정상응답 옴
+//                                            loginResult = response.body()
+//                                            Log.d("LoginResult", loginResult.toString())
+//                                        }
+//                                    })
+//
+//                                }
+//                                else{
+//                                    Log.d("googleToken","null")
+//                                }
+//                            } else {
+//                                // Handle error -> task.getException();
+//                                Log.e("googleToken","error")
+//                            }
+//                        }
 
                     startActivity(intent)
 
@@ -233,13 +240,15 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
 
             //토큰
+
             UserApiClient.instance.accessTokenInfo { kakaoToken, error ->
                 if (error != null) {
                     Log.e("kakao_login_fail", "토큰 정보 보기 실패", error)
                 }
                 else if (kakaoToken != null) {
 
-                    Log.d("kakaoToken", kakaoToken.toString())
+                    //Log.d("kakaoToken", OAuthToken.toString())
+                    Log.d("kakaoToken", UserApiClient.instance.toString())
 
 //                    //23:58
 //                    loginPost.requestLogin(kakaoToken).enqueue(object:
@@ -266,6 +275,22 @@ class LoginActivity : AppCompatActivity() {
     //네이버
     val mOAuthLoginHandler: OAuthLoginHandler = @SuppressLint("HandlerLeak") //19:28 handlerleak
     object : OAuthLoginHandler() {
+//        //서버에 토큰 보내기
+//        var retrofit = Retrofit.Builder()
+//            //.baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
+//            .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        var loginPost: LoginPost = retrofit.create(LoginPost::class.java)
+
+        //테스트-뉴스
+        var retrofit = Retrofit.Builder()
+            .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        var loginPost: LoginPost = retrofit.create(LoginPost::class.java)
+
+        // 로그인 & 토큰
         override fun run(success: Boolean) {
             if (success) {
 //                val accessToken: String = mOAuthLoginModule.getAccessToken(baseContext)
@@ -280,6 +305,62 @@ class LoginActivity : AppCompatActivity() {
                 var naverToken = mOAuthLoginInstance.getAccessToken(mContext)
                 Log.d("naverToken", naverToken)
                 //mOAuthLoginInstance.requestApi(mContext, at, url)
+//
+//                val rootObject= JSONObject()
+//                rootObject.put("access_token",naverToken)
+
+//                //서버에 보내기
+//                loginPost.requestLogin().enqueue(object:
+//                    retrofit2.Callback<LoginPostResult> {
+//
+//                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
+//                        //실패시
+//                        Log.e("LoginResult", "Response error")
+//                    }
+//                    override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
+//                        //정상응답 옴
+//
+//                        Log.d("LoginResult", "응답 옴1")
+//                        loginResult = response.body()
+//                        Log.d("LoginResult", loginResult.toString())
+//
+//                        Log.d("LoginResult", "응답 옴2")
+//                    }
+//                })
+
+                //test hello
+                //서버에 보내기
+                loginPost.requestLogin().enqueue(object:
+                    retrofit2.Callback<MsgResult> {
+
+                    override fun onFailure(call: Call<MsgResult>, t: Throwable){
+                        //실패시
+                        Log.e("LoginResult", "Response error")
+                    }
+                    override fun onResponse(call:Call<MsgResult>, response: Response<MsgResult>){
+                        //정상응답 옴
+
+                        Log.d("LoginResult", "응답 옴1")
+                        //loginResult = response.body()?
+                        //Log.d("LoginResult", loginResult.toString())
+
+                        Log.d("LoginResult", "응답 옴2")
+                    }
+                })
+
+//                //서버에 보내기 test
+//                loginPost.requestLogin("해파랑길").enqueue(object:
+//                    retrofit2.Callback<LoginPostResult> {
+//                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
+//                        //실패시
+//                        Log.e("LoginResult", "Response error")
+//                    }
+//                    override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
+//                        //정상응답 옴
+//                        loginResult = response.body()
+//                        Log.d("LoginResult", loginResult.toString())
+//                    }
+//                })
 
                 startActivity(intent)
             } else {
@@ -299,5 +380,9 @@ class LoginActivity : AppCompatActivity() {
 //        super.onStart()
 //        //구글 자동로그인
 //        moveMainPage(firebaseAuth?.currentUser)
+//    }
+
+//    fun getToken(request:HttpServletRequest, response:HttpServletResponse, json:JSONObject, requestURL: String):String{
+//
 //    }
 }

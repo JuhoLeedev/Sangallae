@@ -6,6 +6,10 @@ package com.example.sangallae.login
 //    var LoginToken:String? = null
 //)
 
-data class LoginPostResult (
-    var jwtAccessToken:String? = null
+//data class LoginPostResult (
+//    var jwtAccessToken:String? = null
+//)
+
+data class MsgResult (
+    var msg:String? = null
 )
