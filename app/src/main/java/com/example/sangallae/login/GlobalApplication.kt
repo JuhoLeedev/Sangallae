@@ -1,4 +1,4 @@
-package com.example.sangallae
+package com.example.sangallae.login
 
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk

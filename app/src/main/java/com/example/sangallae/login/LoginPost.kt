@@ -1,4 +1,4 @@
-package com.example.sangallae
+package com.example.sangallae.login
 
 import retrofit2.Call
 import retrofit2.http.Field

@@ -4,5 +4,6 @@
     <string name="title_favorites">Favorites</string>
     <string name="title_map">Map</string>
     <string name="title_profile">Profile</string>
-    <string name="string_kakao_login">kakao Login</string>
+    <string name="str_kakao_login">kakao Login</string>
+    <string name="str_google_login">Google Sign in</string>
 </resources>
