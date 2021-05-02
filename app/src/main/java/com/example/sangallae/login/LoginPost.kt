@@ -1,7 +1,5 @@
 package com.example.sangallae.login
 
-import com.kakao.sdk.user.model.User
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -16,22 +14,23 @@ interface LoginPost{
 //    ): Call<LoginPostResult>
 
     //@FormUrlEncoded
-//    @Headers("Content-Type:application/json")
-//    @POST("/naver-login")
+    ///@Headers("Content-Type:application/json")
+    @POST("/naver-login")
+    fun requestLogin(
+        //@Part access_token:String
+        //@Body access_token:JSONObject
+        @Body access_token:String
+        //@Field("access_token") access_token: String
+        //@Header("access_token") access_token: String
+    ): Call<LoginPostResult>
+//
+//    //로그인토큰
+//    //@Headers("Content-Type:application/json")
+//    @GET("naver-login ") // base_url + "api/login" 으로 POST 통신
 //    fun requestLogin(
-//        //@Part access_token:String
-//        //@Body access_token:JSONObject
-//        //@Field("access_token") access_token: String
+//        //@Body access_token:String
 //        @Header("access_token") access_token: String
 //    ): Call<LoginPostResult>
-//
-    //로그인토큰
-    //    @Headers("Content-Type:application/json")
-    @GET("hello") // base_url + "api/login" 으로 POST 통신
-    fun requestLogin(
-        //@Body access_token:String
-    //    @Header("access_token") access_token: String
-    ): Call<MsgResult>
 
 //        //테스트-hello
 //    //    @Headers("Content-Type:application/json")

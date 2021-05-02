@@ -74,6 +74,7 @@ class LoginActivity : AppCompatActivity() {
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
+
         //카카오 로그인
         val kakao_login = findViewById(R.id.kakaoLoginBtn) as Button
         kakao_login.setOnClickListener {
@@ -101,13 +102,7 @@ class LoginActivity : AppCompatActivity() {
     // 로그인 성공 시 이동할 페이지
     fun moveMainPage(user: FirebaseUser?) {
         if (user != null) {
-//            Toast.makeText(
-//                this,
-//                getString(R.string.signin_complete),
-//                Toast.LENGTH_SHORT
-//            ).show()
             Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
@@ -143,8 +138,6 @@ class LoginActivity : AppCompatActivity() {
             .build()
         var loginPost: LoginPost = retrofit.create(LoginPost::class.java)
 
-
-
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         firebaseAuth!!.signInWithCredential(credential)
             .addOnCompleteListener(this) {
@@ -154,44 +147,6 @@ class LoginActivity : AppCompatActivity() {
                     //val user = firebaseAuth?.currentUser
                     Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
-
-//
-//                    auth = Firebase.auth
-//                    Log.d("googleToken", auth.toString())
-//                    //토큰
-//                    val mUser = FirebaseAuth.getInstance().currentUser
-//                    mUser.getIdToken(true)
-//                        .addOnCompleteListener { task ->
-//                            if (task.isSuccessful) {
-//                                var googleToken = task.result!!.token
-//
-//                                // Send token to your backend via HTTPS
-//                                if (googleToken != null) {
-//                                    Log.d("googleToken",googleToken)
-//
-//                                    //서버에 보냄
-//                                    loginPost.requestLogin(googleToken).enqueue(object:
-//                                        Callback<LoginPostResult> {
-//                                        override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
-//                                        //실패시
-//                                            Log.e("LoginResult", "Response error")
-//                                        }
-//                                        override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
-//                                        //정상응답 옴
-//                                            loginResult = response.body()
-//                                            Log.d("LoginResult", loginResult.toString())
-//                                        }
-//                                    })
-//
-//                                }
-//                                else{
-//                                    Log.d("googleToken","null")
-//                                }
-//                            } else {
-//                                // Handle error -> task.getException();
-//                                Log.e("googleToken","error")
-//                            }
-//                        }
 
                     startActivity(intent)
 
@@ -246,23 +201,8 @@ class LoginActivity : AppCompatActivity() {
                     Log.e("kakao_login_fail", "토큰 정보 보기 실패", error)
                 }
                 else if (kakaoToken != null) {
-
                     //Log.d("kakaoToken", OAuthToken.toString())
                     Log.d("kakaoToken", UserApiClient.instance.toString())
-
-//                    //23:58
-//                    loginPost.requestLogin(kakaoToken).enqueue(object:
-//                        Callback<LoginPostResult> {
-//                        override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
-//                            //실패시
-//                            Log.e("LoginResult", "Response error")
-//                        }
-//                        override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
-//                            //정상응답 옴
-//                            loginResult = response.body()
-//                            Log.d("LoginResult", loginResult.toString())
-//                        }
-//                    })
 
                 }
             }
@@ -275,15 +215,7 @@ class LoginActivity : AppCompatActivity() {
     //네이버
     val mOAuthLoginHandler: OAuthLoginHandler = @SuppressLint("HandlerLeak") //19:28 handlerleak
     object : OAuthLoginHandler() {
-//        //서버에 토큰 보내기
-//        var retrofit = Retrofit.Builder()
-//            //.baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
-//            .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//        var loginPost: LoginPost = retrofit.create(LoginPost::class.java)
-
-        //테스트-뉴스
+        //서버에 토큰 보내기
         var retrofit = Retrofit.Builder()
             .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
             .addConverterFactory(GsonConverterFactory.create())
@@ -293,74 +225,31 @@ class LoginActivity : AppCompatActivity() {
         // 로그인 & 토큰
         override fun run(success: Boolean) {
             if (success) {
-//                val accessToken: String = mOAuthLoginModule.getAccessToken(baseContext)
-//                val refreshToken: String = mOAuthLoginModule.getRefreshToken(baseContext)
-//                val expiresAt: Long = mOAuthLoginModule.getExpiresAt(baseContext)
-//                val tokenType: String = mOAuthLoginModule.getTokenType(baseContext)
-//                var intent = Intent(this, )
-                //Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
 
                 //토큰
                 var naverToken = mOAuthLoginInstance.getAccessToken(mContext)
                 Log.d("naverToken", naverToken)
-                //mOAuthLoginInstance.requestApi(mContext, at, url)
-//
-//                val rootObject= JSONObject()
-//                rootObject.put("access_token",naverToken)
+                //mOAuthLoginInstance.requestApi(mContext, naverToken, url)
 
-//                //서버에 보내기
-//                loginPost.requestLogin().enqueue(object:
-//                    retrofit2.Callback<LoginPostResult> {
-//
-//                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
-//                        //실패시
-//                        Log.e("LoginResult", "Response error")
-//                    }
-//                    override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
-//                        //정상응답 옴
-//
-//                        Log.d("LoginResult", "응답 옴1")
-//                        loginResult = response.body()
-//                        Log.d("LoginResult", loginResult.toString())
-//
-//                        Log.d("LoginResult", "응답 옴2")
-//                    }
-//                })
-
-                //test hello
                 //서버에 보내기
-                loginPost.requestLogin().enqueue(object:
-                    retrofit2.Callback<MsgResult> {
+                loginPost.requestLogin(naverToken.toString()).enqueue(object:
+                    retrofit2.Callback<LoginPostResult> {
 
-                    override fun onFailure(call: Call<MsgResult>, t: Throwable){
+                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
                         //실패시
                         Log.e("LoginResult", "Response error")
                     }
-                    override fun onResponse(call:Call<MsgResult>, response: Response<MsgResult>){
+                    override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
                         //정상응답 옴
 
                         Log.d("LoginResult", "응답 옴1")
-                        //loginResult = response.body()?
-                        //Log.d("LoginResult", loginResult.toString())
+                        var loginResult = response.body()
+                        Log.d("LoginResult", loginResult.toString())
 
                         Log.d("LoginResult", "응답 옴2")
                     }
                 })
-
-//                //서버에 보내기 test
-//                loginPost.requestLogin("해파랑길").enqueue(object:
-//                    retrofit2.Callback<LoginPostResult> {
-//                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
-//                        //실패시
-//                        Log.e("LoginResult", "Response error")
-//                    }
-//                    override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
-//                        //정상응답 옴
-//                        loginResult = response.body()
-//                        Log.d("LoginResult", loginResult.toString())
-//                    }
-//                })
 
                 startActivity(intent)
             } else {
