@@ -274,4 +274,5 @@ class LoginActivity : AppCompatActivity() {
 //    fun getToken(request:HttpServletRequest, response:HttpServletResponse, json:JSONObject, requestURL: String):String{
 //
 //    }
+
 }
