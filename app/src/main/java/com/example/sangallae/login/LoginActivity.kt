@@ -269,7 +269,6 @@ class LoginActivity : AppCompatActivity() {
                     }
                     override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
                         //정상응답 옴
-
                         var loginResult = response.body()?.data?.access_token.toString()
                         Log.d("LoginResult", loginResult.toString())
                     }
