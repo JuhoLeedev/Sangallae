@@ -2,6 +2,7 @@ package com.example.sangallae
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sangallae.login.LoginActivity
@@ -17,10 +18,10 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//       // Handler().postDelayed({ //delay를 위한 handler
+//        Handler().postDelayed({ //delay를 위한 handler
 //            startActivity(Intent(this, MainActivity::class.java))
 //            finish()
-//       // }, SPLASH_VIEW_TIME)
+//        }, SPLASH_VIEW_TIME)
     }
 
     //자동 로그인. 셋 중 하나라도 토큰 저장되어 있으면 메인페이지로 넘어감

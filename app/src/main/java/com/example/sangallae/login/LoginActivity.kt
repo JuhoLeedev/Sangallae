@@ -97,15 +97,15 @@ class LoginActivity : AppCompatActivity() {
         naver_login.setOAuthLoginHandler(mOAuthLoginHandler)
     }  //oncreate
 
-
-    // 로그인 성공 시 이동할 페이지
-    fun moveMainPage(user: FirebaseUser?) {
-        if (user != null) {
-            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
-    }
+//
+//    // 로그인 성공 시 이동할 페이지
+//    fun moveMainPage(user: FirebaseUser?) {
+//        if (user != null) {
+//            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
+//            startActivity(Intent(this, MainActivity::class.java))
+//            finish()
+//        }
+//    }
     // [START onActivityResult]
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -126,8 +126,6 @@ class LoginActivity : AppCompatActivity() {
     }
     // [END onActivityResult]
 
-
-
     private lateinit var auth: FirebaseAuth
     // [START firebaseAuthWithGoogle] 구글
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
@@ -145,9 +143,7 @@ class LoginActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     //val user = firebaseAuth?.currentUser
                     Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-
-                    startActivity(intent)
+                    moveToMain()
 
                 } else {
                     Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
@@ -191,10 +187,7 @@ class LoginActivity : AppCompatActivity() {
         }
         else if (token != null) {
             Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, MainActivity::class.java)
-
             //토큰
-
             UserApiClient.instance.accessTokenInfo { kakaoToken, error ->
                 if (error != null) {
                     Log.e("kakao_login_fail", "토큰 정보 보기 실패", error)
@@ -229,7 +222,7 @@ class LoginActivity : AppCompatActivity() {
                             override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
                                 //실패시
                                 Log.e("LoginResult", "Retrofit2 response error")
-                                Toast.makeText(baseContext, "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(baseContext, "정보 요청에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                             }
                             override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
                                 //정상응답 옴
@@ -243,8 +236,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }
-
-            startActivity(intent)
+            moveToMain()
         }
     }
 
@@ -261,8 +253,6 @@ class LoginActivity : AppCompatActivity() {
         // 로그인 & 토큰
         override fun run(success: Boolean) {
             if (success) {
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-
                 //토큰
                 var naverToken = mOAuthLoginInstance.getAccessToken(mContext)
                 Log.d("naverToken", naverToken)
@@ -284,8 +274,8 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LoginResult", loginResult.toString())
                     }
                 })
+                moveToMain()
 
-                startActivity(intent)
             } else {
                 val errorCode: String = mOAuthLoginInstance.getLastErrorCode(mContext).code
                 val errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext)
@@ -297,16 +287,11 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-//
-//    //자동 로그인 (지금은 구글만 1:52)
-//    override fun onStart() {
-//        super.onStart()
-//        //구글 자동로그인
-//        moveMainPage(firebaseAuth?.currentUser)
-//    }
 
-//    fun getToken(request:HttpServletRequest, response:HttpServletResponse, json:JSONObject, requestURL: String):String{
-//
-//    }
-
+    fun moveToMain(){
+        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent)
+    }
 }
