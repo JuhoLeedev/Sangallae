@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "584231564293",
+    "project_id": "sangallae-31df5",
+    "storage_bucket": "sangallae-31df5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584231564293:android:348399951e09810e92186c",
+        "android_client_info": {
+          "package_name": "com.example.sangallae"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584231564293-tu8gck50c82jp1o28jm63rtcvdolqaqc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTmUeK_i-BlzvhN4uVzAUFQKhJ57OcL-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584231564293-tu8gck50c82jp1o28jm63rtcvdolqaqc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
