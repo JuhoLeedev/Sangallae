@@ -60,6 +60,7 @@ dependencies {
 
     //카카오
     implementation "com.kakao.sdk:v2-user:2.5.0"
+    implementation "com.kakao.sdk:usermgmt:1.27.0"
 
     // 네이버 아이디로 로그인
     implementation 'com.naver.nid:naveridlogin-android-sdk:4.2.6'
