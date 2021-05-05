@@ -7,4 +7,5 @@
     <string name="str_kakao_login">kakao Login</string>
     <string name="str_google_login">Google Sign in</string>
     <string name="main_back">Press the button again to close the app.</string>
+    <string name="title_search">Search</string>
 </resources>

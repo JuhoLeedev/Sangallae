@@ -14,17 +14,11 @@ class MapFragment : Fragment() {
 
     private lateinit var mapViewModel: MapViewModel
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_map, container, false)
         val textView: TextView = root.findViewById(R.id.text_map)
-        mapViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        mapViewModel.text.observe(viewLifecycleOwner, Observer { textView.text = it })
         return root
     }
 }
