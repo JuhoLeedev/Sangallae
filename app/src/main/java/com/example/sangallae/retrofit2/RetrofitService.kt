@@ -23,17 +23,8 @@ interface GoogleLoginPost{
 
 interface KakaoLoginPost{
     @Headers("Content-Type:application/json")
-    @POST("kakao-login")
-    fun requestLogin(
-        @Body access_token: SocialLoginToken
-    ): Call<LoginPostResult>
-}
-
-interface JoinPost{
-    @Headers("Content-Type:application/json")
     @POST("join")
     fun requestLogin(
-        @Body body: TestLogin
-
+        @Body body: kakaoLogin
     ): Call<LoginPostResult>
 }

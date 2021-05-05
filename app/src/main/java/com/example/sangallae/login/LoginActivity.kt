@@ -204,7 +204,7 @@ class LoginActivity : AppCompatActivity() {
                 .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-            var loginPost: JoinPost = retrofit.create(JoinPost::class.java)
+            var loginPost: KakaoLoginPost = retrofit.create(KakaoLoginPost::class.java)
 
             UserApiClient.instance.me { user, error ->
                 if (error != null) {
@@ -216,7 +216,7 @@ class LoginActivity : AppCompatActivity() {
                                 "\n이메일: ${user.kakaoAccount?.email}" +
                                 "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                                 "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
-                        loginPost.requestLogin(TestLogin("kakao-" + user.id, user.id.toString())).enqueue(object:
+                        loginPost.requestLogin(kakaoLogin("kakao" + user.id, user.kakaoAccount?.profile?.nickname)).enqueue(object:
                             retrofit2.Callback<LoginPostResult> {
 
                             override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
