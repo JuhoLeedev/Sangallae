@@ -1,4 +1,4 @@
-package com.example.sangallae.login
+package com.example.sangallae.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,9 +8,9 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sangallae.MainActivity
 import com.example.sangallae.R
-import com.example.sangallae.retrofit2.*
+import com.example.sangallae.retrofit.*
+import com.example.sangallae.utils.API
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -18,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause.*
@@ -27,9 +26,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
-import org.json.JSONObject
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,16 +35,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 class LoginActivity : AppCompatActivity() {
     // Google Login result
     private val RC_SIGN_IN = 9001
+
     // Google Api Client
     private var googleSigninClient: GoogleSignInClient? = null
+
     // Firebase Auth
     private var firebaseAuth: FirebaseAuth? = null
 
     //네이버
-    lateinit var mOAuthLoginInstance : OAuthLogin
+    lateinit var mOAuthLoginInstance: OAuthLogin
     lateinit var mContext: Context
 
- //   var loginResult:LoginPostResult? = null
+    //   var loginResult:LoginPostResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,37 +66,32 @@ class LoginActivity : AppCompatActivity() {
         googleSigninClient = GoogleSignIn.getClient(this, gso)
         firebaseAuth = FirebaseAuth.getInstance();
 
-        val go_intent = findViewById(R.id.googleLoginBtn) as SignInButton
-        go_intent.setOnClickListener {
+        val googleLogin = findViewById<SignInButton>(R.id.googleLoginBtn)
+        googleLogin.setOnClickListener {
             val signInIntent = googleSigninClient?.getSignInIntent()
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
 
         //카카오 로그인
-        val kakao_login = findViewById(R.id.kakaoLoginBtn) as Button
-        kakao_login.setOnClickListener {
-            if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)){
+        val kakaoLogin = findViewById<Button>(R.id.kakaoLoginBtn)
+        kakaoLogin.setOnClickListener {
+            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
                 UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
-            }else{
+            } else {
                 UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
         }
 
         //  네이버 아이디로 로그인
-        val naver_client_id = "CrwgIv6IKrpcPDkNYllP"
-        val naver_client_secret = "cxy3dRqgkR"
-        val naver_client_name = "Sangallae"
+        OAuthLogin.getInstance()
+            .init(this, API.NAVER_CLIENT_ID, API.NAVER_CLIENT_SECRET, API.NAVER_CLIENT_NAME)
 
-        mContext = this
-        mOAuthLoginInstance = OAuthLogin.getInstance()
-        mOAuthLoginInstance.init(mContext, naver_client_id, naver_client_secret, naver_client_name)
-
-        val naver_login = findViewById(R.id.naverLoginBtn) as OAuthLoginButton
-        naver_login.setOAuthLoginHandler(mOAuthLoginHandler)
+        val naverLogin = findViewById<OAuthLoginButton>(R.id.naverLoginBtn)
+        naverLogin.setOAuthLoginHandler(mOAuthLoginHandler)
     }  //oncreate
 
-//
+    //
 //    // 로그인 성공 시 이동할 페이지
 //    fun moveMainPage(user: FirebaseUser?) {
 //        if (user != null) {
@@ -127,6 +121,7 @@ class LoginActivity : AppCompatActivity() {
     // [END onActivityResult]
 
     private lateinit var auth: FirebaseAuth
+
     // [START firebaseAuthWithGoogle] 구글
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
         var retrofit = Retrofit.Builder()
@@ -184,15 +179,13 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "기타 에러", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
-        else if (token != null) {
+        } else if (token != null) {
             Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
             //토큰
             UserApiClient.instance.accessTokenInfo { kakaoToken, error ->
                 if (error != null) {
                     Log.e("kakao_login_fail", "토큰 정보 보기 실패", error)
-                }
-                else if (kakaoToken != null) {
+                } else if (kakaoToken != null) {
                     //Log.d("kakaoToken", OAuthToken.toString())
                     Log.d("kakaoToken", kakaoToken.toString())
                     kakaoToken
@@ -211,20 +204,35 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("kakaoToken", "사용자 정보 요청 실패", error)
                 } else {
                     if (user != null) {
-                        Log.i("kakaoToken", "사용자 정보 요청 성공" +
-                                "\n회원번호: ${user.id}" +
-                                "\n이메일: ${user.kakaoAccount?.email}" +
-                                "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
-                        loginPost.requestLogin(kakaoLogin("kakao" + user.id, user.kakaoAccount?.profile?.nickname)).enqueue(object:
+                        Log.i(
+                            "kakaoToken", "사용자 정보 요청 성공" +
+                                    "\n회원번호: ${user.id}" +
+                                    "\n이메일: ${user.kakaoAccount?.email}" +
+                                    "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                                    "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+                        )
+                        loginPost.requestLogin(
+                            kakaoLogin(
+                                "kakao" + user.id,
+                                user.kakaoAccount?.profile?.nickname
+                            )
+                        ).enqueue(object :
                             retrofit2.Callback<LoginPostResult> {
 
-                            override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
+                            override fun onFailure(call: Call<LoginPostResult>, t: Throwable) {
                                 //실패시
                                 Log.e("LoginResult", "Retrofit2 response error")
-                                Toast.makeText(baseContext, "정보 요청에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    baseContext,
+                                    "정보 요청에 실패했습니다. 잠시 후 다시 시도해주세요.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                            override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
+
+                            override fun onResponse(
+                                call: Call<LoginPostResult>,
+                                response: Response<LoginPostResult>
+                            ) {
                                 //정상응답 옴
 
                                 var loginResult = response.body()?.data?.access_token.toString()
@@ -259,15 +267,23 @@ class LoginActivity : AppCompatActivity() {
                 //mOAuthLoginInstance.requestApi(mContext, naverToken, url)
 
                 //서버에 보내기
-                loginPost.requestLogin(SocialLoginToken(naverToken)).enqueue(object:
+                loginPost.requestLogin(SocialLoginToken(naverToken)).enqueue(object :
                     retrofit2.Callback<LoginPostResult> {
 
-                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
+                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable) {
                         //실패시
                         Log.e("LoginResult", "Retrofit2 response error")
-                        Toast.makeText(baseContext, "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            baseContext,
+                            "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
+
+                    override fun onResponse(
+                        call: Call<LoginPostResult>,
+                        response: Response<LoginPostResult>
+                    ) {
                         //정상응답 옴
                         var loginResult = response.body()?.data?.access_token.toString()
                         Log.d("LoginResult", loginResult.toString())
@@ -287,7 +303,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun moveToMain(){
+    fun moveToMain() {
         val intent = Intent(this@LoginActivity, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

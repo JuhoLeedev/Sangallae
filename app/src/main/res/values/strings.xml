@@ -8,4 +8,12 @@
     <string name="str_google_login">Google Sign in</string>
     <string name="main_back">Press the button again to close the app.</string>
     <string name="title_search">Search</string>
+    <string name="search_hint">Type here to search</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="str_course_time">Time</string>
+    <string name="str_course_height">Height</string>
+    <string name="str_difficulty_high">hard</string>
+    <string name="str_difficulty_medium">medium</string>
+    <string name="str_difficulty_easy">easy</string>
+    <string name="str_course_distance">Distance</string>
 </resources>

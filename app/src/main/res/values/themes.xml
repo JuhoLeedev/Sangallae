@@ -20,4 +20,13 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
+
+    <style name="Theme.Sangallae.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Sangallae.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Sangallae.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

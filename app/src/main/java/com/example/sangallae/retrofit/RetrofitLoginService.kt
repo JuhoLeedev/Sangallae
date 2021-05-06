@@ -1,9 +1,11 @@
-package com.example.sangallae.retrofit2
+package com.example.sangallae.retrofit
 
+import com.example.sangallae.models.SearchQuery
+import com.example.sangallae.models.SearchResult
+import com.example.sangallae.utils.API
+import com.google.gson.JsonElement
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface NaverLoginPost{
     @Headers("Content-Type:application/json")
@@ -27,4 +29,11 @@ interface KakaoLoginPost{
     fun requestLogin(
         @Body body: kakaoLogin
     ): Call<LoginPostResult>
+}
+
+interface SearchPost {
+    @Headers(API.ADMIN_JWT)
+    @GET(API.SEARCH_COURSE)
+    fun searchCourses(@Query("keyword") keyword: String?, @Query ("order") order: String? ): Call<SearchResult>
+   // fun searchCourses(@Query body: SearchQuery: Call<SearchResult>
 }

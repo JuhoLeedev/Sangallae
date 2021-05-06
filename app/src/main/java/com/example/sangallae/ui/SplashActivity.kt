@@ -1,11 +1,9 @@
-package com.example.sangallae
+package com.example.sangallae.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sangallae.login.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.kakao.sdk.auth.TokenManager
 import com.kakao.sdk.auth.model.OAuthToken

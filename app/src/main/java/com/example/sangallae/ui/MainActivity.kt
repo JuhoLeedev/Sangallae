@@ -1,15 +1,13 @@
-package com.example.sangallae
+package com.example.sangallae.ui
 
 import android.os.Bundle
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.sangallae.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
+
     var time3: Long = 0
     override fun onBackPressed() {
         val time1 = System.currentTimeMillis()
@@ -43,4 +42,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, R.string.main_back, Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }

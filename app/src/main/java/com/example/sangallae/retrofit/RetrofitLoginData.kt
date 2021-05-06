@@ -1,4 +1,4 @@
-package com.example.sangallae.retrofit2
+package com.example.sangallae.retrofit
 
 data class SocialLoginToken (val access_token: String)
 
