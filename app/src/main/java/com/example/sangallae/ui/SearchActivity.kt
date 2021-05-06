@@ -60,7 +60,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         this.findViewById<RecyclerView>(R.id.search_course_recycler_view).layoutManager =
             GridLayoutManager(
                 this,
-                2,
+                1,
                 GridLayoutManager.VERTICAL,
                 false
             )
