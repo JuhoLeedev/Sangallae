@@ -17,4 +17,20 @@
     <string name="str_difficulty_medium">중</string>
     <string name="str_difficulty_easy">하</string>
     <string name="str_course_distance">거리</string>
+    <string name="logout">로그아웃</string>
+    <string name="profile_name">님의 정보</string>
+    <string name="profile_course_record">내 등산 기록</string>
+    <string name="profile_course_view">보기 ></string>
+    <string name="profile_stat">통계</string>
+    <string name="profile_total_distance">총 등산 거리</string>
+    <string name="profile_avg_distance">평균 등산 거리</string>
+    <string name="profile_total_time">총 등산 시간</string>
+    <string name="profile_avg_time">평균 등산 시간</string>
+    <string name="profile_height">총 오른 높이</string>
+    <string name="profile_max_height">최고 높이</string>
+    <string name="profile_avg_height">평균 높이</string>
+    <string name="profile_max_speed">최고 속도</string>
+    <string name="profile_avg_speed">평균 속도</string>
+    <string name="profile_total_calories">총 소모 칼로리</string>
+    <string name="profile_avg_calories">평균 소모 칼로리</string>
 </resources>

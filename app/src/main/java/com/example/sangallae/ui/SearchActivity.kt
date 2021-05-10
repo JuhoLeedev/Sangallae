@@ -1,7 +1,5 @@
 package com.example.sangallae.ui
 
-import android.animation.ObjectAnimator
-import android.animation.StateListAnimator
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
