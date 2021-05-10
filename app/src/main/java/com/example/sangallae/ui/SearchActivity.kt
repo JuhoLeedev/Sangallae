@@ -33,6 +33,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         setContentView(R.layout.activity_search)
 
         setSupportActionBar(findViewById(R.id.search_toolbar))
+        supportActionBar?.elevation = 0f
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -93,48 +94,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
 
         if (!query.isNullOrEmpty()) {
-//            this.findViewById<androidx.appcompat.widget.Toolbar>(R.id.search_toolbar).title = query
-//
-//            //TODO:: api 호출
-//            //TODO:: 검색어 저장
-//            var retrofit = Retrofit.Builder()
-//                .baseUrl(API.BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build()
-//            var searchPost: SearchPost = retrofit.create(SearchPost::class.java)
-//
-//
-//
-//            searchPost.searchCourses(query, "")
-//                .enqueue(object : retrofit2.Callback<SearchResult> {
-//                    override fun onFailure(call: Call<SearchResult>, t: Throwable) {
-//                        //실패시
-//                        Log.e("LoginResult", "Retrofit2 response error")
-//                        Toast.makeText(
-//                            baseContext,
-//                            "정보 요청에 실패했습니다. 잠시 후 다시 시도해주세요.",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//
-//                    override fun onResponse(
-//                        call: Call<SearchResult>,
-//                        response: Response<SearchResult>
-//                    ) {
-//                        var searchResult = response.body()?.data
-//                        if (searchResult != null) {
-//                            courseList.clear()
-//                            courseList = searchResult
-//                            courseRecyeclerViewAdapter.submitList(courseList)
-//                            courseRecyeclerViewAdapter.notifyDataSetChanged()
-//
-//                        }
-//                    }
-//                })
-
             this.searchCourseApiCall(query)
-
-
         }
         this.findViewById<androidx.appcompat.widget.Toolbar>(R.id.search_toolbar)
             .collapseActionView()

@@ -15,4 +15,5 @@
     <color name="difficulty_red">#FFFF3120</color>
     <color name="difficulty_yellow">#FFF7E600</color>
     <color name="difficulty_green">#FF87ff52</color>
+    <color name="kakao_yellow">#FEE500</color>
 </resources>

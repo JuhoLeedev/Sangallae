@@ -27,6 +27,11 @@ class MainActivity : AppCompatActivity() {
 //            .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
 //        appBarConfiguration = AppBarConfiguration(navController.graph)
         navView.setupWithNavController(navController)
+
+        setSupportActionBar(findViewById(R.id.home_toolbar))
+        supportActionBar?.elevation = 0f
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
 
@@ -42,6 +47,4 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, R.string.main_back, Toast.LENGTH_SHORT).show()
         }
     }
-
-
 }

@@ -55,9 +55,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.login)
         mContext = applicationContext
 
-        //카카오 디버그 키해시
-        val keyHash = Utility.getKeyHash(this)
-        Log.d("Hash", keyHash)
+//        //카카오 디버그 키해시 - 컴당 한 번만 받으면 됨
+//        val keyHash = Utility.getKeyHash(this)
+//        Log.d("Hash", keyHash)
 
         // [START config_signin]
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
