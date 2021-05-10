@@ -22,6 +22,7 @@ class FavoritesFragment : Fragment() {
 
         fToolbar = root.findViewById(R.id.home_toolbar)
         (activity as AppCompatActivity).setSupportActionBar(fToolbar)
+        //fToolbar?.elevation = 0f
 
         setHasOptionsMenu(true)
         return root

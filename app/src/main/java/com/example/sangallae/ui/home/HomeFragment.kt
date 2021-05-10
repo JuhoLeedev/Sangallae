@@ -27,6 +27,7 @@ class HomeFragment : Fragment() {
 
         hToolbar = root.findViewById(R.id.home_toolbar)
         (activity as AppCompatActivity).setSupportActionBar(hToolbar)
+        //hToolbar?.elevation = 0f
 
         setHasOptionsMenu(true)
 

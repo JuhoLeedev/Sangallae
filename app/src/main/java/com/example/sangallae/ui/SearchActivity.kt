@@ -1,5 +1,7 @@
 package com.example.sangallae.ui
 
+import android.animation.ObjectAnimator
+import android.animation.StateListAnimator
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
@@ -13,7 +15,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.models.Course
-import com.example.sangallae.models.SearchQuery
 import com.example.sangallae.models.SearchResult
 import com.example.sangallae.retrofit.*
 import com.example.sangallae.ui.recyclerview.CourseRecyclerViewAdapter
@@ -36,6 +37,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         setContentView(R.layout.activity_search)
 
         setSupportActionBar(findViewById(R.id.search_toolbar))
+        supportActionBar?.elevation = 0f
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
