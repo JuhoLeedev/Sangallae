@@ -12,15 +12,13 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
-import com.example.sangallae.models.Course
-import com.example.sangallae.models.SearchResult
+import com.example.sangallae.retrofit.models.Course
 import com.example.sangallae.retrofit.*
 import com.example.sangallae.ui.recyclerview.CourseRecyclerViewAdapter
-import com.example.sangallae.utils.API
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.sangallae.utils.RESPONSE_STATUS
+import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
+import com.example.sangallae.utils.Constants.TAG
+import com.example.sangallae.utils.Usage
 
 
 class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
@@ -96,59 +94,37 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
 
         if (!query.isNullOrEmpty()) {
-            this.findViewById<androidx.appcompat.widget.Toolbar>(R.id.search_toolbar).title = query
-
-            //TODO:: api 호출
-            //TODO:: 검색어 저장
-            var retrofit = Retrofit.Builder()
-                .baseUrl(API.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            var searchPost: SearchPost = retrofit.create(SearchPost::class.java)
-
-
-
-            searchPost.searchCourses(query, "")
-                .enqueue(object : retrofit2.Callback<SearchResult> {
-                    override fun onFailure(call: Call<SearchResult>, t: Throwable) {
-                        //실패시
-                        Log.e("LoginResult", "Retrofit2 response error")
-                        Toast.makeText(
-                            baseContext,
-                            "정보 요청에 실패했습니다. 잠시 후 다시 시도해주세요.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    override fun onResponse(
-                        call: Call<SearchResult>,
-                        response: Response<SearchResult>
-                    ) {
-                        var searchResult = response.body()?.data
-                        if (searchResult != null) {
-                            courseList.clear()
-                            courseList = searchResult
-                            courseRecyeclerViewAdapter.submitList(courseList)
-                            courseRecyeclerViewAdapter.notifyDataSetChanged()
-
-                        }
-
-                    }
-
-//            this.searchPhotoApiCall(query)
-//        }
-
-//        this.mySearchView.setQuery("", false)
-//        this.mySearchView.clearFocus()
-
-
-                })
-
+            this.searchCourseApiCall(query)
         }
         this.findViewById<androidx.appcompat.widget.Toolbar>(R.id.search_toolbar)
             .collapseActionView()
 
         return true
+    }
+
+    private fun searchCourseApiCall(query: String) {
+        val retrofit = RetrofitManager(Usage.ACCESS)
+        retrofit.searchCourses(keyword = query, order = "", completion = { status, list ->
+            when(status){
+                RESPONSE_STATUS.OKAY -> {
+                    Log.d(TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
+
+                    if (list != null){
+                        this.courseList.clear()
+                        this.courseList = list
+                        this.courseRecyeclerViewAdapter.submitList(this.courseList)
+                        this.courseRecyeclerViewAdapter.notifyDataSetChanged()
+                    }
+                }
+                RESPONSE_STATUS.NO_CONTENT -> {
+                    Toast.makeText(this, "$query 에 대한 검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(this, "검색을 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {

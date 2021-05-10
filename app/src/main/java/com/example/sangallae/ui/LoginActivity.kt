@@ -10,7 +10,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.*
+import com.example.sangallae.retrofit.models.KakaoLogin
 import com.example.sangallae.utils.API
+import com.example.sangallae.utils.Constants
+import com.example.sangallae.utils.RESPONSE_STATUS
+import com.example.sangallae.utils.Usage
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -19,6 +23,7 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause.*
 import com.kakao.sdk.common.util.Utility
@@ -26,10 +31,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+
 
 
 class LoginActivity : AppCompatActivity() {
@@ -51,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login)
+        mContext = applicationContext
 
 //        //카카오 디버그 키해시 - 컴당 한 번만 받으면 됨
 //        val keyHash = Utility.getKeyHash(this)
@@ -84,28 +87,21 @@ class LoginActivity : AppCompatActivity() {
         }
 
         //  네이버 아이디로 로그인
-        OAuthLogin.getInstance()
-            .init(this, API.NAVER_CLIENT_ID, API.NAVER_CLIENT_SECRET, API.NAVER_CLIENT_NAME)
+        mContext = this
+        mOAuthLoginInstance = OAuthLogin.getInstance()
+        mOAuthLoginInstance.init(mContext, API.NAVER_CLIENT_ID, API.NAVER_CLIENT_SECRET, API.NAVER_CLIENT_NAME)
 
         val naverLogin = findViewById<OAuthLoginButton>(R.id.naverLoginBtn)
         naverLogin.setOAuthLoginHandler(mOAuthLoginHandler)
     }  //oncreate
 
-    //
-//    // 로그인 성공 시 이동할 페이지
-//    fun moveMainPage(user: FirebaseUser?) {
-//        if (user != null) {
-//            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-//            startActivity(Intent(this, MainActivity::class.java))
-//            finish()
-//        }
-//    }
+
     // [START onActivityResult]
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Google 로그인 인텐트 응답
-        if (requestCode === RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -124,11 +120,11 @@ class LoginActivity : AppCompatActivity() {
 
     // [START firebaseAuthWithGoogle] 구글
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
-        var retrofit = Retrofit.Builder()
-            .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        var loginPost: GoogleLoginPost = retrofit.create(GoogleLoginPost::class.java)
+//        var retrofit = Retrofit.Builder()
+//            .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        var loginPost: GoogleLoginPost = retrofit.create(GoogleLoginPost::class.java)
 
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         firebaseAuth!!.signInWithCredential(credential)
@@ -193,12 +189,6 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            var retrofit = Retrofit.Builder()
-                .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            var loginPost: KakaoLoginPost = retrofit.create(KakaoLoginPost::class.java)
-
             UserApiClient.instance.me { user, error ->
                 if (error != null) {
                     Log.d("kakaoToken", "사용자 정보 요청 실패", error)
@@ -211,32 +201,15 @@ class LoginActivity : AppCompatActivity() {
                                     "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                                     "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
                         )
-                        loginPost.requestLogin(
-                            kakaoLogin(
-                                "kakao" + user.id,
-                                user.kakaoAccount?.profile?.nickname
-                            )
-                        ).enqueue(object :
-                            retrofit2.Callback<LoginPostResult> {
-
-                            override fun onFailure(call: Call<LoginPostResult>, t: Throwable) {
-                                //실패시
-                                Log.e("LoginResult", "Retrofit2 response error")
-                                Toast.makeText(
-                                    baseContext,
-                                    "정보 요청에 실패했습니다. 잠시 후 다시 시도해주세요.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            override fun onResponse(
-                                call: Call<LoginPostResult>,
-                                response: Response<LoginPostResult>
-                            ) {
-                                //정상응답 옴
-
-                                var loginResult = response.body()?.data?.access_token.toString()
-                                Log.d("LoginResult", loginResult.toString())
+                        val retrofit = RetrofitManager(Usage.ACCESS)
+                        retrofit.kakaoLogin(KakaoLogin("kakao" + user.id, user.kakaoAccount?.profile?.nickname), completion = { status, token ->
+                            when(status){
+                                RESPONSE_STATUS.OKAY -> {
+                                    Log.d(Constants.TAG, "LoginActivity - kakaoLogin called 응답 성공 / token : ${token?.access_token}")
+                                }
+                                else -> {
+                                    Toast.makeText(this, "로그인을 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         })
                     } else {
@@ -251,12 +224,6 @@ class LoginActivity : AppCompatActivity() {
     //네이버
     val mOAuthLoginHandler: OAuthLoginHandler = @SuppressLint("HandlerLeak") //19:28 handlerleak
     object : OAuthLoginHandler() {
-        //서버에 토큰 보내기
-        var retrofit = Retrofit.Builder()
-            .baseUrl("http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/") // or 8081 0
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        var loginPost: NaverLoginPost = retrofit.create(NaverLoginPost::class.java)
 
         // 로그인 & 토큰
         override fun run(success: Boolean) {
@@ -267,30 +234,18 @@ class LoginActivity : AppCompatActivity() {
                 //mOAuthLoginInstance.requestApi(mContext, naverToken, url)
 
                 //서버에 보내기
-                loginPost.requestLogin(SocialLoginToken(naverToken)).enqueue(object :
-                    retrofit2.Callback<LoginPostResult> {
-
-                    override fun onFailure(call: Call<LoginPostResult>, t: Throwable) {
-                        //실패시
-                        Log.e("LoginResult", "Retrofit2 response error")
-                        Toast.makeText(
-                            baseContext,
-                            "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    override fun onResponse(
-                        call: Call<LoginPostResult>,
-                        response: Response<LoginPostResult>
-                    ) {
-                        //정상응답 옴
-                        var loginResult = response.body()?.data?.access_token.toString()
-                        Log.d("LoginResult", loginResult.toString())
+                val retrofit = RetrofitManager(Usage.ACCESS)
+                retrofit.naverLogin(accessToken = naverToken, completion = { status, token ->
+                    when(status){
+                        RESPONSE_STATUS.OKAY -> {
+                            Log.d(Constants.TAG, "LoginActivity - naverLogin called 응답 성공 / token : ${token?.access_token}")
+                        }
+                        else -> {
+                            Toast.makeText(baseContext, "로그인을 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 })
                 moveToMain()
-
             } else {
                 val errorCode: String = mOAuthLoginInstance.getLastErrorCode(mContext).code
                 val errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext)
