@@ -3,10 +3,9 @@ package com.example.sangallae.ui.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
-import com.example.sangallae.models.Course
+import com.example.sangallae.retrofit.models.Course
 
 class CourseRecyclerViewAdapter : RecyclerView.Adapter<CourseItemViewHolder>() {
 

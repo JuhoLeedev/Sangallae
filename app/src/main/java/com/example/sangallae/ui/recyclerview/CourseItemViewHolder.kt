@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
-import com.example.sangallae.models.Course
+import com.example.sangallae.retrofit.models.Course
 
 class CourseItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
