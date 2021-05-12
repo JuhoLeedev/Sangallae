@@ -37,4 +37,5 @@ object API {
     const val LOGIN_NAVER : String = "naver-login"
     const val LOGIN_GOOGLE : String = "google-login"
     const val SEARCH_COURSE : String = "search"
+    const val PROFILE_LOAD : String = "profile"
 }

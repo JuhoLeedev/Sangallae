@@ -6,6 +6,7 @@ import com.example.sangallae.retrofit.RetrofitClient
 import com.example.sangallae.retrofit.RetrofitService
 import com.example.sangallae.retrofit.models.JsonToken
 import com.example.sangallae.retrofit.models.KakaoLogin
+import com.example.sangallae.retrofit.models.Profile
 import com.example.sangallae.utils.API
 import com.example.sangallae.utils.Constants.TAG
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -102,6 +103,111 @@ class RetrofitManager(usage: Usage) {
             }
         })
     }
+
+    // 마이페이지 프로필/통계 로드
+    fun profileLoad(
+        order: String?,
+        completion: (RESPONSE_STATUS, Profile?) -> Unit
+    ) {
+        //val term = keyword ?: ""
+        val call = iRetrofit?.profileLoad(order = "") ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+
+                completion(RESPONSE_STATUS.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val parsedProfileDataArray = ArrayList<Course>()
+                        val body = it.asJsonObject
+                        val results = body.getAsJsonObject("data")
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "OK" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                val profilePicture = results.get("picture").asString
+                                val profileNickname = results.get("nickname").asString
+                                val profileHeightWeight = results.get("user_height_weight").asString
+                                //val profileHeight = results.get("user_height").asString
+                                //val profileWeight = results.get("user_weight").asString
+                                val profileTotalDistance = results.get("total_distance").asString
+                                val profileAvgDistance = results.get("avg_distance").asString
+                                val profileTotalTime = results.get("total_time").asString
+                                val profileAvgTime = results.get("avg_time").asString
+                                val profileTotalHeight = results.get("total_height").asString
+                                val profileMaxHeight = results.get("max_height").asString
+                                val profileAvgHeight = results.get("avg_height").asString
+                                val profileMaxSpeed = results.get("max_speed").asString
+                                val profileAvgSpeed = results.get("avg_speed").asString
+                                val profileTotalCalories = results.get("total_calories").asString
+                                val profileAvgCalores = results.get("avg_calories").asString
+
+                                val profileItem = Profile(
+//                                    picture = profilePicture,
+//                                    nickname = profileNickname,
+//                                    user_height_weight = "{$profileHeight}cm / {$profileWeight}kg",
+//                                    total_distance = "{$profileTotalDistance}km",
+//                                    avg_distance = "{$profileAvgDistance}km",
+//                                    total_time = profileTotalTime,
+//                                    avg_time = profileAvgTime,
+//                                    total_height = "{$profileTotalHeight}m",
+//                                    max_height = "{$profileMaxHeight}m",
+//                                    avg_height = "{$profileAvgHeight}m",
+//                                    max_speed = "{$profileMaxSpeed}km/h",
+//                                    avg_speed = "{$profileAvgSpeed}km/h",
+//                                    total_calories = "{$profileTotalCalories}kcal",
+//                                    avg_calories = "{$profileAvgCalores}kcal"
+                                    user_id = "",
+                                    picture = profilePicture,
+                                    nickname = profileNickname,
+                                    user_height_weight = profileHeightWeight,
+                                    total_distance = profileTotalDistance,
+                                    avg_distance = profileAvgDistance,
+                                    total_time = profileTotalTime,
+                                    avg_time = profileAvgTime,
+                                    total_height = profileTotalHeight,
+                                    max_height = profileMaxHeight,
+                                    avg_height = profileAvgHeight,
+                                    max_speed = profileMaxSpeed,
+                                    avg_speed = profileAvgSpeed,
+                                    total_calories = profileTotalCalories,
+                                    avg_calories = profileAvgCalores
+                                )
+
+                                completion(RESPONSE_STATUS.OKAY, profileItem)
+                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST, null)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, null)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND, null)
+                }
+            }
+        })
+    }
+
 
     // 네이버 로그인
     fun naverLogin(

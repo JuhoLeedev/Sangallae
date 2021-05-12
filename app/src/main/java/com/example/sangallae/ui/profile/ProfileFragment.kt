@@ -8,10 +8,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sangallae.R
+import com.example.sangallae.retrofit.models.Course
+import com.example.sangallae.retrofit.models.Profile
+import com.example.sangallae.utils.Constants
+import com.example.sangallae.utils.RESPONSE_STATUS
+import com.example.sangallae.utils.Usage
+import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 class ProfileFragment : Fragment() {
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var pToolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var profileItem: Profile
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,6 +36,10 @@ class ProfileFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+        // 페이지 열 때 유저 정보 요청
+        profileLoadApiCall()
+
+
         return root
     }
 
@@ -39,11 +50,36 @@ class ProfileFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.logout -> {
-            Toast.makeText(this.context, "dd", 3)
+
             true
         }
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun profileLoadApiCall() {
+        val retrofit = RetrofitManager(Usage.ACCESS)
+        retrofit.profileLoad(order = "", completion = { status, profileItem ->
+            when(status){
+                RESPONSE_STATUS.OKAY -> {
+                    //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
+                    if (profileItem != null){
+                        //this.profileItem.clear()
+                        this.profileItem = profileItem
+                        Log.d(Constants.TAG, "ProfileFragment-OncreateView-profileLoadApiCall() profileItem: ${profileItem.toString()}")
+//                        this.courseRecyeclerViewAdapter.submitList(this.profileList)
+//                        this.courseRecyeclerViewAdapter.notifyDataSetChanged()
+                    }
+                }
+//                RESPONSE_STATUS.NO_CONTENT -> {
+//                    Toast.makeText(this, "$query 에 대한 검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+//                }
+                else -> {
+                    Toast.makeText(this.context, "페이지를 로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
     }
 }

@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.*
 import com.example.sangallae.retrofit.models.KakaoLogin
@@ -184,8 +185,6 @@ class LoginActivity : AppCompatActivity() {
                 } else if (kakaoToken != null) {
                     //Log.d("kakaoToken", OAuthToken.toString())
                     Log.d("kakaoToken", kakaoToken.toString())
-                    kakaoToken
-
                 }
             }
 
@@ -201,11 +200,14 @@ class LoginActivity : AppCompatActivity() {
                                     "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                                     "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
                         )
-                        val retrofit = RetrofitManager(Usage.ACCESS)
+                        val retrofit = RetrofitManager(Usage.LOGIN)
                         retrofit.kakaoLogin(KakaoLogin("kakao" + user.id, user.kakaoAccount?.profile?.nickname), completion = { status, token ->
                             when(status){
                                 RESPONSE_STATUS.OKAY -> {
                                     Log.d(Constants.TAG, "LoginActivity - kakaoLogin called 응답 성공 / token : ${token?.access_token}")
+                                    // 저장
+                                    GlobalApplication.prefs.setString("access_token", token?.access_token.toString())
+                                    Log.d(Constants.TAG, "LoginActivity - kakaoLogin token 저장확인 / local_token: ${GlobalApplication.prefs.getString("access_token","fail")}")
                                 }
                                 else -> {
                                     Toast.makeText(this, "로그인을 할 수 없습니다.", Toast.LENGTH_SHORT).show()
@@ -234,11 +236,13 @@ class LoginActivity : AppCompatActivity() {
                 //mOAuthLoginInstance.requestApi(mContext, naverToken, url)
 
                 //서버에 보내기
-                val retrofit = RetrofitManager(Usage.ACCESS)
+                val retrofit = RetrofitManager(Usage.LOGIN)
                 retrofit.naverLogin(accessToken = naverToken, completion = { status, token ->
                     when(status){
                         RESPONSE_STATUS.OKAY -> {
                             Log.d(Constants.TAG, "LoginActivity - naverLogin called 응답 성공 / token : ${token?.access_token}")
+                            GlobalApplication.prefs.setString("access_token", token?.access_token.toString())
+                            Log.d(Constants.TAG, "LoginActivity - naverLogin token 저장확인 / local_token: ${GlobalApplication.prefs.getString("access_token","fail")}")
                         }
                         else -> {
                             Toast.makeText(baseContext, "로그인을 할 수 없습니다.", Toast.LENGTH_SHORT).show()

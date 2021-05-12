@@ -20,7 +20,7 @@
     <string name="logout">로그아웃</string>
     <string name="profile_name">님의 정보</string>
     <string name="profile_course_record">내 등산 기록</string>
-    <string name="profile_course_view">보기 ></string>
+    <string name="profile_course_view">보기  ></string>
     <string name="profile_stat">통계</string>
     <string name="profile_total_distance">총 등산 거리</string>
     <string name="profile_avg_distance">평균 등산 거리</string>
