@@ -32,6 +32,7 @@ class ProfileFragment : Fragment() {
 
         pToolbar = root.findViewById(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(pToolbar)
+        pToolbar.title=""
         //hToolbar?.elevation = 0f
 
         setHasOptionsMenu(true)
@@ -60,7 +61,7 @@ class ProfileFragment : Fragment() {
 
     private fun profileLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.profileLoad(order = "", completion = { status, profileItem ->
+        retrofit.profileLoad(completion = { status, profileItem ->
             when(status){
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
@@ -76,6 +77,7 @@ class ProfileFragment : Fragment() {
 //                    Toast.makeText(this, "$query 에 대한 검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
 //                }
                 else -> {
+                    Log.d(Constants.TAG, "ProfileFragment-OncreateView-profileLoadApiCall() profileItem: ${profileItem.toString()}")
                     Toast.makeText(this.context, "페이지를 로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
                 }
             }

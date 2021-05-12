@@ -35,7 +35,6 @@ class RetrofitManager(usage: Usage) {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
-
                 completion(RESPONSE_STATUS.FAIL, null)
             }
 
@@ -106,11 +105,10 @@ class RetrofitManager(usage: Usage) {
 
     // 마이페이지 프로필/통계 로드
     fun profileLoad(
-        order: String?,
+        //order: String?,
         completion: (RESPONSE_STATUS, Profile?) -> Unit
     ) {
-        //val term = keyword ?: ""
-        val call = iRetrofit?.profileLoad(order = "") ?: return
+        val call = iRetrofit?.profileLoad() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -126,7 +124,7 @@ class RetrofitManager(usage: Usage) {
 
                 if(response.isSuccessful) {
                     response.body()?.let {
-                        val parsedProfileDataArray = ArrayList<Course>()
+                        //val parsedProfileDataArray = ArrayList<Course>()
                         val body = it.asJsonObject
                         val results = body.getAsJsonObject("data")
                         val message = body.get("message")
