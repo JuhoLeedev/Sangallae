@@ -243,13 +243,14 @@ class LoginActivity : AppCompatActivity() {
                             Log.d(Constants.TAG, "LoginActivity - naverLogin called 응답 성공 / token : ${token?.access_token}")
                             GlobalApplication.prefs.setString("access_token", token?.access_token.toString())
                             Log.d(Constants.TAG, "LoginActivity - naverLogin token 저장확인 / local_token: ${GlobalApplication.prefs.getString("access_token","fail")}")
+
+                            moveToMain()
                         }
                         else -> {
                             Toast.makeText(baseContext, "로그인을 할 수 없습니다.", Toast.LENGTH_SHORT).show()
                         }
                     }
                 })
-                moveToMain()
             } else {
                 val errorCode: String = mOAuthLoginInstance.getLastErrorCode(mContext).code
                 val errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext)

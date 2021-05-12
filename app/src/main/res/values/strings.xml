@@ -19,7 +19,7 @@
     <string name="logout">logout</string>
     <string name="profile_name">\'s profile</string>
     <string name="profile_course_record">My Course Records</string>
-    <string name="profile_course_view">View  ></string>
+    <string name="profile_course_view">Course Records  ></string>
     <string name="profile_stat">Stats</string>
     <string name="profile_total_distance">Total Distance</string>
     <string name="profile_avg_distance">Average Distance</string>
