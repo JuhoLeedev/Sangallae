@@ -177,7 +177,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         } else if (token != null) {
-            Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "카카오 로그인 성공.", Toast.LENGTH_SHORT).show()
             //토큰
             UserApiClient.instance.accessTokenInfo { kakaoToken, error ->
                 if (error != null) {
@@ -208,9 +208,10 @@ class LoginActivity : AppCompatActivity() {
                                     // 저장
                                     GlobalApplication.prefs.setString("access_token", token?.access_token.toString())
                                     Log.d(Constants.TAG, "LoginActivity - kakaoLogin token 저장확인 / local_token: ${GlobalApplication.prefs.getString("access_token","fail")}")
+                                    moveToMain()
                                 }
                                 else -> {
-                                    Toast.makeText(this, "로그인을 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "서버 토큰 받기 실패", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         })
@@ -219,7 +220,6 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }
-            moveToMain()
         }
     }
 

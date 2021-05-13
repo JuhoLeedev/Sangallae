@@ -33,4 +33,10 @@
     <string name="profile_avg_speed">평균 속도</string>
     <string name="profile_total_calories">총 소모 칼로리</string>
     <string name="profile_avg_calories">평균 소모 칼로리</string>
+    <string name="profile_edit">프로필 설정</string>
+    <string name="profile_edit_nickname">닉네임</string>
+    <string name="profile_edit_height">키</string>
+    <string name="profile_edit_weight">몸무게</string>
+    <string name="profile_edit_ok">확인</string>
+    <string name="profile_edit_cancel">취소</string>
 </resources>

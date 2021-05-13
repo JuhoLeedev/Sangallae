@@ -33,4 +33,10 @@
     <string name="profile_total_calories">Total Calories</string>
     <string name="profile_avg_calories">Average Calories</string>
 
+    <string name="profile_edit">Edit Profile</string>
+    <string name="profile_edit_nickname">Nickname</string>
+    <string name="profile_edit_height">Height</string>
+    <string name="profile_edit_weight">Weight</string>
+    <string name="profile_edit_ok">OK</string>
+    <string name="profile_edit_cancel">Cancel</string>
 </resources>

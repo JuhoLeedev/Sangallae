@@ -9,6 +9,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
@@ -61,6 +62,26 @@ class ProfileFragment : Fragment() {
             logout(logoutBtn)
         }
 
+        // 프로필 수정 버튼
+        val editBtn = root.findViewById<ImageButton>(R.id.editBtn)
+        editBtn.setOnClickListener {
+//            //뷰 바인딩
+//            binding = ActivityMainBinding.inflate(layoutInflater)
+//            setContentView(binding.root)
+//
+//            binding.startButton.setOnClickListener {
+
+                // Dialog만들기
+                val mDialogView = LayoutInflater.from(activity).inflate(R.layout.edit_profile_dialog, null)
+                val mBuilder = activity?.let { it1 ->
+                    AlertDialog.Builder(it1)
+                        .setView(mDialogView)
+                        //.setTitle("Login Form")
+                }
+
+                mBuilder?.show()
+            //}
+        }
 
         return root
     }
