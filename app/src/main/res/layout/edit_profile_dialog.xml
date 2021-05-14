@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageView"
+        android:id="@+id/popImageView"
         android:layout_width="66dp"
         android:layout_height="66dp"
         android:layout_marginStart="20dp"
@@ -68,7 +68,7 @@
     <TextView
         android:id="@+id/textView6"
         android:layout_width="53dp"
-        android:layout_height="18dp"
+        android:layout_height="19dp"
 
         android:layout_marginStart="234dp"
         android:layout_marginTop="150dp"
