@@ -157,9 +157,10 @@ class ProfileFragment : Fragment() {
                         view?.findViewById<TextView>(R.id.avg_calories_view)?.text = profileItem.avg_calories
 
                         view?.findViewById<TextView>(R.id.nickname)?.text = profileItem.nickname + getString(R.string.profile_name);
-                        view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height_weight
+                        //view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height_weight
+                        view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height + "cm / "+profileItem.user_weight + "kg"
 
-                        nick= profileItem.nickname.toString()
+                            nick= profileItem.nickname.toString()
 //                        wei = profileItem.user_height_weight.toString().substring(0,3)
 //                        hei =  profileItem.user_height_weight.toString().substring(-3,0)
 //                        Glide.with(this).load(profileItem.picture).into(view?.findViewById<CircleImageView>(R.id.imageView))
