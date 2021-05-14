@@ -90,6 +90,8 @@ class ProfileFragment : Fragment() {
                 // 서버에 업데이트 요청
                 profileUpdateApiCall(nick, hei, wei)
 
+                //profileLoadApiCall()
+
                 mAlertDialog?.dismiss()
             }
             //취소 버튼
@@ -171,11 +173,11 @@ class ProfileFragment : Fragment() {
                         wei = profileItem.user_weight.toString()
                         hei =  profileItem.user_height.toString()
 
-                        view?.findViewById<CircleImageView>(R.id.imageView)?.let {
-                            Glide.with(this).load(profileItem.picture).into(
-                                it
-                            )
-                        }
+//                        view?.findViewById<CircleImageView>(R.id.imageView)?.let {
+//                            Glide.with(this).load(profileItem.picture).into(
+//                                it
+//                            )
+//                        }
 
                         if(profileItem.picture != "no_image"){
                             view?.findViewById<ImageView>(R.id.imageView)?.let {
