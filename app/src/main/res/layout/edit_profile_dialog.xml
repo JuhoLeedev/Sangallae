@@ -53,7 +53,7 @@
     <EditText
         android:id="@+id/editHeight"
         android:layout_width="120dp"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
 
         android:layout_marginStart="100dp"
         android:layout_marginTop="170dp"
@@ -97,7 +97,7 @@
     <EditText
         android:id="@+id/editWeight"
         android:layout_width="120dp"
-        android:layout_height="41dp"
+        android:layout_height="48dp"
         android:layout_marginStart="230dp"
 
         android:layout_marginTop="170dp"
@@ -111,11 +111,11 @@
 
     <Button
         android:id="@+id/successButton"
-        android:layout_width="58dp"
+        android:layout_width="72dp"
         android:layout_height="40dp"
         android:layout_gravity="right"
         android:layout_marginTop="240dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         android:background="@android:color/transparent"
         android:text="@string/profile_edit_ok"
         android:textColor="@color/black"
@@ -132,7 +132,7 @@
         android:layout_height="40dp"
         android:layout_gravity="right"
         android:layout_marginTop="240dp"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="80dp"
         android:background="@android:color/transparent"
         android:text="@string/profile_edit_cancel"
         android:textColor="@color/black"

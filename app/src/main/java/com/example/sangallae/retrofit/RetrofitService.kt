@@ -1,5 +1,6 @@
 package com.example.sangallae.retrofit
 
+import com.example.sangallae.retrofit.models.JsonToken
 import com.example.sangallae.utils.API
 import com.google.gson.JsonElement
 import retrofit2.Call
@@ -10,7 +11,8 @@ interface RetrofitService {
 
     @Headers(API.CONTENTTYPE_JSON)
     @POST(API.LOGIN_NAVER)
-    fun requestNaverLogin(@Body access_token: String): Call<JsonElement>
+    fun requestNaverLogin(@Body body: JsonToken): Call<JsonElement>
+    //fun requestNaverLogin(@Body access_token: String): Call<JsonElement>
 
     @Headers(API.CONTENTTYPE_JSON)
     @POST(API.LOGIN_GOOGLE)
@@ -25,4 +27,10 @@ interface RetrofitService {
 
     @GET(API.PROFILE_LOAD)
     fun profileLoad(): Call<JsonElement>
+
+//    @GET(API.PROFILE_UPDATE)
+//    fun profileUpdate(@Query("nickname") nickname:String, @Query("Height") height:String, @Query("Weight") weight:String): Call<JsonElement>
+    @FormUrlEncoded
+    @PATCH(API.PROFILE_UPDATE)
+    fun profileUpdate(@Field("nickname")nickname:String, @Field("height") height:String, @Field("weight") weight:String): Call<JsonElement>
 }

@@ -69,6 +69,7 @@ object RetrofitClient {
                 override fun intercept(chain: Interceptor.Chain): Response {
                     Log.d(TAG, "RetrofitClient - intercept() called")
                     // 오리지날 리퀘스트
+                    //admin
                     //val token = "Bearer ${API.ADMIN_JWT}"
                     //로컬에 저장된 access_token값을 가져옴
                     val access_token = GlobalApplication.prefs.getString("access_token", "null")
@@ -106,7 +107,6 @@ object RetrofitClient {
         client.readTimeout(10, TimeUnit.SECONDS)
         client.writeTimeout(10, TimeUnit.SECONDS)
         client.retryOnConnectionFailure(true)
-
 
         if(retrofitClient == null){
             // 레트로핏 빌더를 통해 인스턴스 생성

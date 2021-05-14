@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.LayoutInflater.from
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -34,6 +31,10 @@ class ProfileFragment : Fragment() {
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var pToolbar: androidx.appcompat.widget.Toolbar
     private lateinit var profileItem: Profile
+    private var nick:String = ""
+    private var hei:String = ""
+    private var wei:String = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,22 +66,33 @@ class ProfileFragment : Fragment() {
         // 프로필 수정 버튼
         val editBtn = root.findViewById<ImageButton>(R.id.editBtn)
         editBtn.setOnClickListener {
-//            //뷰 바인딩
-//            binding = ActivityMainBinding.inflate(layoutInflater)
-//            setContentView(binding.root)
-//
-//            binding.startButton.setOnClickListener {
+            // Dialog 띄우기
+            val mDialogView = from(activity).inflate(R.layout.edit_profile_dialog, null)
+            val mBuilder = activity?.let { it1 ->
+                AlertDialog.Builder(it1)
+                    .setView(mDialogView)
+                //.setTitle("Login Form")
+            }
+            mDialogView.findViewById<EditText>(R.id.editNickname).setText(nick)
+            mDialogView.findViewById<EditText>(R.id.editHeight).setText(hei)
+            mDialogView.findViewById<EditText>(R.id.editWeight).setText(wei)
+            val mAlertDialog = mBuilder?.show()
+            //확인 버튼
+            val okButton = mDialogView.findViewById<Button>(R.id.successButton)
+            okButton.setOnClickListener {
+                // 유저가 입력한 내용 받아오기
+                nick = mDialogView.findViewById<EditText>(R.id.editNickname).text.toString()
+                hei = mDialogView.findViewById<EditText>(R.id.editHeight).text.toString()
+                wei = mDialogView.findViewById<EditText>(R.id.editWeight).text.toString()
 
-                // Dialog만들기
-                val mDialogView = LayoutInflater.from(activity).inflate(R.layout.edit_profile_dialog, null)
-                val mBuilder = activity?.let { it1 ->
-                    AlertDialog.Builder(it1)
-                        .setView(mDialogView)
-                        //.setTitle("Login Form")
-                }
-
-                mBuilder?.show()
-            //}
+                // 서버에 업데이트 요청
+                profileUpdateApiCall(nick, hei, wei)
+            }
+            //취소 버튼
+            val cancelButton = mDialogView.findViewById<Button>(R.id.cancelBtn)
+            cancelButton.setOnClickListener {
+                mAlertDialog?.dismiss()
+            }
         }
 
         return root
@@ -101,8 +113,10 @@ class ProfileFragment : Fragment() {
                             Log.i(Constants.TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
                         }
                     }
-                    val mOAuthLoginModule = OAuthLogin.getInstance()
-                    mOAuthLoginModule.logout(activity)
+                    if(OAuthLogin.getInstance()!=null){
+                        val mOAuthLoginModule = OAuthLogin.getInstance()
+                        mOAuthLoginModule.logout(activity)
+                    }
                     FirebaseAuth.getInstance().signOut();
                     Toast.makeText(this.context, item.title, Toast.LENGTH_SHORT).show()
                     val intent = Intent(activity, SplashActivity::class.java)
@@ -110,7 +124,6 @@ class ProfileFragment : Fragment() {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent)
                 }
-
             }
             true
         })
@@ -146,14 +159,19 @@ class ProfileFragment : Fragment() {
                         view?.findViewById<TextView>(R.id.nickname)?.text = profileItem.nickname + getString(R.string.profile_name);
                         view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height_weight
 
+                        nick= profileItem.nickname.toString()
+//                        wei = profileItem.user_height_weight.toString().substring(0,3)
+//                        hei =  profileItem.user_height_weight.toString().substring(-3,0)
 //                        Glide.with(this).load(profileItem.picture).into(view?.findViewById<CircleImageView>(R.id.imageView))
-//
-                        view?.findViewById<ImageView>(R.id.imageView)?.let {
-                            Glide.with(this)
-                                .load(profileItem.picture)
-                                .circleCrop()
-                                .into(it)
-                        };
+
+                        if(profileItem.picture!="no_image"){
+                            view?.findViewById<ImageView>(R.id.imageView)?.let {
+                                Glide.with(this)
+                                    .load(profileItem.picture)
+                                    .circleCrop()
+                                    .into(it)
+                            }
+                        }
                     }
                 }
                 else -> {
@@ -162,6 +180,21 @@ class ProfileFragment : Fragment() {
                 }
             }
         })
+    }
 
+    private fun profileUpdateApiCall(newnick:String, newhei:String, newwei:String) {
+        val retrofit = RetrofitManager(Usage.ACCESS)
+        retrofit.profileUpdate(nickname = newnick, height = newhei, weight = newwei, completion = {status ->
+            when(status){
+                RESPONSE_STATUS.OKAY -> {
+                    Log.d(Constants.TAG, "profileUpdateApiCall()")
+                    Toast.makeText(this.context, "프로필이 업데이트 되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Log.d(Constants.TAG, "ProfileFragment-OncreateView-profileUpdateApiCall() Error")
+                    Toast.makeText(this.context, "프로필을 업데이트할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 }

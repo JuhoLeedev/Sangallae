@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.*
+import com.example.sangallae.retrofit.models.JsonToken
 import com.example.sangallae.retrofit.models.KakaoLogin
 import com.example.sangallae.utils.API
 import com.example.sangallae.utils.Constants
@@ -144,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
     }
     // [END firebaseAuthWithGoogle]
 
-    //카카오 로그인
+    // 카카오 로그인
     private val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
             when {
@@ -200,6 +201,7 @@ class LoginActivity : AppCompatActivity() {
                                     "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                                     "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
                         )
+                        // 서버에 보내기
                         val retrofit = RetrofitManager(Usage.LOGIN)
                         retrofit.kakaoLogin(KakaoLogin("kakao" + user.id, user.kakaoAccount?.profile?.nickname), completion = { status, token ->
                             when(status){
@@ -237,13 +239,12 @@ class LoginActivity : AppCompatActivity() {
 
                 //서버에 보내기
                 val retrofit = RetrofitManager(Usage.LOGIN)
-                retrofit.naverLogin(accessToken = naverToken, completion = { status, token ->
+                retrofit.naverLogin(JsonToken(naverToken), completion = { status, token ->
                     when(status){
                         RESPONSE_STATUS.OKAY -> {
                             Log.d(Constants.TAG, "LoginActivity - naverLogin called 응답 성공 / token : ${token?.access_token}")
                             GlobalApplication.prefs.setString("access_token", token?.access_token.toString())
                             Log.d(Constants.TAG, "LoginActivity - naverLogin token 저장확인 / local_token: ${GlobalApplication.prefs.getString("access_token","fail")}")
-
                             moveToMain()
                         }
                         else -> {
