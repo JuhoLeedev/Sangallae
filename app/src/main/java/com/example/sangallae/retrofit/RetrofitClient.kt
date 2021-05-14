@@ -86,7 +86,7 @@ object RetrofitClient {
 
                     val response = chain.proceed(addedRequest)
 
-                    if (response.code != 200) {
+                    if (response.code != 200 && response.code != 201) {
                         Handler(Looper.getMainLooper()).post {
                             Toast.makeText(
                                 GlobalApplication.instance,

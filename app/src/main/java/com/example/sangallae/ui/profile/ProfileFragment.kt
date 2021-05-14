@@ -89,6 +89,8 @@ class ProfileFragment : Fragment() {
 
                 // 서버에 업데이트 요청
                 profileUpdateApiCall(nick, hei, wei)
+
+                mAlertDialog?.dismiss()
             }
             //취소 버튼
             val cancelButton = mDialogView.findViewById<Button>(R.id.cancelBtn)
@@ -165,12 +167,17 @@ class ProfileFragment : Fragment() {
                         //view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height_weight
                         view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height + "cm / "+profileItem.user_weight + "kg"
 
-                            nick= profileItem.nickname.toString()
-//                        wei = profileItem.user_height_weight.toString().substring(0,3)
-//                        hei =  profileItem.user_height_weight.toString().substring(-3,0)
-//                        Glide.with(this).load(profileItem.picture).into(view?.findViewById<CircleImageView>(R.id.imageView))
+                        nick= profileItem.nickname.toString()
+                        wei = profileItem.user_weight.toString()
+                        hei =  profileItem.user_height.toString()
 
-                        if(profileItem.picture!="no_image"){
+                        view?.findViewById<CircleImageView>(R.id.imageView)?.let {
+                            Glide.with(this).load(profileItem.picture).into(
+                                it
+                            )
+                        }
+
+                        if(profileItem.picture != "no_image"){
                             view?.findViewById<ImageView>(R.id.imageView)?.let {
                                 Glide.with(this)
                                     .load(profileItem.picture)
@@ -190,7 +197,7 @@ class ProfileFragment : Fragment() {
 
     private fun profileUpdateApiCall(newnick:String, newhei:String, newwei:String) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.profileUpdate(NewProfile(nickname = newnick, height = newhei, weight = newwei), completion = { status ->
+        retrofit.profileUpdate(NewProfile(newnick, newhei, newwei), completion = { status ->
             when(status){
                 RESPONSE_STATUS.OKAY -> {
                     Log.d(Constants.TAG, "profileUpdateApiCall()")

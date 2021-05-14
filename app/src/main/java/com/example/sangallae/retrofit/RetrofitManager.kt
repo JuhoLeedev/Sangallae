@@ -224,7 +224,7 @@ class RetrofitManager(usage: Usage) {
                     response.body()?.let {
                         //val parsedProfileDataArray = ArrayList<Course>()
                         val body = it.asJsonObject
-                        val results = body.getAsJsonObject("data")
+//                        val results = body.getAsJsonObject("data")
                         val message = body.get("message")
 
                         when (val status = body.get("status").asString) {

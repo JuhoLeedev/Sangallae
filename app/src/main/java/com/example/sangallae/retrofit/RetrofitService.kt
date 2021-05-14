@@ -31,7 +31,8 @@ interface RetrofitService {
 
 //    @GET(API.PROFILE_UPDATE)
 //    fun profileUpdate(@Query("nickname") nickname:String, @Query("Height") height:String, @Query("Weight") weight:String): Call<JsonElement>
-    @FormUrlEncoded
-    @PATCH(API.PROFILE_UPDATE)
+    //@FormUrlEncoded
+    @Headers(API.CONTENTTYPE_JSON)
+    @POST(API.PROFILE_UPDATE)
     fun profileUpdate(@Body body: NewProfile): Call<JsonElement>
 }
