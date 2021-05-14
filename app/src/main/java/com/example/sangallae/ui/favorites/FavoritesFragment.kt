@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.sangallae.R
 
 class FavoritesFragment : Fragment() {
@@ -31,5 +32,15 @@ class FavoritesFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.main_menu_search -> {
+            findNavController().navigate(R.id.action_navigation_home_to_searchActivity)
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
     }
 }

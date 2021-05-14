@@ -24,5 +24,8 @@ interface RetrofitService {
     fun searchCourses(@Query("keyword") keyword: String, @Query("order") order: String): Call<JsonElement>
 
     @GET(API.PROFILE_LOAD)
-    fun profileLoad(@Query("order") order:String): Call<JsonElement>
+    fun profileLoad(@Query("order") order: String): Call<JsonElement>
+
+    @GET(API.COURSE_DETAIL)
+    fun getCourseDetail(@Path("id") id: String): Call<JsonElement>
 }

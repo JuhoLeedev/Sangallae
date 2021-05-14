@@ -25,9 +25,9 @@ class SplashActivity : AppCompatActivity() {
     //자동 로그인. 셋 중 하나라도 토큰 저장되어 있으면 메인페이지로 넘어감
     override fun onStart() {
         super.onStart()
-        var firebaseAuth = FirebaseAuth.getInstance();
-        var mOAuthLoginInstance = OAuthLogin.getInstance()
-        var mContext = this
+        val firebaseAuth = FirebaseAuth.getInstance();
+        val mOAuthLoginInstance = OAuthLogin.getInstance()
+        val mContext = this
 
         //구글 자동로그인
         if(firebaseAuth?.currentUser != null){

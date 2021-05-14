@@ -18,10 +18,10 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="230dp"
-            android:background="@color/profile"
-            android:backgroundTint="@color/profile"
+            android:background="@color/sky_blue"
+            android:backgroundTint="@color/sky_blue"
             android:fitsSystemWindows="true"
-            app:contentScrim="@color/profile"
+            app:contentScrim="@color/sky_blue"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 

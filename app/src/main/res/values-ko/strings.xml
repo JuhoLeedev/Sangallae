@@ -33,4 +33,15 @@
     <string name="profile_avg_speed">평균 속도</string>
     <string name="profile_total_calories">총 소모 칼로리</string>
     <string name="profile_avg_calories">평균 소모 칼로리</string>
+    <string name="str_report">신고하기</string>
+    <string name="str_download">다운로드</string>
+    <string name="str_follow">따라가기</string>
+    <string name="str_detail_course">상세 정보</string>
+    <string name="str_detail_loaction_title">소재지</string>
+    <string name="str_detail_distance_title">등산 거리</string>
+    <string name="str_detail_time_title">소요 시간</string>
+    <string name="str_detail_speed_title">평균 속도</string>
+    <string name="str_detail_height_title">최고 높이</string>
+    <string name="str_detail_difficulty_title">난이도</string>
+    <string name="str_detail_score_title">평점</string>
 </resources>

@@ -15,8 +15,7 @@
             app:destination="@id/navigation"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:popUpTo="@id/navigation_home" />
     </fragment>
 
     <fragment
@@ -29,8 +28,7 @@
             app:destination="@id/navigation"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:popUpTo="@id/navigation_favorites" />
     </fragment>
 
     <fragment
@@ -44,26 +42,25 @@
         android:name="com.example.sangallae.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/courseDetailFragment"
+        android:name="com.example.sangallae.ui.detail.CourseDetailFragment"
+        android:label="course_detail_fragment"
+        tools:layout="@layout/course_detail_fragment" >
+        <argument
+            android:name="courseId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
     <navigation android:id="@+id/navigation"
         app:startDestination="@id/searchActivity">
         <activity
             android:id="@+id/searchActivity"
-            android:name="com.example.sangallae.ui.SearchActivity"
+            android:name="com.example.sangallae.ui.search.SearchActivity"
             android:label="activity_search"
             tools:layout="@layout/activity_search" />
         <action
-            android:id="@+id/action_global_navigation_home"
-            app:destination="@id/navigation_home"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-        <action
-            android:id="@+id/action_global_navigation_favorites"
-            app:destination="@id/navigation_favorites"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            android:id="@+id/action_global_courseDetailFragment"
+            app:destination="@id/courseDetailFragment" />
     </navigation>
 </navigation>

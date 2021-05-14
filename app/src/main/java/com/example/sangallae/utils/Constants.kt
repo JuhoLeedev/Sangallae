@@ -38,4 +38,5 @@ object API {
     const val LOGIN_GOOGLE : String = "google-login"
     const val SEARCH_COURSE : String = "search"
     const val PROFILE_LOAD : String = "profile"
+    const val COURSE_DETAIL : String = "course/{id}"
 }
