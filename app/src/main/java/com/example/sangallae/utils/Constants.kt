@@ -10,6 +10,7 @@ enum class RESPONSE_STATUS {
     NO_CONTENT,
     NOT_FOUND,
     BAD_REQUEST,
+    DUPLICATE,
     UNAUTHORIZED
 }
 

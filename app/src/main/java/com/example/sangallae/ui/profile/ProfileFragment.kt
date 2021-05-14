@@ -91,6 +91,9 @@ class ProfileFragment : Fragment() {
                 profileUpdateApiCall(nick, hei, wei)
 
                 //profileLoadApiCall()
+                mDialogView.findViewById<EditText>(R.id.editNickname).setText(nick)
+                mDialogView.findViewById<EditText>(R.id.editHeight).setText(hei)
+                mDialogView.findViewById<EditText>(R.id.editWeight).setText(wei)
 
                 mAlertDialog?.dismiss()
             }
@@ -204,6 +207,10 @@ class ProfileFragment : Fragment() {
                 RESPONSE_STATUS.OKAY -> {
                     Log.d(Constants.TAG, "profileUpdateApiCall()")
                     Toast.makeText(this.context, "프로필이 업데이트 되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+                RESPONSE_STATUS.DUPLICATE -> {
+                    Log.d(Constants.TAG, "ProfileFragment-OncreateView-profileUpdateApiCall() Error")
+                    Toast.makeText(this.context, "중복된 닉네임이 존재합니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     Log.d(Constants.TAG, "ProfileFragment-OncreateView-profileUpdateApiCall() Error")
