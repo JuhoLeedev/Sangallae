@@ -6,6 +6,7 @@ import com.google.gson.JsonElement
 import retrofit2.Call
 import retrofit2.http.*
 import com.example.sangallae.retrofit.models.KakaoLogin
+import com.example.sangallae.retrofit.models.NewProfile
 
 interface RetrofitService {
 
@@ -32,5 +33,5 @@ interface RetrofitService {
 //    fun profileUpdate(@Query("nickname") nickname:String, @Query("Height") height:String, @Query("Weight") weight:String): Call<JsonElement>
     @FormUrlEncoded
     @PATCH(API.PROFILE_UPDATE)
-    fun profileUpdate(@Field("nickname")nickname:String, @Field("height") height:String, @Field("weight") weight:String): Call<JsonElement>
+    fun profileUpdate(@Body body: NewProfile): Call<JsonElement>
 }

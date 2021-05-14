@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.Course
+import com.example.sangallae.retrofit.models.NewProfile
 import com.example.sangallae.retrofit.models.Profile
 import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.ui.SplashActivity
@@ -23,6 +24,7 @@ import com.example.sangallae.utils.Usage
 import com.google.android.gms.common.SignInButton
 import com.google.firebase.auth.FirebaseAuth
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
+import com.kakao.sdk.auth.TokenManager
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import de.hdodenhof.circleimageview.CircleImageView
@@ -105,6 +107,9 @@ class ProfileFragment : Fragment() {
 
             when (item!!.itemId) {
                 R.id.logout -> {
+                    //카카오
+                    Log.d(Constants.TAG,TokenManager.instance.getToken().toString())
+
                     UserApiClient.instance.logout { error ->
                         if (error != null) {
                             Log.e(Constants.TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
@@ -113,11 +118,11 @@ class ProfileFragment : Fragment() {
                             Log.i(Constants.TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
                         }
                     }
-                    if(OAuthLogin.getInstance()!=null){
-                        val mOAuthLoginModule = OAuthLogin.getInstance()
-                        mOAuthLoginModule.logout(activity)
+                    if(OAuthLogin.getInstance()!=null){ //네이버
+                        OAuthLogin.getInstance().logout(activity)
                     }
-                    FirebaseAuth.getInstance().signOut();
+                    FirebaseAuth.getInstance().signOut() //구글
+
                     Toast.makeText(this.context, item.title, Toast.LENGTH_SHORT).show()
                     val intent = Intent(activity, SplashActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -185,7 +190,7 @@ class ProfileFragment : Fragment() {
 
     private fun profileUpdateApiCall(newnick:String, newhei:String, newwei:String) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.profileUpdate(nickname = newnick, height = newhei, weight = newwei, completion = {status ->
+        retrofit.profileUpdate(NewProfile(nickname = newnick, height = newhei, weight = newwei), completion = { status ->
             when(status){
                 RESPONSE_STATUS.OKAY -> {
                     Log.d(Constants.TAG, "profileUpdateApiCall()")

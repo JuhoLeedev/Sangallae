@@ -1,12 +1,9 @@
 package com.jeongdaeri.unsplash_app_tutorial.retrofit
 
 import android.util.Log
-import com.example.sangallae.retrofit.models.Course
 import com.example.sangallae.retrofit.RetrofitClient
 import com.example.sangallae.retrofit.RetrofitService
-import com.example.sangallae.retrofit.models.JsonToken
-import com.example.sangallae.retrofit.models.KakaoLogin
-import com.example.sangallae.retrofit.models.Profile
+import com.example.sangallae.retrofit.models.*
 import com.example.sangallae.utils.API
 import com.example.sangallae.utils.Constants.TAG
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -203,13 +200,13 @@ class RetrofitManager(usage: Usage) {
 
     // 프로필 업데이트
     fun profileUpdate(
-        nickname: String?, height: String?, weight:String,
+        newprofile: NewProfile,
         completion: (RESPONSE_STATUS) -> Unit
     ) {
-        val nick = nickname ?: ""
-        val hei = height ?: ""
-        val wei = weight ?: ""
-        val call = iRetrofit?.profileUpdate(nickname = nick, height = hei, weight = wei) ?: return
+//        val nick = nickname ?: ""
+//        val hei = height ?: ""
+//        val wei = weight ?: ""
+        val call = iRetrofit?.profileUpdate(body = newprofile) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
