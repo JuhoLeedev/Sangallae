@@ -83,7 +83,6 @@ object RetrofitClient {
 //                val finalRequest = addedRequestBody.method(originalRequest.method, originalRequest.body)
 //                    .build()
 
-
                     val response = chain.proceed(addedRequest)
 
                     if (response.code != 200 && response.code != 201) {

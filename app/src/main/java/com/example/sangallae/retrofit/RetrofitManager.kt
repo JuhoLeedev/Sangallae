@@ -320,10 +320,6 @@ class RetrofitManager(usage: Usage) {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 completion(RESPONSE_STATUS.BAD_REQUEST)
                             }
-                            "DUPLICATE" -> {
-                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.DUPLICATE)
-                            }
                             "UNAUTHORIZED" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 completion(RESPONSE_STATUS.UNAUTHORIZED)
