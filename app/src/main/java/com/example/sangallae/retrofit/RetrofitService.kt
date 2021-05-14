@@ -35,4 +35,8 @@ interface RetrofitService {
     @Headers(API.CONTENTTYPE_JSON)
     @POST(API.PROFILE_UPDATE)
     fun profileUpdate(@Body body: NewProfile): Call<JsonElement>
+
+    @GET(API.COURSE_DETAIL)
+    fun getCourseDetail(@Path("id") id: String): Call<JsonElement>
+
 }

@@ -18,7 +18,7 @@ class RetrofitManager(usage: Usage) {
     private val iRetrofit: RetrofitService? =
         RetrofitClient.getClient(API.BASE_URL, usage)?.create(RetrofitService::class.java)
 
-    // 사진 검색 api 호출
+    // 등산로 검색 api 호출
     fun searchCourses(
         keyword: String?, order: String?,
         completion: (RESPONSE_STATUS, ArrayList<Course>?) -> Unit
@@ -50,6 +50,7 @@ class RetrofitManager(usage: Usage) {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
+                                    val courseId = resultItemObject.get("id").asInt
                                     val courseName = resultItemObject.get("name").asString
                                     val courseDistance = resultItemObject.get("distance").asString
                                     val courseHeight = resultItemObject.get("height").asString
@@ -60,20 +61,104 @@ class RetrofitManager(usage: Usage) {
                                     val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
 
                                     val courseItem = Course(
-                                        id = "",
+                                        id = courseId,
                                         name = courseName,
-                                        distance = courseDistance,
-                                        height = courseHeight,
+                                        distance = courseDistance + "km",
+                                        height = courseHeight + "m",
                                         time = courseTime,
                                         diffiulty = courseDifficulty,
                                         url = "",
                                         review_cnt = "($courseReviewCount)",
                                         score = courseScore,
                                         thumbnail = courseThumbnailUrl,
+                                        location = "",
+                                        speed = ""
                                     )
                                     parsedCourseDataArray.add(courseItem)
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
+                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST, null)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, null)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND, null)
+                }
+            }
+        })
+    }
+
+    // 상세 정보 api 호출
+    fun getCourseDetail(
+        id: Int,
+        completion: (RESPONSE_STATUS, Course?) -> Unit
+    ) {
+        val call = iRetrofit?.getCourseDetail(id = id.toString()) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+
+                completion(RESPONSE_STATUS.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val parsedCourseData: Course
+                        val body = it.asJsonObject
+                        val result = body.getAsJsonObject("data")
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "OK" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                val courseId = result.get("id").asInt
+                                val courseName = result.get("name").asString
+                                val courseDistance = result.get("distance").asString
+                                val courseHeight = result.get("height").asString
+                                val courseTime = result.get("time").asString
+                                val courseDifficulty = result.get("difficulty").asString
+                                val courseUrl = result.get("url").asString
+                                val courseReviewCount = result.get("review_cnt").asString
+                                val courseScore = result.get("score").asString
+                                val courseThumbnailUrl = result.get("thumbnail").asString
+                                val courseLocation = result.get("location").asString
+                                val courseSpeed = result.get("speed").asString
+                                val course = Course(
+                                    id = courseId,
+                                    name = courseName,
+                                    distance = courseDistance + "km",
+                                    height = courseHeight + "m",
+                                    time = courseTime,
+                                    diffiulty = courseDifficulty,
+                                    url = courseUrl,
+                                    review_cnt = "($courseReviewCount)",
+                                    score = courseScore,
+                                    thumbnail = courseThumbnailUrl,
+                                    location = courseLocation,
+                                    speed = courseSpeed + "km/h"
+                                )
+                                parsedCourseData = course
+                                completion(RESPONSE_STATUS.OKAY, parsedCourseData)
                             }
                             "NO_CONTENT" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")

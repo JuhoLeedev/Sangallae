@@ -1,10 +1,12 @@
-package com.example.sangallae.ui
+package com.example.sangallae.ui.search
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.Course
 import com.example.sangallae.retrofit.*
-import com.example.sangallae.ui.recyclerview.CourseRecyclerViewAdapter
+import com.example.sangallae.ui.detail.CourseDetailActivity
+import com.example.sangallae.ui.detail.CourseDetailFragment
 import com.example.sangallae.utils.RESPONSE_STATUS
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.example.sangallae.utils.Constants.TAG
@@ -25,6 +28,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private var courseList = ArrayList<Course>()
     private lateinit var courseRecyeclerViewAdapter: CourseRecyclerViewAdapter
+    private lateinit var searchView: SearchView
 
     private lateinit var mySearchViewEditText: EditText
 
@@ -46,10 +50,18 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         this.courseCollectionRecyclerViewSetting(this.courseList)
 
+        courseRecyeclerViewAdapter.setOnItemClickListener(object : CourseRecyclerViewAdapter.OnItemClickListener{
+            override fun onItemClick(v: View, data: Int, pos : Int) {
+                Intent(this@SearchActivity, CourseDetailActivity::class.java).apply {
+                    putExtra("id", data)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.run { startActivity(this) }
+            }
+        })
+
     }
 
     private fun courseCollectionRecyclerViewSetting(courseList: ArrayList<Course>) {
-        //Log.d(TAG, "PhotoCollectionActivity - photoCollecitonRecyclerViewSetting() called")
 
         this.courseRecyeclerViewAdapter = CourseRecyclerViewAdapter()
 
@@ -74,6 +86,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             // Assumes current activity is the searchable activity
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            searchView = this
             isFocusable = true
             isIconified = false
             requestFocusFromTouch()
@@ -95,6 +108,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         if (!query.isNullOrEmpty()) {
             this.searchCourseApiCall(query)
+            searchView.clearFocus()
         }
         this.findViewById<androidx.appcompat.widget.Toolbar>(R.id.search_toolbar)
             .collapseActionView()
@@ -107,7 +121,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         retrofit.searchCourses(keyword = query, order = "", completion = { status, list ->
             when(status){
                 RESPONSE_STATUS.OKAY -> {
-                    Log.d(TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
+                    Log.d(TAG, "SearchActivity - searchCourseApiCall() called 응답 성공 / list.size : ${list?.size}")
 
                     if (list != null){
                         this.courseList.clear()
@@ -124,7 +138,6 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         })
-
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
@@ -134,6 +147,8 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         return true
     }
+
+
 }
 
 

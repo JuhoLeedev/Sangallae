@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.google.gms.google-services'
+    id "androidx.navigation.safeargs.kotlin"
 }
 
 android {
@@ -30,6 +31,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    viewBinding {
+        enabled = true
     }
 }
 
@@ -82,4 +87,3 @@ dependencies {
 
 
 }
-apply plugin: "androidx.navigation.safeargs.kotlin"

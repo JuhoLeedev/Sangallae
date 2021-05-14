@@ -32,6 +32,17 @@
     <string name="profile_avg_speed">Average Speed</string>
     <string name="profile_total_calories">Total Calories</string>
     <string name="profile_avg_calories">Average Calories</string>
+    <string name="str_report">Report</string>
+    <string name="str_download">Download</string>
+    <string name="str_follow">Follow</string>
+    <string name="str_detail_course">Course Details</string>
+    <string name="str_detail_loaction_title">Location</string>
+    <string name="str_detail_distance_title">Distance</string>
+    <string name="str_detail_time_title">Time</string>
+    <string name="str_detail_speed_title">Avg Speed</string>
+    <string name="str_detail_height_title">Height</string>
+    <string name="str_detail_difficulty_title">Difficulty</string>
+    <string name="str_detail_score_title">Score</string>
 
     <string name="profile_edit">Edit Profile</string>
     <string name="profile_edit_nickname">Nickname</string>
