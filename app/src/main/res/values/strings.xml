@@ -25,6 +25,7 @@
     <string name="profile_avg_distance">Average Distance</string>
     <string name="profile_total_time">Total Time</string>
     <string name="profile_avg_time">Average Time</string>
+    <string name="profile_max_time">Max Time</string>
     <string name="profile_height">Total Height</string>
     <string name="profile_max_height">Max Height</string>
     <string name="profile_avg_height">Average Height</string>
@@ -32,6 +33,19 @@
     <string name="profile_avg_speed">Average Speed</string>
     <string name="profile_total_calories">Total Calories</string>
     <string name="profile_avg_calories">Average Calories</string>
+    <string name="profile_max_distance">Max Distance</string>
+    <string name="profile_total_moving_time">Total Moving Time</string>
+    <string name="profile_avg_moving_time">Average Moving Time</string>
+    <string name="profile_max_moving_time">Max Moving Time</string>
+    <string name="profile_max_pace">Max Pace</string>
+    <string name="profile_avg_pace">Average Pace</string>
+    <string name="total_uphill">Total Uphill</string>
+    <string name="avg_uphill">Average Uphill</string>
+    <string name="max_uphill">Max Uphill</string>
+    <string name="total_downhill">Total Downhill</string>
+    <string name="avg_downhill">Average Downhill</string>
+    <string name="max_downhill">Max Downhill</string>
+
     <string name="str_report">Report</string>
     <string name="str_download">Download</string>
     <string name="str_follow">Follow</string>
