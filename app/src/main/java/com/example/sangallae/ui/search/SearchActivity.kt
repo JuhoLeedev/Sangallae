@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.Course
 import com.example.sangallae.retrofit.*
+import com.example.sangallae.retrofit.models.CourseItem
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.ui.detail.CourseDetailFragment
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -26,7 +27,7 @@ import com.example.sangallae.utils.Usage
 
 class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
-    private var courseList = ArrayList<Course>()
+    private var courseList = ArrayList<CourseItem>()
     private lateinit var courseRecyeclerViewAdapter: CourseRecyclerViewAdapter
     private lateinit var searchView: SearchView
 

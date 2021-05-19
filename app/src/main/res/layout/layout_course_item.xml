@@ -99,62 +99,27 @@
             app:layout_constraintStart_toEndOf="@+id/item_heigh_value"
             app:layout_constraintTop_toBottomOf="@+id/item_time" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/item_review"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:srcCompat="@drawable/ic_star_filled"
-            app:tint="@color/custom_yellow" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/difficulty_layout"
             android:layout_width="36dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:background="@drawable/rounded_background_yellow"
             android:gravity="center"
             android:padding="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/course_image_view">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
                 android:id="@+id/item_difficulty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/str_difficulty_easy"
                 android:textAlignment="center"
-                android:gravity="center"
                 android:textColor="@color/custom_white"
                 android:textSize="12sp" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/item_review_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="(21)"
-            android:textColor="@color/custom_black"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-        <TextView
-            android:id="@+id/item_review"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="2dp"
-            android:text="4.8"
-            android:textColor="@color/custom_black"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/item_review_count"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

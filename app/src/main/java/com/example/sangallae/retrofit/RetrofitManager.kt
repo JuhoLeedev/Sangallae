@@ -21,7 +21,7 @@ class RetrofitManager(usage: Usage) {
     // 등산로 검색 api 호출
     fun searchCourses(
         keyword: String?, order: String?,
-        completion: (RESPONSE_STATUS, ArrayList<Course>?) -> Unit
+        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
         val term = keyword ?: ""
 
@@ -40,7 +40,7 @@ class RetrofitManager(usage: Usage) {
 
                 if(response.isSuccessful) {
                     response.body()?.let {
-                        val parsedCourseDataArray = ArrayList<Course>()
+                        val parsedCourseDataArray = ArrayList<CourseItem>()
                         val body = it.asJsonObject
                         val results = body.getAsJsonArray("data")
                         val message = body.get("message")
@@ -53,26 +53,21 @@ class RetrofitManager(usage: Usage) {
                                     val courseId = resultItemObject.get("id").asInt
                                     val courseName = resultItemObject.get("name").asString
                                     val courseDistance = resultItemObject.get("distance").asString
-                                    val courseHeight = resultItemObject.get("height").asString
-                                    val courseTime = resultItemObject.get("time").asString
+                                    val courseSpeed = resultItemObject.get("avg_speed").asString
+                                    val courseMovingTime = resultItemObject.get("moving_time").asString
+                                    val courseElevation = resultItemObject.get("ele_dif").asString
                                     val courseDifficulty = resultItemObject.get("difficulty").asString
-                                    val courseReviewCount = resultItemObject.get("review_cnt").asString
-                                    val courseScore = resultItemObject.get("score").asString
                                     val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
 
-                                    val courseItem = Course(
+                                    val courseItem = CourseItem(
                                         id = courseId,
                                         name = courseName,
                                         distance = courseDistance + "km",
-                                        height = courseHeight + "m",
-                                        time = courseTime,
-                                        diffiulty = courseDifficulty,
-                                        url = "",
-                                        review_cnt = "($courseReviewCount)",
-                                        score = courseScore,
+                                        avg_speed = courseSpeed + "km/h",
+                                        moving_time = courseMovingTime,
+                                        ele_dif = courseElevation + "m",
                                         thumbnail = courseThumbnailUrl,
-                                        location = "",
-                                        speed = ""
+                                        difficulty = courseDifficulty
                                     )
                                     parsedCourseDataArray.add(courseItem)
                                 }
@@ -134,7 +129,8 @@ class RetrofitManager(usage: Usage) {
                                 val courseId = result.get("id").asInt
                                 val courseName = result.get("name").asString
                                 val courseDistance = result.get("distance").asString
-                                val courseHeight = result.get("height").asString
+                                val courseMaxHeight= result.get("max_height").asString
+                                val courseMinHeight = result.get("main_height").asString
                                 val courseTime = result.get("time").asString
                                 val courseDifficulty = result.get("difficulty").asString
                                 val courseUrl = result.get("url").asString
