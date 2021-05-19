@@ -26,6 +26,7 @@
     <string name="profile_avg_distance">평균 등산 거리</string>
     <string name="profile_total_time">총 등산 시간</string>
     <string name="profile_avg_time">평균 등산 시간</string>
+    <string name="profile_max_time">최고 등산 시간</string>
     <string name="profile_height">총 오른 높이</string>
     <string name="profile_max_height">최고 높이</string>
     <string name="profile_avg_height">평균 높이</string>
@@ -39,6 +40,18 @@
     <string name="profile_edit_weight">몸무게</string>
     <string name="profile_edit_ok">확인</string>
     <string name="profile_edit_cancel">취소</string>
+    <string name="profile_max_distance">최고 등산 거리</string>
+    <string name="profile_total_moving_time">총 이동 시간</string>
+    <string name="profile_avg_moving_time">평균 이동 시간</string>
+    <string name="profile_max_moving_time">최고 이동 시간</string>
+    <string name="profile_max_pace">최고 페이스</string>
+    <string name="profile_avg_pace">평균 페이스</string>
+    <string name="total_uphill">총 오르막합</string>
+    <string name="avg_uphill">평균 오르막합</string>
+    <string name="max_uphill">최고 오르막합</string>
+    <string name="total_downhill">총 내리막합</string>
+    <string name="avg_downhill">평균 내리막합</string>
+    <string name="max_downhill">최고 내리막합</string>
 
     <string name="str_report">신고하기</string>
     <string name="str_download">다운로드</string>

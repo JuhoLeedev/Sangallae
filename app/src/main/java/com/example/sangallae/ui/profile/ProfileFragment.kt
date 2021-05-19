@@ -36,6 +36,7 @@ class ProfileFragment : Fragment() {
     private var nick:String = ""
     private var hei:String = ""
     private var wei:String = ""
+    private var pic:String = ""
 
 
     override fun onCreateView(
@@ -75,9 +76,20 @@ class ProfileFragment : Fragment() {
                     .setView(mDialogView)
                 //.setTitle("Login Form")
             }
+
             mDialogView.findViewById<EditText>(R.id.editNickname).setText(nick)
             mDialogView.findViewById<EditText>(R.id.editHeight).setText(hei)
             mDialogView.findViewById<EditText>(R.id.editWeight).setText(wei)
+
+            if(pic != "no_image"){
+                mDialogView.findViewById<ImageView>(R.id.popImageView)?.let {
+                    Glide.with(this)
+                        .load(pic)
+                        .circleCrop()
+                        .into(it)
+                }
+            }
+
             val mAlertDialog = mBuilder?.show()
             //확인 버튼
             val okButton = mDialogView.findViewById<Button>(R.id.successButton)
@@ -87,14 +99,15 @@ class ProfileFragment : Fragment() {
                 hei = mDialogView.findViewById<EditText>(R.id.editHeight).text.toString()
                 wei = mDialogView.findViewById<EditText>(R.id.editWeight).text.toString()
 
+
                 // 서버에 업데이트 요청
                 profileUpdateApiCall(nick, hei, wei)
 
-                //profileLoadApiCall()
-                mDialogView.findViewById<EditText>(R.id.editNickname).setText(nick)
-                mDialogView.findViewById<EditText>(R.id.editHeight).setText(hei)
-                mDialogView.findViewById<EditText>(R.id.editWeight).setText(wei)
+                // 화면 업데이트
+                view?.findViewById<TextView>(R.id.nickname)?.text = nick + getString(R.string.profile_name)
+                view?.findViewById<TextView>(R.id.height_weight)?.text = hei + "cm / " + wei + "kg"
 
+                // 팝업 닫기
                 mAlertDialog?.dismiss()
             }
             //취소 버튼
@@ -168,13 +181,14 @@ class ProfileFragment : Fragment() {
                         view?.findViewById<TextView>(R.id.total_calories_view)?.text = profileItem.total_calories
                         view?.findViewById<TextView>(R.id.avg_calories_view)?.text = profileItem.avg_calories
 
-                        view?.findViewById<TextView>(R.id.nickname)?.text = profileItem.nickname + getString(R.string.profile_name);
+                        view?.findViewById<TextView>(R.id.nickname)?.text = profileItem.nickname + getString(R.string.profile_name)
                         //view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height_weight
                         view?.findViewById<TextView>(R.id.height_weight)?.text = profileItem.user_height + "cm / "+profileItem.user_weight + "kg"
 
-                        nick= profileItem.nickname.toString()
-                        wei = profileItem.user_weight.toString()
-                        hei =  profileItem.user_height.toString()
+                        nick = profileItem.nickname
+                        wei = profileItem.user_weight
+                        hei =  profileItem.user_height
+                        pic = profileItem.picture
 
 //                        view?.findViewById<CircleImageView>(R.id.imageView)?.let {
 //                            Glide.with(this).load(profileItem.picture).into(

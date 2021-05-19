@@ -60,7 +60,6 @@
                 android:shadowDx="3"
                 android:shadowDy="3"
                 android:shadowRadius="3"
-                android:text="TextView"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_collapseMode="parallax" />
@@ -75,7 +74,6 @@
                 android:shadowDx="3"
                 android:shadowDy="3"
                 android:shadowRadius="3"
-                android:text="TextView"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_collapseMode="parallax" />

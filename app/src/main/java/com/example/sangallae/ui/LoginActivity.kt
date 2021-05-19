@@ -135,7 +135,7 @@ class LoginActivity : AppCompatActivity() {
                 // 성공여부
                 if (it.isSuccessful) {
                     //val user = firebaseAuth?.currentUser
-                    Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                     moveToMain()
 
                 } else {
@@ -178,7 +178,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         } else if (token != null) {
-            Toast.makeText(this, "카카오 로그인 성공.", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "카카오 로그인 성공.", Toast.LENGTH_SHORT).show()
             //토큰
             UserApiClient.instance.accessTokenInfo { kakaoToken, error ->
                 if (error != null) {
