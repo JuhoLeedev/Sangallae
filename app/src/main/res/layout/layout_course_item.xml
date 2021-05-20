@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_background_yellow"
             android:gravity="center"
-            android:padding="4dp"
+            android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -118,7 +118,7 @@
                 android:text="@string/str_difficulty_easy"
                 android:textAlignment="center"
                 android:textColor="@color/custom_white"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
 

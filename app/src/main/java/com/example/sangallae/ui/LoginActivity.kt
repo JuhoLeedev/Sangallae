@@ -28,7 +28,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause.*
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
@@ -54,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.login)
+        setContentView(R.layout.activity_login)
         mContext = applicationContext
 
 //        //카카오 디버그 키해시 - 컴당 한 번만 받으면 됨

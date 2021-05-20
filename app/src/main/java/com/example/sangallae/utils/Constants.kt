@@ -23,7 +23,7 @@ object API {
     const val BASE_URL : String = "http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/"
 
     // admin jwt token
-    const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybHRuMmRmZGRkZndmZXNkZmZzMTIxIiwiaWQiOjEwMDQ4LCJleHAiOjE2MjE5ODU5MzgsInVzZXJuYW1lIjoicmx0bjJkZmRkZGZ3ZmVzZGZmczEyMSJ9.TcPb3moRxl5eKt4piHGGEsIdtvnKQzG5flqQ3j78MDL2hcT06lq_fg4fYsD8MBjbEgXKAzsubDlk1cJVZhn9gw"
+    const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmFkbWluYWRtaW5hZG1pbiIsImlkIjoxMDA4MSwiZXhwIjoxNjIyNjM1MzIwLCJ1c2VybmFtZSI6ImFkbWluYWRtaW5hZG1pbmFkbWluIn0.2BJvol8Xwth_bMX12TzTY9qMW6aDsjPhn3qFIaMdmBtpBF5ftd7sHXooxWCdzcXiTCVpAe0xCqNxDQplH38ZCQ"
 
     // social login
     const val NAVER_CLIENT_ID = "CrwgIv6IKrpcPDkNYllP"

@@ -29,7 +29,6 @@ import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 class CourseDetailActivity : AppCompatActivity() {
     private lateinit var detailViewModel: CourseDetailViewModel
-    private lateinit var course: Course
     private lateinit var binding: ActivityCourseDetailBinding
     private val args: CourseDetailFragmentArgs by navArgs()
 
@@ -46,14 +45,19 @@ class CourseDetailActivity : AppCompatActivity() {
         detailViewModel = ViewModelProvider(this).get(CourseDetailViewModel::class.java)
         detailViewModel.courseDetailValue.observe(this, Observer {
             binding.detailCourseTitle.text = it.name
-            binding.detailLocationValue.text = it.location.toString()
-            binding.detailDistanceValue.text = it.distance.toString()
-            binding.detailDifficultyValue.text = it.distance.toString()
-            binding.detailTimeValue.text = it.time.toString()
-            binding.detailSpeedValue.text = it.speed.toString()
-            binding.detailHeightValue.text = it.height.toString()
-            binding.detailDifficultyValue.text = it.diffiulty.toString()
-            binding.detailScoreValue.text = it.score.toString()
+            binding.detailLocationValue.text = it.location
+            binding.detailDistanceValue.text = it.distance
+            binding.detailMovingTimeValue.text = it.moving_time
+            binding.detailTotalTimeValue.text = it.total_time
+            binding.detailAvgSpeedValue.text = it.avg_speed
+            binding.detailAvgPaceValue.text = it.avg_pace
+            binding.detailMaxHeightValue.text = it.max_height
+            binding.detailMinHeightValue.text = it.min_height
+            binding.detailEleDifValue.text = it.ele_dif
+            binding.detailDifficultyValue.text = it.difficulty
+            binding.detailUphillValue.text = it.uphill
+            binding.detailDownhillValue.text = it.downhill
+            binding.detailDateValue.text = it.date
             Glide.with(GlobalApplication.instance).load(it.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
         })
@@ -67,12 +71,15 @@ class CourseDetailActivity : AppCompatActivity() {
 
     private fun getCourseDetailApiCall(id: Int) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.getCourseDetail(id = id, completion = { status, course ->
-            when(status){
+        retrofit.getCourseDetail(id = id) { status, course ->
+            when (status) {
                 RESPONSE_STATUS.OKAY -> {
-                    Log.d(Constants.TAG, "CourseDetailActivity - getCourseDetailApiCall() called 응답 성공")
+                    Log.d(
+                        Constants.TAG,
+                        "CourseDetailActivity - getCourseDetailApiCall() called 응답 성공"
+                    )
 
-                    if (course != null){
+                    if (course != null) {
                         detailViewModel.setCourseValue(course)
                     }
                 }
@@ -83,7 +90,7 @@ class CourseDetailActivity : AppCompatActivity() {
                     Toast.makeText(this, "인터넷에 연결할 수 없습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
-        })
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

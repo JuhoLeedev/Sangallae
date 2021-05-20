@@ -56,13 +56,21 @@
     <string name="str_report">신고하기</string>
     <string name="str_download">다운로드</string>
     <string name="str_follow">따라가기</string>
-    <string name="str_detail_course">상세 정보</string>
-    <string name="str_detail_loaction_title">소재지</string>
-    <string name="str_detail_distance_title">등산 거리</string>
-    <string name="str_detail_time_title">소요 시간</string>
-    <string name="str_detail_speed_title">평균 속도</string>
-    <string name="str_detail_height_title">최고 높이</string>
-    <string name="str_detail_difficulty_title">난이도</string>
-    <string name="str_detail_score_title">평점</string>
+    <string name="detail_course">상세 정보</string>
+    <string name="detail_loaction">소재지</string>
+    <string name="detail_distance">등산 거리</string>
+    <string name="detail_total_time">소요 시간</string>
+    <string name="detail_avg_speed">평균 속도</string>
+    <string name="detail_max_heigh">최고 높이</string>
+    <string name="detail_difficulty">난이도</string>
+    <string name="detail_date">기록된 날짜</string>
+    <string name="detail_moving_time">이동 시간</string>
+    <string name="detail_avg_pace">평균 페이스</string>
+    <string name="detail_min_height">최소 높이</string>
+    <string name="detail_ele_dif">고도차</string>
+    <string name="detail_uphill">오르막합</string>
+    <string name="detail_downhill">내리막함</string>
+    <string name="str_my_record">내 등산 기록</string>
+    <string name="str_more">더보기</string>
 
 </resources>

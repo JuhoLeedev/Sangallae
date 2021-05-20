@@ -53,7 +53,6 @@ class RetrofitManager(usage: Usage) {
                                     val courseId = resultItemObject.get("id").asInt
                                     val courseName = resultItemObject.get("name").asString
                                     val courseDistance = resultItemObject.get("distance").asString
-                                    val courseSpeed = resultItemObject.get("avg_speed").asString
                                     val courseMovingTime = resultItemObject.get("moving_time").asString
                                     val courseElevation = resultItemObject.get("ele_dif").asString
                                     val courseDifficulty = resultItemObject.get("difficulty").asString
@@ -63,7 +62,6 @@ class RetrofitManager(usage: Usage) {
                                         id = courseId,
                                         name = courseName,
                                         distance = courseDistance + "km",
-                                        avg_speed = courseSpeed + "km/h",
                                         moving_time = courseMovingTime,
                                         ele_dif = courseElevation + "m",
                                         thumbnail = courseThumbnailUrl,
@@ -130,28 +128,39 @@ class RetrofitManager(usage: Usage) {
                                 val courseName = result.get("name").asString
                                 val courseDistance = result.get("distance").asString
                                 val courseMaxHeight= result.get("max_height").asString
-                                val courseMinHeight = result.get("main_height").asString
-                                val courseTime = result.get("time").asString
+                                val courseMinHeight = result.get("min_height").asString
+                                val courseEleDif = result.get("ele_dif").asString
+                                val courseMovingTime = result.get("moving_time_str").asString
+                                val courseTotalTime = result.get("total_time_str").asString
                                 val courseDifficulty = result.get("difficulty").asString
                                 val courseUrl = result.get("url").asString
-                                val courseReviewCount = result.get("review_cnt").asString
-                                val courseScore = result.get("score").asString
                                 val courseThumbnailUrl = result.get("thumbnail").asString
                                 val courseLocation = result.get("location").asString
-                                val courseSpeed = result.get("speed").asString
+                                val courseAvgSpeed = result.get("avg_speed").asString
+                                val courseAvgPace = result.get("avg_pace").asString
+                                val courseDate = result.get("date").asString
+                                val courseUphill = result.get("total_uphill").asString
+                                val courseDownhill = result.get("total_downhill").asString
                                 val course = Course(
                                     id = courseId,
                                     name = courseName,
                                     distance = courseDistance + "km",
-                                    height = courseHeight + "m",
-                                    time = courseTime,
-                                    diffiulty = courseDifficulty,
+                                    moving_time = courseMovingTime,
+                                    total_time = courseTotalTime,
+                                    max_height = courseMaxHeight + "m",
+                                    min_height = courseMinHeight + "m",
+                                    avg_speed = courseAvgSpeed + "km/h",
+                                    avg_pace = courseAvgPace + "min/h",
+                                    ele_dif = courseEleDif,
+                                    difficulty = courseDifficulty,
                                     url = courseUrl,
-                                    review_cnt = "($courseReviewCount)",
-                                    score = courseScore,
+                                    date = courseDate,
+                                    uphill = courseUphill + "m",
+                                    downhill = courseDownhill + "m",
                                     thumbnail = courseThumbnailUrl,
                                     location = courseLocation,
-                                    speed = courseSpeed + "km/h"
+                                    score = "",
+                                    review_cnt = ""
                                 )
                                 parsedCourseData = course
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseData)
@@ -179,122 +188,113 @@ class RetrofitManager(usage: Usage) {
         })
     }
 
-//    // 마이페이지 프로필/통계 로드
-//    fun profileLoad(
-//        completion: (RESPONSE_STATUS, Profile?) -> Unit
-//    ) {
-//        val call = iRetrofit?.profileLoad() ?: return
-//
-//        call.enqueue(object : retrofit2.Callback<JsonElement> {
-//            // 응답 실패시
-//            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-//                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
-//
-//                completion(RESPONSE_STATUS.FAIL, null)
-//            }
-//
-//            // 응답 성공시
-//            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
-//                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
-//
-//                if(response.isSuccessful) {
-//                    response.body()?.let {
-//                        //val parsedProfileDataArray = ArrayList<Course>()
-//                        val body = it.asJsonObject
-//                        val results = body.getAsJsonObject("data")
-//                        val message = body.get("message")
-//
-//                        when (val status = body.get("status").asString) {
-//                            "OK" -> {
-//                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-//                                val profilePicture = results.get("picture").asString
-//                                val profileNickname = results.get("nickname").asString
-//                                //val profileHeightWeight = results.get("user_height_weight").asString
-//                                val profileHeight = results.get("user_height").asString
-//                                val profileWeight = results.get("user_weight").asString
-//                                val profileTotalDistance = results.get("total_distance").asString
-//                                val profileAvgDistance = results.get("avg_distance").asString
-//                                val profileMaxDistance = results.get("max_distance").asString
-//                                val profileTotalTime = results.get("total_total_time").asString
-//                                val profileAvgTime = results.get("avg_total_time").asString
-//                                val profileMaxTime = results.get("max_total_time").asString
-//
-//                                val profileTotalMTime = results.get("total_moving_time").asString
-//                                val profileAvgMTime = results.get("avg_moving_time").asString
-//                                val profileMaxMTime = results.get("max_moving_time").asString
-//
-//                                val profileTotalUphill = results.get("total_total_uphill").asString
-//                                val profileMaxUphill = results.get("avg_total_uphill").asString
-//                                val profileAvgUphill = results.get("max_total_uphill").asString
-//
-//                                val profileTotalDownhill = results.get("total_total_downhill").asString
-//                                val profileMaxDownhill = results.get("avg_total_downhill").asString
-//                                val profileAvgDownhill = results.get("max_total_downhill").asString
-//
-//                                //val profileTotalHeight = results.get("total_height").asString
-//                                val profileMaxHeight = results.get("max_height").asString
-//                                val profileAvgHeight = results.get("avg_height").asString
-//
-//                                val profileMaxSpeed = results.get("max_speed").asString
-//                                val profileAvgSpeed = results.get("avg_speed").asString
-//                                val profileMaxPace = results.get("max_pace").asString
-//                                val profileAvgPace = results.get("avg_pace").asString
-//                                val profileTotalCalories = results.get("total_calories").asString
-//                                val profileAvgCalores = results.get("avg_calories").asString
-//
-//                                val profileItem = Profile(
-////                                    picture = profilePicture,
-////                                    nickname = profileNickname,
-////                                    user_height_weight = "{$profileHeight}cm / {$profileWeight}kg",
-////                                    total_distance = "{$profileTotalDistance}km",
-////                                    avg_distance = "{$profileAvgDistance}km",
-////                                    total_time = profileTotalTime,
-////                                    avg_time = profileAvgTime,
-////                                    total_height = "{$profileTotalHeight}m",
-////                                    max_height = "{$profileMaxHeight}m",
-////                                    avg_height = "{$profileAvgHeight}m",
-////                                    max_speed = "{$profileMaxSpeed}km/h",
-////                                    avg_speed = "{$profileAvgSpeed}km/h",
-////                                    total_calories = "{$profileTotalCalories}kcal",
-////                                    avg_calories = "{$profileAvgCalores}kcal"
-//                                    user_id = "",
-//                                    picture = profilePicture,
-//                                    nickname = profileNickname,
-//                                    //user_height_weight = profileHeightWeight,
-//                                    user_height = profileHeight,
-//                                    user_weight = profileWeight,
-//                                    total_distance = profileTotalDistance,
-//                                    avg_distance = profileAvgDistance,
-////                                    total_time = profileTotalTime,
-////                                    avg_time = profileAvgTime,
-////                                    total_height = profileTotalHeight,
-//                                    max_height = profileMaxHeight,
-//                                    avg_height = profileAvgHeight,
-//                                    max_speed = profileMaxSpeed,
-//                                    avg_speed = profileAvgSpeed,
-//                                    total_calories = profileTotalCalories,
-//                                    avg_calories = profileAvgCalores
-//                                )
-//                                completion(RESPONSE_STATUS.OKAY, profileItem)
-//                            }
-//                            "BAD_REQUEST" -> {
-//                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-//                                completion(RESPONSE_STATUS.BAD_REQUEST, null)
-//                            }
-//                            "UNAUTHORIZED" -> {
-//                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-//                                completion(RESPONSE_STATUS.UNAUTHORIZED, null)
-//                            }
-//                        }
-//                    }
-//                }
-//                else {
-//                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
-//                    completion(RESPONSE_STATUS.NOT_FOUND, null)
-//                }
-//            }
-//        })
-//    }
+    // 마이페이지 프로필/통계 로드
+    fun profileLoad(
+        completion: (RESPONSE_STATUS, Profile?) -> Unit
+    ) {
+        val call = iRetrofit?.profileLoad() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+
+                completion(RESPONSE_STATUS.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        //val parsedProfileDataArray = ArrayList<Course>()
+                        val body = it.asJsonObject
+                        val results = body.getAsJsonObject("data")
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "OK" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                val profilePicture = results.get("picture").asString ?: "no_image"
+                                val profileNickname = results.get("nickname").asString
+                                //val profileHeightWeight = results.get("user_height_weight").asString
+                                val profileHeight = results.get("user_height").asString
+                                val profileWeight = results.get("user_weight").asString
+                                val profileTotalDistance = results.get("total_distance").asString
+                                val profileAvgDistance = results.get("avg_distance").asString
+                                val profileMaxDistance = results.get("max_distance").asString
+                                val profileTotalTime = results.get("total_total_time").asString
+                                val profileAvgTime = results.get("avg_total_time").asString
+                                val profileMaxTime = results.get("max_total_time").asString
+                                val profileTotalMTime = results.get("total_moving_time").asString
+                                val profileAvgMTime = results.get("avg_moving_time").asString
+                                val profileMaxMTime = results.get("max_moving_time").asString
+                                val profileTotalUphill = results.get("total_total_uphill").asString
+                                val profileMaxUphill = results.get("avg_total_uphill").asString
+                                val profileAvgUphill = results.get("max_total_uphill").asString
+                                val profileTotalDownhill = results.get("total_total_downhill").asString
+                                val profileMaxDownhill = results.get("avg_total_downhill").asString
+                                val profileAvgDownhill = results.get("max_total_downhill").asString
+                                val profileMaxHeight = results.get("max_height").asString
+                                val profileAvgHeight = results.get("avg_height").asString
+                                val profileMaxSpeed = results.get("max_speed").asString
+                                val profileAvgSpeed = results.get("avg_speed").asString
+                                val profileMaxPace = results.get("max_pace").asString
+                                val profileAvgPace = results.get("avg_pace").asString
+                                val profileTotalCalories = results.get("total_calories").asString
+                                val profileAvgCalores = results.get("avg_calories").asString
+
+                                val profileItem = Profile(
+                                    user_id = "",
+                                    picture = profilePicture,
+                                    nickname = profileNickname,
+                                    user_height = profileHeight,
+                                    user_weight = profileWeight,
+                                    total_distance = profileTotalDistance,
+                                    avg_distance = profileAvgDistance,
+                                    max_distance = profileMaxDistance,
+                                    total_total_time = profileTotalTime,
+                                    max_total_time = profileMaxTime,
+                                    avg_total_time = profileAvgTime,
+                                    total_moving_time = profileTotalMTime,
+                                    max_moving_time = profileMaxMTime,
+                                    avg_moving_time = profileAvgMTime,
+                                    max_height = profileMaxHeight,
+                                    avg_height = profileAvgHeight,
+                                    max_speed = profileMaxSpeed,
+                                    avg_speed = profileAvgSpeed,
+                                    max_pace = profileMaxPace,
+                                    avg_pace = profileAvgPace,
+                                    total_total_uphill = profileTotalUphill,
+                                    avg_total_uphill = profileAvgUphill,
+                                    max_total_uphill = profileMaxUphill,
+                                    avg_total_downhill = profileAvgDownhill,
+                                    max_total_downhill = profileMaxDownhill,
+                                    total_total_downhill = profileTotalDownhill,
+                                    total_calories = profileTotalCalories,
+                                    avg_calories = profileAvgCalores
+                                )
+                                completion(RESPONSE_STATUS.OKAY, profileItem)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST, null)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, null)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND, null)
+                }
+            }
+        })
+    }
 
     // 프로필 업데이트
     fun profileUpdate(

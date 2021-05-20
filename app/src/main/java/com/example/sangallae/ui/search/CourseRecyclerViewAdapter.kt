@@ -19,7 +19,7 @@ class CourseRecyclerViewAdapter : RecyclerView.Adapter<CourseRecyclerViewAdapter
 
     private var courseList = ArrayList<CourseItem>()
 
-    inner class CourseItemViewHolder(private val itemBinding: LayoutCourseItemBinding) : RecyclerView.ViewHolder(itemView) {
+    inner class CourseItemViewHolder(private val itemBinding: LayoutCourseItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bindWithView(courseItem: CourseItem) {
             itemBinding.courseTitle.text = courseItem.name
             itemBinding.itemDistanceValue.text = courseItem.distance
@@ -27,17 +27,14 @@ class CourseRecyclerViewAdapter : RecyclerView.Adapter<CourseRecyclerViewAdapter
             itemBinding.itemTimeValue.text = courseItem.moving_time
             itemBinding.itemDifficulty.text = courseItem.difficulty
             when(courseItem.difficulty){
-                "상"-> {
-
-                    itemBinding.difficultyLayout.setBackgroundColor(R.id.diff)
-                }
+                "상" -> itemBinding.difficultyLayout.setBackgroundResource(R.drawable.rounded_background_red)
+                "중" -> itemBinding.difficultyLayout.setBackgroundResource(R.drawable.rounded_background_yellow)
+                "하" -> itemBinding.difficultyLayout.setBackgroundResource(R.drawable.rounded_background_green)
             }
-            courseReviewText.text = courseItem.score
-            courseReviewCountText.text = courseItem.review_cnt
 
 
             Glide.with(GlobalApplication.instance).load(courseItem.thumbnail)
-                .placeholder(R.drawable.ic_baseline_photo_24).into(courseImageView)
+                .placeholder(R.drawable.ic_baseline_photo_24).into(itemBinding.courseImageView)
 
 //            itemView.setOnClickListener {
 //                val navController: NavController = Navigation.findNavController(itemView)

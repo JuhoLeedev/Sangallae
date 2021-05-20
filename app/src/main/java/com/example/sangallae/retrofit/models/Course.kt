@@ -16,10 +16,10 @@ data class Course(
     var avg_pace: String,
     var moving_time: String,
     var total_time: String,
-    var diffiulty: String,
+    var difficulty: String,
     var url: String,
-    var review_cnt: String,
-    var score: String,
+    var review_cnt: String?,
+    var score: String?,
     var thumbnail: String,
     var date: String
 ):Serializable

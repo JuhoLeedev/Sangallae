@@ -72,8 +72,8 @@ object RetrofitClient {
                     //admin
                     val token = "Bearer ${API.ADMIN_JWT}"
                     //로컬에 저장된 access_token값을 가져옴
-                    //val access_token = GlobalApplication.prefs.getString("access_token", "null")
-                    //val token = "Bearer $access_token"
+//                    val access_token = GlobalApplication.prefs.getString("access_token", "null")
+//                    val token = "Bearer $access_token"
 
                     Log.d(TAG, "RetrofitClient - intercept() called - 서버에 보낼 나의 acc 토큰: $token")
                     // ?client_id=asdfadsf

@@ -62,7 +62,7 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     }
 
-    private fun courseCollectionRecyclerViewSetting(courseList: ArrayList<Course>) {
+    private fun courseCollectionRecyclerViewSetting(courseList: ArrayList<CourseItem>) {
 
         this.courseRecyeclerViewAdapter = CourseRecyclerViewAdapter()
 
