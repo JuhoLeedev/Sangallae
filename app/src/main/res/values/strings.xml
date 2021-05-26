@@ -77,5 +77,6 @@
     <string name="greeting2">Find the course that suits you</string>
     <string name="mycourse">Courses that suit you</string>
     <string name="popular">Popular Courses</string>
+    <string name="popMtn">Popular Mountains</string>
     <string name="near">Nearby Courses</string>
 </resources>

@@ -145,10 +145,8 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         val userInputText = newText.let {
             it
         } ?: ""
-
         return true
     }
-
 
 }
 

@@ -77,5 +77,6 @@
     <string name="greeting2">나에게 꼭 맞는 등산로를 찾아보세요</string>
     <string name="mycourse">나만의 맞춤 등산로</string>
     <string name="popular">인기 있는 등산로</string>
+    <string name="popMtn">인기 있는 산</string>
     <string name="near">내 근처에 있는 등산로</string>
 </resources>

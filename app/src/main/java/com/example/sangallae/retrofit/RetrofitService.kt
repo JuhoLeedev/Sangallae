@@ -39,4 +39,6 @@ interface RetrofitService {
     @GET(API.COURSE_DETAIL)
     fun getCourseDetail(@Path("id") id: String): Call<JsonElement>
 
+    @GET(API.HOME_LOAD)
+    fun homeLoad(): Call<JsonElement>
 }
