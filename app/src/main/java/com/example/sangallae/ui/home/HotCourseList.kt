@@ -24,7 +24,6 @@ class HotCourseList : Fragment() {
     private var courseList = ArrayList<CourseItem>()
     private lateinit var hotCourseListAdapter: CourseViewAdapter
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
