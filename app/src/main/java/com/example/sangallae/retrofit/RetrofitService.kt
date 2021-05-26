@@ -44,4 +44,7 @@ interface RetrofitService {
 
     @GET(API.REC_COURSE_LIST)
     fun recCourseList(): Call<JsonElement>
+
+    @GET(API.HOT_COURSE_LIST)
+    fun hotCourseList(): Call<JsonElement>
 }

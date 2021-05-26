@@ -12,14 +12,14 @@ import com.example.sangallae.R
 import com.example.sangallae.databinding.LayoutCourseItemBinding
 import com.example.sangallae.retrofit.models.CourseItem
 
-class RecCourseViewAdapter : RecyclerView.Adapter<RecCourseViewAdapter.CourseItemViewHolder>() {
+class CourseViewAdapter : RecyclerView.Adapter<CourseViewAdapter.CourseItemViewHolder>() {
 
     private var courseList = ArrayList<CourseItem>()
 
     inner class CourseItemViewHolder(private val itemBinding: LayoutCourseItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bindWithView(courseItem: CourseItem) {
             itemBinding.courseTitle.text = courseItem.name
-            itemBinding.itemDistanceValue.text = courseItem.distance
+            itemBinding.itemDistanceValue.text = courseItem.distance + "km"
             itemBinding.itemHeighValue.text = courseItem.ele_dif
             itemBinding.itemTimeValue.text = courseItem.moving_time
             itemBinding.itemDifficulty.text = courseItem.difficulty

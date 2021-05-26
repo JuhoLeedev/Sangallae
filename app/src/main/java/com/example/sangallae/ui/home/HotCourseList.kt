@@ -18,11 +18,11 @@ import com.example.sangallae.utils.Usage
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 
-class RecCourseList : Fragment() {
+class HotCourseList : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
     private var courseList = ArrayList<CourseItem>()
-    private lateinit var recCourseListAdapter: CourseViewAdapter
+    private lateinit var hotCourseListAdapter: CourseViewAdapter
 
 
     override fun onCreateView(
@@ -30,7 +30,7 @@ class RecCourseList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.recommended_course_list, container, false)
+        val root = inflater.inflate(R.layout.hot_course_list, container, false)
         //homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         //val textView: TextView = root.findViewById(R.id.text_home)
         //homeViewModel.text.observe(viewLifecycleOwner, Observer { textView.text = it })
@@ -43,20 +43,20 @@ class RecCourseList : Fragment() {
 
         // 추천 화면 갱신
         //refreshHome()
-        this.recCourseListAdapter = CourseViewAdapter()
-        this.recCourseListAdapter.submitList(courseList)
+        this.hotCourseListAdapter = CourseViewAdapter()
+        this.hotCourseListAdapter.submitList(courseList)
 
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.rec_course_recycler_view)?.layoutManager =
+        root.findViewById<RecyclerView>(R.id.hot_course_recycler_view)?.layoutManager =
             LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.rec_course_recycler_view)?.adapter =
-            this.recCourseListAdapter
+        root.findViewById<RecyclerView>(R.id.hot_course_recycler_view)?.adapter =
+            this.hotCourseListAdapter
 
-        recCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
+        hotCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
             override fun onItemClick(v: View, data: Int, pos : Int) {
                 Intent(activity, CourseDetailActivity::class.java).apply {
                     putExtra("id", data)
@@ -65,24 +65,24 @@ class RecCourseList : Fragment() {
             }
         })
 
-        recCourseApiCall()
+        hotCourseApiCall()
 
         return root
     }
 
-    private fun recCourseApiCall() {
+    private fun hotCourseApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.recCourseList(completion = { status, list ->
+        retrofit.hotCourseList(completion = { status, list ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
                     if (list != null) {
                         this.courseList.clear()
                         this.courseList = list
-                        recCourseListAdapter.submitList(this.courseList)
-                        recCourseListAdapter.notifyDataSetChanged()
-                        Log.d(Constants.TAG,"여기까지 됨 $courseList")
-                    //
+                        hotCourseListAdapter.submitList(this.courseList)
+                        hotCourseListAdapter.notifyDataSetChanged()
+                        //Log.d(Constants.TAG,"여기까지 됨 $courseList")
+                        //
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()
                     }
@@ -90,7 +90,7 @@ class RecCourseList : Fragment() {
                 else -> {
                     Log.d(
                         Constants.TAG,
-                        "ProfileFragment-OncreateView-homeLoadApiCall() ${list.toString()}"
+                        "ProfileFragment-OncreateView-hotListApiCall() ${list.toString()}"
                     )
                     Toast.makeText(this.context, "페이지를 로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
                 }

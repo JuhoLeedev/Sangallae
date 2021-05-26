@@ -15,13 +15,14 @@ import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.databinding.HomeItemBinding
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.retrofit.models.Home
 
 class PopularCourseAdapter : RecyclerView.Adapter<PopularCourseAdapter.CourseItemViewHolder>() {
 
-    private var courseList = ArrayList<CourseItem>()
+    private var courseList = ArrayList<Home>()
 
     inner class CourseItemViewHolder(private val itemBinding: HomeItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
-        fun bindWithView(courseItem: CourseItem) {
+        fun bindWithView(courseItem: Home) {
             itemBinding.courseName.text = courseItem.name
             itemBinding.courseInfo.text = courseItem.distance + " / " + courseItem.moving_time + " / " + courseItem.difficulty
 
@@ -62,7 +63,7 @@ class PopularCourseAdapter : RecyclerView.Adapter<PopularCourseAdapter.CourseIte
         return this.courseList.size
     }
 
-    fun submitList(courseList: ArrayList<CourseItem>){
+    fun submitList(courseList: ArrayList<Home>){
         this.courseList = courseList
     }
 }

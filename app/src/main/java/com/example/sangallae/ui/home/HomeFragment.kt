@@ -31,6 +31,7 @@ class HomeFragment : Fragment() {
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
     private var courseList = ArrayList<CourseItem>()
     private var recCourseList = ArrayList<Home>()
+    private var hotCourseList = ArrayList<Home>()
     private lateinit var recommendedCourseAdapter: RecommendedCourseAdapter
     private lateinit var popularCourseAdapter: PopularCourseAdapter
     lateinit var navController: NavController
@@ -56,8 +57,8 @@ class HomeFragment : Fragment() {
         this.recommendedCourseAdapter = RecommendedCourseAdapter()
         this.recommendedCourseAdapter.submitList(recCourseList)
 //
-//        this.popularCourseAdapter = PopularCourseAdapter()
-//        this.popularCourseAdapter.submitList(courseList)
+        this.popularCourseAdapter = PopularCourseAdapter()
+        this.popularCourseAdapter.submitList(hotCourseList)
 
         //root activity view context this.context 중에 root만 되네
         root.findViewById<RecyclerView>(R.id.recCourse)?.layoutManager =
@@ -76,16 +77,16 @@ class HomeFragment : Fragment() {
                 false
             )
         root.findViewById<RecyclerView>(R.id.popCourse)?.adapter =
-            this.recommendedCourseAdapter
+            this.popularCourseAdapter
 
-        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
-            override fun onItemClick(v: View, data: Int, pos : Int) {
-                Intent(activity, CourseDetailActivity::class.java).apply {
-                    putExtra("id", data)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }.run { startActivity(this) }
-            }
-        })
+//        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
+//            override fun onItemClick(v: View, data: Int, pos : Int) {
+//                Intent(activity, CourseDetailActivity::class.java).apply {
+//                    putExtra("id", data)
+//                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                }.run { startActivity(this) }
+//            }
+//        })
         //homeLoadApiCall()
         homeLoadApiCall()
 
@@ -93,9 +94,14 @@ class HomeFragment : Fragment() {
         val recCourseMore = root.findViewById<TextView>(R.id.recCourseMore)
         recCourseMore.setOnClickListener {
             //목록 fragment로 넘어가기
-//            val intent = Intent(this.context, RecCourseList::class.java)
-//            startActivity(intent)
             findNavController().navigate(R.id.action_navigation_home_to_navigation_rec_course)
+        }
+
+        // 인기 등산로 더보기 버튼
+        val hotCourseMore = root.findViewById<TextView>(R.id.popCourseMore)
+        hotCourseMore.setOnClickListener {
+            //목록 fragment로 넘어가기
+            findNavController().navigate(R.id.action_navigation_home_to_navigation_hot_course)
         }
         return root
     }
@@ -106,25 +112,29 @@ class HomeFragment : Fragment() {
 
     private fun homeLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.homeLoad(completion = { status, list ->
+        retrofit.homeLoad(completion = { status, list1, list2 ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
-                    if (list != null) {
+                    if (list1 != null) {
                         this.recCourseList.clear()
-                        this.recCourseList = list
+                        this.recCourseList = list1
                         recommendedCourseAdapter.submitList(this.recCourseList)
                         recommendedCourseAdapter.notifyDataSetChanged()
-                        Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
-//
-//                        popularCourseAdapter.submitList(this.recCourseList)
-//                        popularCourseAdapter.notifyDataSetChanged()
+                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                    }
+                    if (list2 != null) {
+                        this.hotCourseList.clear()
+                        this.hotCourseList = list2
+                        popularCourseAdapter.submitList(this.hotCourseList)
+                        popularCourseAdapter.notifyDataSetChanged()
+                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
                     }
                 }
                 else -> {
                     Log.d(
                         Constants.TAG,
-                        "ProfileFragment-OncreateView-homeLoadApiCall() ${list.toString()}"
+                        "ProfileFragment-OncreateView-homeLoadApiCall() ${list1.toString()}"
                     )
                     Toast.makeText(this.context, "페이지를 로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
                 }

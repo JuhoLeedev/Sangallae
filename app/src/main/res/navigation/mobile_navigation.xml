@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_rec_course"
             app:destination="@id/navigation_rec_course" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_hot_course"
+            app:destination="@id/navigation_hot_course" />
     </fragment>
 
     <fragment
@@ -26,6 +29,13 @@
         android:name="com.example.sangallae.ui.home.RecCourseList"
         android:label="@string/recCourseList"
         tools:layout="@layout/recommended_course_list" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_hot_course"
+        android:name="com.example.sangallae.ui.home.HotCourseList"
+        android:label="@string/hotCourseList"
+        tools:layout="@layout/hot_course_list" >
     </fragment>
 
     <fragment
