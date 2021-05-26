@@ -77,7 +77,7 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/textView11"
+                        android:id="@+id/recCourseMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -117,7 +117,7 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/recCourseMore"
+                        android:id="@+id/popCourseMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

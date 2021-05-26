@@ -16,6 +16,16 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popUpTo="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_rec_course"
+            app:destination="@id/navigation_rec_course" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_rec_course"
+        android:name="com.example.sangallae.ui.home.RecCourseList"
+        android:label="@string/recCourseList"
+        tools:layout="@layout/recommended_course_list" >
     </fragment>
 
     <fragment

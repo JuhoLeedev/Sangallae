@@ -79,4 +79,5 @@
     <string name="popular">Popular Courses</string>
     <string name="popMtn">Popular Mountains</string>
     <string name="near">Nearby Courses</string>
+    <string name="recCourseList">Recommended Course List</string>
 </resources>
