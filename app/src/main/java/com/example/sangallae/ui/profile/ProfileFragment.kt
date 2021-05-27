@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
-import com.example.sangallae.databinding.FragmentProfileBinding
 import com.example.sangallae.retrofit.models.NewProfile
 import com.example.sangallae.retrofit.models.Profile
 import com.example.sangallae.ui.SplashActivity

@@ -23,6 +23,7 @@ object API {
     const val BASE_URL : String = "http://ec2-15-165-252-29.ap-northeast-2.compute.amazonaws.com/"
 
     // admin jwt token
+    //const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmFkbWluYWRtaW5hZG1pbiIsImlkIjoxMDA4MSwiZXhwIjoxNjIyNjM1MzIwLCJ1c2VybmFtZSI6ImFkbWluYWRtaW5hZG1pbmFkbWluIn0.2BJvol8Xwth_bMX12TzTY9qMW6aDsjPhn3qFIaMdmBtpBF5ftd7sHXooxWCdzcXiTCVpAe0xCqNxDQplH38ZCQ"
     const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmYXRoZXIiLCJpZCI6MCwiZXhwIjoxNjIzNjUxMjE0LCJ1c2VybmFtZSI6ImZhdGhlciJ9.MrZo6o7a3C3LnJoubu-nJjq09nBMq96YZDlE-vEkB12WBdgx5hUdDnvS1zTmFNee5_GFXY8m_RSqziiQSRiPRw"
 
     // social login
@@ -41,4 +42,8 @@ object API {
     const val PROFILE_UPDATE : String = "user" //profile update
     const val COURSE_DETAIL : String = "course/{id}"
     const val FAVORITES : String = "favorite"
+    const val HOME_LOAD : String= "course/main"
+    const val REC_COURSE_LIST : String = "course/recommendation"
+    const val HOT_COURSE_LIST : String = "course/hot"
+    const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
 }
