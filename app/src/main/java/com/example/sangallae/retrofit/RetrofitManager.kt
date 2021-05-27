@@ -435,6 +435,7 @@ class RetrofitManager(usage: Usage) {
                                         id = courseId,
                                         name = courseName,
                                         thumbnail = courseThumbnailUrl,
+                                        location=""
                                     )
                                     parsedCourseDataArray3.add(courseItem)
                                 }
@@ -611,9 +612,9 @@ class RetrofitManager(usage: Usage) {
 
     //인기 산 더보기
     fun hotMountainList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        completion: (RESPONSE_STATUS, ArrayList<Mountain>?) -> Unit
     ) {
-        val call = iRetrofit?.hotCourseList() ?: return
+        val call = iRetrofit?.hotMountainList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -628,7 +629,7 @@ class RetrofitManager(usage: Usage) {
 
                 if(response.isSuccessful) {
                     response.body()?.let {
-                        val parsedCourseDataArray = ArrayList<CourseItem>()
+                        val parsedCourseDataArray = ArrayList<Mountain>()
                         val body = it.asJsonObject
                         val result1 = body.getAsJsonObject("data")
                         val results = result1.getAsJsonArray("content")
@@ -646,16 +647,18 @@ class RetrofitManager(usage: Usage) {
                                     //val courseMovingTime = resultItemObject.get("moving_time").asString
                                     //val courseElevation = resultItemObject.get("ele_dif").asString
                                     //val courseDifficulty = resultItemObject.get("difficulty").asString
+                                    val location = resultItemObject.get("location").asString
                                     val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
 
-                                    val courseItem = CourseItem(
+                                    val courseItem = Mountain(
                                         id = courseId,
                                         name = courseName,
-                                        distance = "",
-                                        moving_time = "",
-                                        ele_dif = "",
+                                        //distance = "",
+                                        //moving_time = "",
+                                        //ele_dif = "",
                                         thumbnail = courseThumbnailUrl,
-                                        difficulty = ""
+                                        location = location
+                                        //difficulty = ""
                                     )
                                     parsedCourseDataArray.add(courseItem)
                                 }

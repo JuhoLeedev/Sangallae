@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.retrofit.models.Mountain
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -23,8 +24,8 @@ import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 class HotMountainList : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
-    private var courseList = ArrayList<CourseItem>()
-    private lateinit var hotCourseListAdapter: CourseViewAdapter
+    private var courseList = ArrayList<Mountain>()
+    private lateinit var hotMountainListAdapter: MountainViewAdapter
     //private lateinit var callback: OnBackPressedCallback
 
     override fun onCreateView(
@@ -32,7 +33,7 @@ class HotMountainList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.hot_course_list, container, false)
+        val root = inflater.inflate(R.layout.hot_mountain_list, container, false)
         //homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         //val textView: TextView = root.findViewById(R.id.text_home)
         //homeViewModel.text.observe(viewLifecycleOwner, Observer { textView.text = it })
@@ -45,20 +46,20 @@ class HotMountainList : Fragment() {
 
         // 추천 화면 갱신
         //refreshHome()
-        this.hotCourseListAdapter = CourseViewAdapter()
-        this.hotCourseListAdapter.submitList(courseList)
+        this.hotMountainListAdapter = MountainViewAdapter()
+        this.hotMountainListAdapter.submitList(courseList)
 
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.hot_course_recycler_view)?.layoutManager =
+        root.findViewById<RecyclerView>(R.id.hot_mountain_recycler_view)?.layoutManager =
             LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.hot_course_recycler_view)?.adapter =
-            this.hotCourseListAdapter
+        root.findViewById<RecyclerView>(R.id.hot_mountain_recycler_view)?.adapter =
+            this.hotMountainListAdapter
 
-        hotCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
+        hotMountainListAdapter.setOnItemClickListener(object : MountainViewAdapter.OnItemClickListener{
             override fun onItemClick(v: View, data: Int, pos : Int) {
                 Intent(activity, CourseDetailActivity::class.java).apply {
                     putExtra("id", data)
@@ -81,8 +82,8 @@ class HotMountainList : Fragment() {
                     if (list != null) {
                         this.courseList.clear()
                         this.courseList = list
-                        hotCourseListAdapter.submitList(this.courseList)
-                        hotCourseListAdapter.notifyDataSetChanged()
+                        hotMountainListAdapter.submitList(this.courseList)
+                        hotMountainListAdapter.notifyDataSetChanged()
                         //Log.d(Constants.TAG,"여기까지 됨 $courseList")
                         //
 //                        popularCourseAdapter.submitList(this.recCourseList)

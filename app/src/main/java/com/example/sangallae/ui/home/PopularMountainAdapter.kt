@@ -19,7 +19,7 @@ class PopularMountainAdapter : RecyclerView.Adapter<PopularMountainAdapter.MtnIt
         fun bindWithView(mtnItem: Mountain) {
             itemBinding.courseName.text = mtnItem.name
             //itemBinding.courseInfo.text = courseItem.distance + " / " + courseItem.moving_time + " / " + courseItem.difficulty
-
+            //itemBinding.location.text =
             Glide.with(GlobalApplication.instance).load(mtnItem.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(itemBinding.courseImageView)
 
