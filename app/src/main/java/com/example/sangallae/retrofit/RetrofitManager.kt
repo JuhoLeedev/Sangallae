@@ -435,7 +435,8 @@ class RetrofitManager(usage: Usage) {
                                         id = courseId,
                                         name = courseName,
                                         thumbnail = courseThumbnailUrl,
-                                        location=""
+                                        location="",
+                                        height=""
                                     )
                                     parsedCourseDataArray3.add(courseItem)
                                 }
@@ -648,6 +649,7 @@ class RetrofitManager(usage: Usage) {
                                     //val courseElevation = resultItemObject.get("ele_dif").asString
                                     //val courseDifficulty = resultItemObject.get("difficulty").asString
                                     val location = resultItemObject.get("location").asString
+                                    val height = resultItemObject.get("height").asString
                                     val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
 
                                     val courseItem = Mountain(
@@ -657,7 +659,8 @@ class RetrofitManager(usage: Usage) {
                                         //moving_time = "",
                                         //ele_dif = "",
                                         thumbnail = courseThumbnailUrl,
-                                        location = location
+                                        location = location,
+                                        height = height
                                         //difficulty = ""
                                     )
                                     parsedCourseDataArray.add(courseItem)

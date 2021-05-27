@@ -7,5 +7,6 @@ data class Mountain (
     var id: Int, //courseid
     var name: String, //coursename
     var thumbnail: String,
-    var location: String
+    var location: String,
+    var height: String
 ):Serializable

@@ -33,15 +33,62 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mountain_image_view" />
 
+<!--        <TextView-->
+<!--            android:id="@+id/item_location"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@color/custom_black"-->
+<!--            android:textSize="14sp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />-->
+
+        <TextView
+            android:id="@+id/item_height"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/str_course_height"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />
+
+
         <TextView
             android:id="@+id/item_location"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/location"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@+id/item_height"
+            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />
+
+        <TextView
+            android:id="@+id/item_heigh_value"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="500m"
             android:textColor="@color/custom_black"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />
+            app:layout_constraintStart_toEndOf="@+id/item_distance_value"
+            app:layout_constraintTop_toBottomOf="@+id/item_height" />
+
+        <TextView
+            android:id="@+id/item_location_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인천광역시 미추홀구 용현동"
+            android:textColor="@color/custom_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/item_heigh_value"
+            app:layout_constraintTop_toBottomOf="@+id/item_time" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

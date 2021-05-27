@@ -20,7 +20,8 @@ class MountainViewAdapter : RecyclerView.Adapter<MountainViewAdapter.MountainIte
     inner class MountainItemViewHolder(private val itemBinding: LayoutMountainItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bindWithView(courseItem: Mountain) {
             itemBinding.mountainTitle.text = courseItem.name
-            itemBinding.itemLocation.text = courseItem.location
+            itemBinding.itemLocationValue.text = courseItem.location
+            itemBinding.itemHeighValue.text=courseItem.height
 //            itemBinding.itemDistanceValue.text = courseItem.distance + "km"
 //            itemBinding.itemHeighValue.text = courseItem.ele_dif
 //            itemBinding.itemTimeValue.text = courseItem.moving_time
