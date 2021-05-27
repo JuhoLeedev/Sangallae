@@ -47,4 +47,7 @@ interface RetrofitService {
 
     @GET(API.HOT_COURSE_LIST)
     fun hotCourseList(): Call<JsonElement>
+
+    @GET(API.HOT_MOUNTAIN_LIST)
+    fun hotMountainList(): Call<JsonElement>
 }

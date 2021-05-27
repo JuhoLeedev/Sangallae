@@ -20,7 +20,7 @@ import com.example.sangallae.utils.Usage
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 
-class HotCourseList : Fragment() {
+class HotMountainList : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
     private var courseList = ArrayList<CourseItem>()
@@ -67,14 +67,14 @@ class HotCourseList : Fragment() {
             }
         })
 
-        hotCourseApiCall()
+        hotMountainApiCall()
 
         return root
     }
 
-    private fun hotCourseApiCall() {
+    private fun hotMountainApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.hotCourseList(completion = { status, list ->
+        retrofit.hotMountainList(completion = { status, list ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")

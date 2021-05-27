@@ -81,4 +81,5 @@
     <string name="near">Nearby Courses</string>
     <string name="recCourseList">Recommended Course List</string>
     <string name="hotCourseList">Hot Course List</string>
+    <string name="hotMountainList">Hot Mountain List</string>
 </resources>

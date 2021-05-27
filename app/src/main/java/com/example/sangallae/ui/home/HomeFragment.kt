@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.CourseItem
 import com.example.sangallae.retrofit.models.Home
+import com.example.sangallae.retrofit.models.Mountain
 import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.Constants
@@ -29,11 +30,13 @@ import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 class HomeFragment : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
-    private var courseList = ArrayList<CourseItem>()
+    //private var courseList = ArrayList<CourseItem>()
     private var recCourseList = ArrayList<Home>()
     private var hotCourseList = ArrayList<Home>()
+    private var hotMtnList = ArrayList<Mountain>()
     private lateinit var recommendedCourseAdapter: RecommendedCourseAdapter
     private lateinit var popularCourseAdapter: PopularCourseAdapter
+    private lateinit var popularMountainAdapter: PopularMountainAdapter
     lateinit var navController: NavController
 
     override fun onCreateView(
@@ -60,6 +63,9 @@ class HomeFragment : Fragment() {
         this.popularCourseAdapter = PopularCourseAdapter()
         this.popularCourseAdapter.submitList(hotCourseList)
 
+        this.popularMountainAdapter = PopularMountainAdapter()
+        this.popularMountainAdapter.submitList(hotMtnList)
+
         //root activity view context this.context 중에 root만 되네
         root.findViewById<RecyclerView>(R.id.recCourse)?.layoutManager =
             LinearLayoutManager(
@@ -78,6 +84,15 @@ class HomeFragment : Fragment() {
             )
         root.findViewById<RecyclerView>(R.id.popCourse)?.adapter =
             this.popularCourseAdapter
+
+        root.findViewById<RecyclerView>(R.id.popMtn)?.layoutManager =
+            LinearLayoutManager(
+                context, //activity?
+                RecyclerView.HORIZONTAL,
+                false
+            )
+        root.findViewById<RecyclerView>(R.id.popMtn)?.adapter =
+            this.popularMountainAdapter
 
 //        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
 //            override fun onItemClick(v: View, data: Int, pos : Int) {
@@ -103,6 +118,13 @@ class HomeFragment : Fragment() {
             //목록 fragment로 넘어가기
             findNavController().navigate(R.id.action_navigation_home_to_navigation_hot_course)
         }
+
+        // 인기 산 더보기 버튼
+        val hotMtnMore = root.findViewById<TextView>(R.id.popMtnMore)
+        hotMtnMore.setOnClickListener {
+            //목록 fragment로 넘어가기
+            findNavController().navigate(R.id.action_navigation_home_to_navigation_hot_mountain)
+        }
         return root
     }
 //
@@ -112,7 +134,7 @@ class HomeFragment : Fragment() {
 
     private fun homeLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.homeLoad(completion = { status, list1, list2 ->
+        retrofit.homeLoad(completion = { status, list1, list2, list3 ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
@@ -128,6 +150,13 @@ class HomeFragment : Fragment() {
                         this.hotCourseList = list2
                         popularCourseAdapter.submitList(this.hotCourseList)
                         popularCourseAdapter.notifyDataSetChanged()
+                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                    }
+                    if (list3 != null) {
+                        this.hotMtnList.clear()
+                        this.hotMtnList = list3
+                        popularMountainAdapter.submitList(this.hotMtnList)
+                        popularMountainAdapter.notifyDataSetChanged()
                         //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
                     }
                 }

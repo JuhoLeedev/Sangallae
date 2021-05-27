@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_hot_course"
             app:destination="@id/navigation_hot_course" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_hot_mountain"
+            app:destination="@id/navigation_hot_mountain" />
     </fragment>
 
     <fragment
@@ -35,6 +38,13 @@
         android:id="@+id/navigation_hot_course"
         android:name="com.example.sangallae.ui.home.HotCourseList"
         android:label="@string/hotCourseList"
+        tools:layout="@layout/hot_course_list" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_hot_mountain"
+        android:name="com.example.sangallae.ui.home.HotMountainList"
+        android:label="@string/hotMountainList"
         tools:layout="@layout/hot_course_list" >
     </fragment>
 
