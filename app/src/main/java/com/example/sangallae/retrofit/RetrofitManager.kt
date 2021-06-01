@@ -94,6 +94,80 @@ class RetrofitManager(usage: Usage) {
         })
     }
 
+    // 찜 목록
+    fun favoriteCourses(
+        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+    ) {
+        val call = iRetrofit?.favoriteCourses() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+                completion(RESPONSE_STATUS.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val parsedCourseDataArray = ArrayList<CourseItem>()
+                        val body = it.asJsonObject
+                        val data = body.getAsJsonObject("data")
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "OK" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                val results = data.getAsJsonArray("content")
+                                results.forEach { resultItem ->
+                                    val resultItemObject = resultItem.asJsonObject
+                                    val courseId = resultItemObject.get("id").asInt
+                                    val courseName = resultItemObject.get("name").asString
+                                    val courseDistance = resultItemObject.get("distance").asString
+                                    val courseMovingTime = resultItemObject.get("moving_time").asString
+                                    val courseElevation = resultItemObject.get("ele_dif").asString
+                                    val courseDifficulty = resultItemObject.get("difficulty").asString
+                                    val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
+
+                                    val courseItem = CourseItem(
+                                        id = courseId,
+                                        name = courseName,
+                                        distance = courseDistance + "km",
+                                        moving_time = courseMovingTime,
+                                        ele_dif = courseElevation + "m",
+                                        thumbnail = courseThumbnailUrl,
+                                        difficulty = courseDifficulty
+                                    )
+                                    parsedCourseDataArray.add(courseItem)
+                                }
+                                completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
+                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST, null)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, null)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND, null)
+                }
+            }
+        })
+    }
+
     // 상세 정보 api 호출
     fun getCourseDetail(
         id: Int,

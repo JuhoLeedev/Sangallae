@@ -71,7 +71,8 @@
     <string name="detail_uphill">오르막합</string>
     <string name="detail_downhill">내리막함</string>
     <string name="str_my_record">내 등산 기록</string>
-    <string name="str_more">더보기 > </string>
+    <string name="str_more">더보기</string>
+    <string name="str_no_favorites">내가 찜한 목록이 없습니다</string>
 
     <string name="greeting1">님 반가워요!</string>
     <string name="greeting2">나에게 꼭 맞는 등산로를 찾아보세요</string>

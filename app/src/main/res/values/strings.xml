@@ -86,4 +86,5 @@
     <string name="str_no_favorites">There is no list of courses.</string>
 
     <string name="location">Location</string>
+    <string name="str_no_favorites">Do not have a favorite list</string>
 </resources>

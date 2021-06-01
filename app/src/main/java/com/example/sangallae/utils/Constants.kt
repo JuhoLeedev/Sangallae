@@ -41,6 +41,7 @@ object API {
     const val PROFILE_LOAD : String = "user" // profile
     const val PROFILE_UPDATE : String = "user" //profile update
     const val COURSE_DETAIL : String = "course/{id}"
+    const val FAVORITES : String = "favorite"
     const val HOME_LOAD : String= "course/main"
     const val REC_COURSE_LIST : String = "course/recommendation"
     const val HOT_COURSE_LIST : String = "course/hot"
