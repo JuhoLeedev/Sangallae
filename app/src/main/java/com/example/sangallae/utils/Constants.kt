@@ -46,5 +46,4 @@ object API {
     const val REC_COURSE_LIST : String = "course/recommendation"
     const val HOT_COURSE_LIST : String = "course/hot"
     const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
-    const val FAVORITES : String = "favorite"
 }

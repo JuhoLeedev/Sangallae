@@ -52,7 +52,4 @@ interface RetrofitService {
 
     @GET(API.HOT_MOUNTAIN_LIST)
     fun hotMountainList(): Call<JsonElement>
-
-    @GET(API.FAVORITES)
-    fun favoriteCourses(): Call<JsonElement>
 }

@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-
     var time3: Long = 0
     override fun onBackPressed() {
         val time1 = System.currentTimeMillis()

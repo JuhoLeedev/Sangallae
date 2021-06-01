@@ -22,7 +22,7 @@
         tools:targetApi="n">
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="7ok55d1ugn" />
+            android:value="5m14y0nfld" />
         <activity android:name=".ui.detail.CourseDetailActivity"
             android:label="@string/detail_course"
             android:parentActivityName=".ui.search.SearchActivity"
