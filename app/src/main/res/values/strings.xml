@@ -83,5 +83,7 @@
     <string name="hotCourseList">Hot Course List</string>
     <string name="hotMountainList">Hot Mountain List</string>
 
+    <string name="str_no_favorites">There is no list of courses.</string>
+
     <string name="location">Location</string>
 </resources>

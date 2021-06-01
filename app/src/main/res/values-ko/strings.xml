@@ -83,4 +83,6 @@
     <string name="hotCourseList">인기 등산로 목록</string>
     <string name="hotMountainList">인기 산 목록</string>
     <string name="location">위치</string>
+
+    <string name="str_no_favorites">내가 찜한 목록이 없습니다</string>
 </resources>
