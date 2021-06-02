@@ -88,4 +88,8 @@ dependencies {
     // naver map
     implementation 'com.naver.maps:map-sdk:3.11.0'
 
+    implementation 'io.jenetics:jpx:2.2.0'
+    implementation 'stax:stax-api:1.0.1'
+    implementation 'com.fasterxml:aalto-xml:1.1.1'
+    implementation "com.google.android.gms:play-services-location:16.0.0"
 }
