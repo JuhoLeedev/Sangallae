@@ -141,7 +141,7 @@ class MyGPX {
         val hour = second / 3600
         second %= 3600
         val minute = second / 60
-        second %= 600
+        second %= 60
         return String.format("%02d:%02d:%02d", hour, minute, second)
     }
 
@@ -159,17 +159,48 @@ class MyGPX {
     @RequiresApi(Build.VERSION_CODES.O)
     fun getExpectedTime(): String {
         var second = Math.round(getLeftTime())
-        val hour = second / 3600
+        var hour = second / 3600
         second %= 3600
-        val minute = second / 60
-        second %= 600
-        val localDateTime = LocalDateTime.now().plusHours(hour).plusMinutes(minute)
-        var hour1 = localDateTime.hour
-        val minute1 = localDateTime.minute
-        val ampm = if (hour1 < 12) "AM " else "PM "
-        hour1 = if (hour1 > 12) hour1 % 12 else hour1
-        return ampm + hour1 + "H " + minute1 + "M"
+        var minute = second / 60
+        second %= 60
+
+        var day: Long = 0
+
+
+        val now = LocalDateTime.now()
+        if(now.minute + minute > 59) {
+            hour++
+            minute %= 60
+        }
+
+        if(now.hour + hour > 23){
+            day++
+            hour %= 24
+        }
+//        val localDateTime = now.plusDays(day).plusHours(hour).plusMinutes(minute)
+//
+//
+//        var hour1 = localDateTime.hour
+//        val minute1 = localDateTime.minute
+        val ampm = if (hour < 12) "AM " else "PM "
+        hour = if (hour > 12) hour % 12 else hour
+        return ampm + hour + "H " + minute + "M"
     }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    fun getExpectedTime(): String {
+//        var second = Math.round(getLeftTime())
+//        val hour = second / 3600
+//        second %= 3600
+//        val minute = second / 60
+//        second %= 600
+//        val localDateTime = LocalDateTime.now().plusHours(hour).plusMinutes(minute)
+//        var hour1 = localDateTime.hour
+//        val minute1 = localDateTime.minute
+//        val ampm = if (hour1 < 12) "AM " else "PM "
+//        hour1 = if (hour1 > 12) hour1 % 12 else hour1
+//        return ampm + hour1 + "H " + minute1 + "M"
+//    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Throws(InterruptedException::class)
@@ -180,7 +211,7 @@ class MyGPX {
             moving_time = convertSecondToTime(movingTimeSec),
             moving_distance = convertMeterToKillo(movingDistance),
             left_distance = convertMeterToKillo(getLeftDistance()),
-            expected_time = convertMeterToKillo(getLeftDistance())
+            expected_time = getExpectedTime()
         )
     }
 }

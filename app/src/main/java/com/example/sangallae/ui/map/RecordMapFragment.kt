@@ -27,6 +27,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.LocationOverlay
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.widget.LocationButtonView
 import io.jenetics.jpx.GPX
 import java.time.Duration
 import java.time.LocalDateTime
@@ -60,16 +61,18 @@ import java.time.LocalDateTime
 class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var naverMap: NaverMap
+    private lateinit var naverMap_: NaverMap
     @RequiresApi(Build.VERSION_CODES.N)
     var gg = MyGPX()
-
+    var listenerFlag = false //위치 변경에 대한 리스너를 설정할 것인지 (일시정지/시작에 사용)
+    lateinit var locationListener:NaverMap.OnLocationChangeListener
     //퍼미션 응답 처리 코드
     private val multiplePermissionsCode = 100
+    var timeflag = false
     //private lateinit var gpx: GPX
-
-    var mLocationManager: LocationManager? = null
-    var mLocationListener: LocationListener? = null
+//
+//    var mLocationManager: LocationManager? = null
+//    var mLocationListener: LocationListener? = null
 
 //    //필요한 퍼미션 리스트
 //    @RequiresApi(Build.VERSION_CODES.R)
@@ -129,27 +132,40 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
+        mapFragment.getMapAsync {
+            val locationButtonView = root.findViewById(R.id.current) as LocationButtonView
+            locationButtonView.map = naverMap_
+        }
 
-
+        // 저장 및 종료
         val btn = root.findViewById<Button>(R.id.button)
         btn.setOnClickListener {
             //목록 fragment로 넘어가기
             gg.saveGPX("/storage/emulated/0/gpxdata/테스트.gpx")
             Toast.makeText(this.context,"저장됨", Toast.LENGTH_SHORT).show()
+            //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
+            listenerFlag = false
         }
 
+        //시작 버튼
         val startBtn = root.findViewById<Button>(R.id.startBtn)
         startBtn.setOnClickListener {
             //목록 fragment로 넘어가기
-            recordCurrentCourse(gg, naverMap)
+            listenerFlag = true
+            recordCurrentCourse(gg, naverMap_)
         }
 
+        //일시정지
         val pauseBtn = root.findViewById<Button>(R.id.pauseBtn)
         pauseBtn.setOnClickListener {
             //목록 fragment로 넘어가기
+            if(listenerFlag)  gg.pause()
+            else gg.restart()
+            listenerFlag = !listenerFlag //토글
 
-
+            Log.d(Constants.TAG, "일시정지, flag: $listenerFlag")
         }
+
 
         return root
     }
@@ -158,27 +174,25 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
         // ...
+        naverMap_ = naverMap
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
         //사용자 현재위치
         naverMap.locationSource = locationSource
 
         val uiSettings = naverMap.uiSettings
-        uiSettings.isLocationButtonEnabled = true
+        //uiSettings.isLocationButtonEnabled = true
         uiSettings.isScaleBarEnabled = false
         uiSettings.isZoomControlEnabled = false
+        uiSettings.isCompassEnabled = false
 
         val locationOverlay = naverMap.locationOverlay
         locationOverlay.isVisible = true
         naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
 
         val path = PathOverlay() // 따라갈 경로 그리기
-        val path2 = PathOverlay() // 현재 위치 그리기
-
-
 
         drawFullCourse(gg,"/storage/emulated/0/gpxdata/문학산.gpx", path, naverMap, locationOverlay)
         //drawFullCourse(gg,"/storage/emulated/0/gpxdata/inha (1).gpx", path, naverMap, locationOverlay)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -209,21 +223,35 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     fun recordCurrentCourse(gg: MyGPX, naverMap: NaverMap){
         var lastTime = LocalDateTime.now()
         naverMap.addOnLocationChangeListener { location ->
-            val lat = location.latitude
-            val lon = location.longitude
-            val alt = location.altitude
-            //GlobalScope.launch { // launch new coroutine in background and continue
-            //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
-            var currentTime = LocalDateTime.now()
-            if(Duration.between(lastTime, currentTime).seconds > 3){
-                gg.addWayPoint(lat, lon, alt)
-                //coords.add(LatLng(lat, lon))
-                lastTime = currentTime
-                Log.d(Constants.TAG,"현재: $lat $lon $alt")
-                //path2.coords = coords
+            Log.d(Constants.TAG, "record함수 flag: $listenerFlag")
+            if(timeflag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고
+                activity?.findViewById<TextView>(R.id.total_time_view2)?.text = gg.printInfo(gg.getGPX()).total_time
 
-                var info = gg.printInfo(gg.getGPX())
-                Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
+            if(listenerFlag){ // 일시정지 아닐 때만 동작하게
+                val lat = location.latitude
+                val lon = location.longitude
+                val alt = location.altitude
+                //GlobalScope.launch { // launch new coroutine in background and continue
+                //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
+                var currentTime = LocalDateTime.now()
+                if(Duration.between(lastTime, currentTime).seconds > 3){
+                    gg.addWayPoint(lat, lon, alt)
+                    timeflag=true
+                    //coords.add(LatLng(lat, lon))
+                    lastTime = currentTime
+                    Log.d(Constants.TAG,"현재: $lat $lon $alt")
+                    //path2.coords = coords
+
+                    var info = gg.printInfo(gg.getGPX())
+                    Log.d(Constants.TAG,"$info")
+
+
+                    activity?.findViewById<TextView>(R.id.moving_time_view)?.text = info.moving_time
+                    activity?.findViewById<TextView>(R.id.moving_distance_view)?.text = info.moving_distance
+                    activity?.findViewById<TextView>(R.id.left_distance_view)?.text = info.left_distance
+                    activity?.findViewById<TextView>(R.id.cur_height_view)?.text = alt.toString().substring(0,4) +"m"
+                    activity?.findViewById<TextView>(R.id.arrival_time_view)?.text = info.expected_time
+                }
             }
         }
     }
@@ -234,7 +262,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         if (locationSource.onRequestPermissionsResult(requestCode, permissions,
                 grantResults)) {
             if (!locationSource.isActivated) { // 권한 거부됨
-                naverMap.locationTrackingMode = LocationTrackingMode.None
+                naverMap_.locationTrackingMode = LocationTrackingMode.None
                 Log.d(Constants.TAG, "요청3")
                 //checkPermissions()
             }

@@ -86,4 +86,10 @@
     <string name="str_no_favorites">There is no list of courses.</string>
 
     <string name="location">Location</string>
+    <string name="total_time">Total time</string>
+    <string name="moving_time">Moving time</string>
+    <string name="moving_distance">Moving distance</string>
+    <string name="left_distance">Left distance</string>
+    <string name="cur_height">Current height</string>
+    <string name="arrival_time">Expected arrival time</string>
 </resources>

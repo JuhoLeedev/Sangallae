@@ -84,4 +84,10 @@
     <string name="hotCourseList">인기 등산로 목록</string>
     <string name="hotMountainList">인기 산 목록</string>
     <string name="location">위치</string>
+    <string name="total_time">측정 시간</string>
+    <string name="moving_time">걸은 시간</string>
+    <string name="moving_distance">이동한 거리</string>
+    <string name="left_distance">남은 거리</string>
+    <string name="cur_height">현재 고도</string>
+    <string name="arrival_time">예상 도착 시간</string>
 </resources>
