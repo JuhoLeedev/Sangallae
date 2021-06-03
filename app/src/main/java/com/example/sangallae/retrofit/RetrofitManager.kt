@@ -759,7 +759,6 @@ class RetrofitManager(usage: Usage) {
             }
         })
     }
-    
     // 네이버 로그인
     fun naverLogin(
         accessToken: JsonToken,

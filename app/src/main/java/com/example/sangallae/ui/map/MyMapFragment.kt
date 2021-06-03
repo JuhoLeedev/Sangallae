@@ -12,6 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sangallae.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.graphics.Color
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import com.example.sangallae.utils.Constants
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -22,18 +28,42 @@ import com.naver.maps.map.util.FusedLocationSource
 class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
 
     private lateinit var mapViewModel: MapViewModel
-    private lateinit var fab : FloatingActionButton
-    private lateinit var fab1 : FloatingActionButton
-    private lateinit var fab2 : FloatingActionButton
+    private lateinit var fab: FloatingActionButton
+    private lateinit var fab1: FloatingActionButton
+    private lateinit var fab2: FloatingActionButton
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
     private var isFabOpen = false
-    private val toBottom : Animation by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.to_bottom_anim) }
-    private val fromBottom : Animation by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.from_bottom_anim) }
-    private val rotateOpen : Animation by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_open_anim) }
-    private val rotateClose : Animation by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_close_anim) }
+    private val toBottom: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.to_bottom_anim
+        )
+    }
+    private val fromBottom: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.from_bottom_anim
+        )
+    }
+    private val rotateOpen: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.rotate_open_anim
+        )
+    }
+    private val rotateClose: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.rotate_close_anim
+        )
+    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_map, container, false)
         val fm = childFragmentManager
@@ -90,31 +120,147 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        if (locationSource.onRequestPermissionsResult(requestCode, permissions,
-                grantResults)) {
-            if (!locationSource.isActivated) { // 권한 거부됨
-                naverMap.locationTrackingMode = LocationTrackingMode.None
-            }
-            return
+//class MyMapFragment : Fragment() {
+//
+//    private lateinit var mapViewModel: MapViewModel
+//
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+//        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+//        val root = inflater.inflate(R.layout.fragment_map, container, false)
+//
+//        val fm = childFragmentManager
+//        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+//            ?: MapFragment.newInstance().also {
+//                fm.beginTransaction().add(R.id.map, it).commit()
+//            }
+//        mapFragment.getMapAsync(this)
+//
+//        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_TRANSIT, true)
+//        return root
+//    }
+//
+//    @UiThread
+//    override fun onMapReady(naverMap: NaverMap) {
+//        // ...
+//    }
+//}
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        @UiThread
+        override fun onMapReady(naverMap: NaverMap) {
+            // ...
+            this.naverMap = naverMap
+            naverMap.locationSource = locationSource
+            val uiSettings = naverMap.uiSettings
+
+            naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
+            naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
+            //사용자 현재위치
+            uiSettings.isLocationButtonEnabled = true
+            naverMap.locationSource = locationSource
+            uiSettings.isScaleBarEnabled = false
+            uiSettings.isZoomControlEnabled = false
+
+            val locationOverlay = naverMap.locationOverlay
+            locationOverlay.isVisible = true
+            naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
+
+            val path = PathOverlay() // 따라갈 경로 그리기
+            val path2 = PathOverlay() // 현재 위치 그리기
+
+            var gg = MyGPX()
+
+            drawFullCourse(
+                gg,
+                "/storage/emulated/0/gpxdata/4_sample[2].gpx",
+                path,
+                naverMap,
+                locationOverlay
+            )
+            drawCurrentCourse(gg, path2, naverMap)
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 
-    @UiThread
-    override fun onMapReady(naverMap: NaverMap){
-        this.naverMap = naverMap
-        naverMap.locationSource = locationSource
-        val uiSettings = naverMap.uiSettings
-        uiSettings.isLocationButtonEnabled = true
-        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
-    }
+        @RequiresApi(Build.VERSION_CODES.N)
+        fun drawFullCourse(
+            gg: MyGPX,
+            coursePath: String,
+            path: PathOverlay,
+            naverMap: NaverMap,
+            locationOverlay: LocationOverlay
+        ) {
+            val gpx = gg.read(coursePath)
+            val course = gg.getWayPoints(gpx)
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-    }
+            val coords = mutableListOf( // 첫 점을 넣어야 되는데
+                LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
+            )
+            Log.d(Constants.TAG, "$coords")
+
+            //locationOverlay.position = LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
+            //naverMap.locationTrackingMode = LocationTrackingMode.Face
+
+            course.forEach { track ->
+                val lat = track.latitude.toDouble()
+                val lon = track.longitude.toDouble()
+                coords.add(LatLng(lat, lon))
+            }
+            path.coords = coords
+            path.map = naverMap
+            path.width = 10
+            path.color = Color.RED
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun drawCurrentCourse(gg: MyGPX, path2: PathOverlay, naverMap: NaverMap) {
+            val coords = mutableListOf<LatLng>(
+                LatLng(131.0, 37.0),
+                LatLng(131.0, 37.0)
+            )
+            path2.coords = coords
+            path2.map = naverMap
+            path2.width = 10
+            path2.color = Color.BLUE
+
+            //GlobalScope.launch{
+            // 사용자의 위치가 변경되면 그 좌표를 토스트로 표시
+            naverMap.addOnLocationChangeListener { location ->
+                val lat = location.latitude
+                val lon = location.longitude
+                val alt = location.altitude
+                //GlobalScope.launch { // launch new coroutine in background and continue
+                //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
+                gg.addWayPoint(lat, lon, alt)
+                coords.add(LatLng(lat, lon))
+
+                Log.d(Constants.TAG, "현재: $lat $lon $alt $coords")
+                //}
+                path2.coords = coords
+            }
+            // }
+            // path2.coords = coords
+        }
+
+        override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
+        ) {
+            if (locationSource.onRequestPermissionsResult(
+                    requestCode, permissions,
+                    grantResults
+                )
+            ) {
+                if (!locationSource.isActivated) { // 권한 거부됨
+                    naverMap.locationTrackingMode = LocationTrackingMode.None
+                }
+                return
+            }
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+
+        companion object {
+            private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        }
 }
 
 
