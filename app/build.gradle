@@ -92,4 +92,6 @@ dependencies {
     implementation 'stax:stax-api:1.0.1'
     implementation 'com.fasterxml:aalto-xml:1.1.1'
     implementation "com.google.android.gms:play-services-location:16.0.0"
+   // implementation 'commons-codec:commons-codec:1.10'
+    //implementation 'javax.xml.stream:stax-api:1.0'
 }

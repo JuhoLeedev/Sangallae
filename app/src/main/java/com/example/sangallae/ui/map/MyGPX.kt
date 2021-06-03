@@ -80,7 +80,6 @@ class MyGPX {
         return wayPoints
     }
 
-
     fun printGPX(wayPoints: List<WayPoint>) {
         for (wayPoint in wayPoints) {
             print("latitude = " + wayPoint.latitude)
