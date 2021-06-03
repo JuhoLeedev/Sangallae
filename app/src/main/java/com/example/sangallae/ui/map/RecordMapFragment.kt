@@ -1,28 +1,24 @@
 package com.example.sangallae.ui.map
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.Path
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.sangallae.R
 import com.example.sangallae.utils.Constants
+import com.google.android.gms.location.LocationListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -31,14 +27,9 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.LocationOverlay
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
-import io.jenetics.jpx.WayPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.timerTask
+import io.jenetics.jpx.GPX
+import java.time.Duration
+import java.time.LocalDateTime
 
 //class MyMapFragment : Fragment() {
 //
@@ -51,6 +42,7 @@ import kotlin.concurrent.timerTask
 //        val fm = childFragmentManager
 //        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
 //            ?: MapFragment.newInstance().also {
+
 //                fm.beginTransaction().add(R.id.map, it).commit()
 //            }
 //        mapFragment.getMapAsync(this)
@@ -65,13 +57,19 @@ import kotlin.concurrent.timerTask
 //    }
 //}
 
-class MyMapFragment : Fragment(), OnMapReadyCallback {
+class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
+    @RequiresApi(Build.VERSION_CODES.N)
+    var gg = MyGPX()
 
     //퍼미션 응답 처리 코드
     private val multiplePermissionsCode = 100
+    //private lateinit var gpx: GPX
+
+    var mLocationManager: LocationManager? = null
+    var mLocationListener: LocationListener? = null
 
 //    //필요한 퍼미션 리스트
 //    @RequiresApi(Build.VERSION_CODES.R)
@@ -116,7 +114,7 @@ class MyMapFragment : Fragment(), OnMapReadyCallback {
 //        }
 
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_map, container, false)
+        val root = inflater.inflate(R.layout.fragment_recording, container, false)
         //setContentView(R.layout.fragment_map)
 
         //val fm = supportFragmentManager
@@ -132,6 +130,26 @@ class MyMapFragment : Fragment(), OnMapReadyCallback {
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
 
+
+        val btn = root.findViewById<Button>(R.id.button)
+        btn.setOnClickListener {
+            //목록 fragment로 넘어가기
+            gg.saveGPX("/storage/emulated/0/gpxdata/테스트.gpx")
+            Toast.makeText(this.context,"저장됨", Toast.LENGTH_SHORT).show()
+        }
+
+        val startBtn = root.findViewById<Button>(R.id.startBtn)
+        startBtn.setOnClickListener {
+            //목록 fragment로 넘어가기
+            recordCurrentCourse(gg, naverMap)
+        }
+
+        val pauseBtn = root.findViewById<Button>(R.id.pauseBtn)
+        pauseBtn.setOnClickListener {
+            //목록 fragment로 넘어가기
+
+
+        }
 
         return root
     }
@@ -156,22 +174,22 @@ class MyMapFragment : Fragment(), OnMapReadyCallback {
         val path = PathOverlay() // 따라갈 경로 그리기
         val path2 = PathOverlay() // 현재 위치 그리기
 
-        var gg = MyGPX()
 
-        drawFullCourse(gg,"/storage/emulated/0/gpxdata/4_sample[2].gpx", path, naverMap, locationOverlay)
-        drawCurrentCourse(gg, path2, naverMap)
+
+        drawFullCourse(gg,"/storage/emulated/0/gpxdata/문학산.gpx", path, naverMap, locationOverlay)
+        //drawFullCourse(gg,"/storage/emulated/0/gpxdata/inha (1).gpx", path, naverMap, locationOverlay)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun drawFullCourse(gg:MyGPX, coursePath:String, path:PathOverlay, naverMap: NaverMap, locationOverlay:LocationOverlay){
-        val gpx = gg.read(coursePath)
-        val course = gg.getWayPoints(gpx)
+    fun drawFullCourse(gg: MyGPX, coursePath:String, path:PathOverlay, naverMap: NaverMap, locationOverlay:LocationOverlay){
+        gg.read(coursePath) // 객체에 gpx 저장하기
+        val course = gg.getWayPoints()
 
         val coords = mutableListOf( // 첫 점을 넣어야 되는데
             LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
         )
-        Log.d(Constants.TAG,"$coords")
-
+        //Log.d(Constants.TAG,"$coords")
         //locationOverlay.position = LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
         //naverMap.locationTrackingMode = LocationTrackingMode.Face
 
@@ -180,6 +198,7 @@ class MyMapFragment : Fragment(), OnMapReadyCallback {
             val lon = track.longitude.toDouble()
             coords.add(LatLng(lat, lon))
         }
+        //path.coords = gg.getWayPoints()
         path.coords = coords
         path.map = naverMap
         path.width = 10
@@ -187,33 +206,95 @@ class MyMapFragment : Fragment(), OnMapReadyCallback {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun drawCurrentCourse(gg:MyGPX, path2:PathOverlay, naverMap: NaverMap){
-        val coords = mutableListOf<LatLng>(
-            LatLng(131.0,37.0),
-            LatLng(131.0,37.0)
-        )
-        path2.coords = coords
-        path2.map = naverMap
-        path2.width = 10
-        path2.color = Color.BLUE
+    fun recordCurrentCourse(gg: MyGPX, naverMap: NaverMap){
+//        val coords = mutableListOf<LatLng>(
+//            LatLng(131.0,37.0),
+//            LatLng(131.0,37.0)
+//        )
+//        path2.coords = coords
+//        path2.map = naverMap
+//        path2.width = 10
+//        path2.color = Color.BLUE
+//        mLocationManager = context?.getSystemService(LOCATION_SERVICE) as LocationManager
+//        mLocationListener = object : LocationListener {
+//            override fun onLocationChanged(location: Location?) {
+//                var lat = 0.0
+//                var lng = 0.0
+//                if (location != null) {
+//                    lat = location.latitude
+//                    lng = location.longitude
+//                    val alt = location.altitude
+//                    Log.d("GmapViewFragment", "Lat: ${lat}, lon: ${lng}, alt: $alt")
+//                }
+//                var currentLocation = LatLng(lat, lng)
+//            }
+//        }
+//
+//        if (this.context?.let {
+//                ActivityCompat.checkSelfPermission(
+//                    it,
+//                    Manifest.permission.ACCESS_FINE_LOCATION
+//                )
+//            } != PackageManager.PERMISSION_GRANTED && this.context?.let {
+//                ActivityCompat.checkSelfPermission(
+//                    it,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION
+//                )
+//            } != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            mLocationManager!!.requestLocationUpdates(
+//                LocationManager.GPS_PROVIDER,
+//                3000L,
+//                30f,
+//                mLocationListener
+//            )
+//            return
+//        }
+//        val b = naverMap.locationOverlay
+//        b.position.latitude
+//        b.position.longitude
 
-        //GlobalScope.launch{
-        // 사용자의 위치가 변경되면 그 좌표를 토스트로 표시
-            naverMap.addOnLocationChangeListener { location ->
-                val lat = location.latitude
-                val lon = location.longitude
-                val alt = location.altitude
-                //GlobalScope.launch { // launch new coroutine in background and continue
-                    //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
-                    gg.addWayPoint(lat, lon, alt)
-                    coords.add(LatLng(lat, lon))
+        var lastTime = LocalDateTime.now()
+        naverMap.addOnLocationChangeListener { location ->
+            val lat = location.latitude
+            val lon = location.longitude
+            val alt = location.altitude
+            //GlobalScope.launch { // launch new coroutine in background and continue
+            //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
+            var currentTime = LocalDateTime.now()
+            if(Duration.between(lastTime, currentTime).seconds > 3){
+                gg.addWayPoint(lat, lon, alt)
+                //coords.add(LatLng(lat, lon))
+                lastTime = currentTime
+                Log.d(Constants.TAG,"현재: $lat $lon $alt")
+                //path2.coords = coords
 
-                    Log.d(Constants.TAG,"현재: $lat $lon $alt $coords")
-                //}
-                path2.coords = coords
+                var info = gg.printInfo(gg.getGPX())
+                Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
             }
-       // }
-       // path2.coords = coords
+        }
+//        var info = gg.printInfo(gpx)
+//        Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
+
+//        info = gg.printInfo(gpx)
+//        Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
+//
+//        //GlobalScope.launch{
+//        // 사용자의 위치가 변경되면 그 좌표를 토스트로 표시
+//            //delay(2000)
+//            naverMap.addOnLocationChangeListener { location ->
+//                val lat = location.latitude
+//                val lon = location.longitude
+//                val alt = location.altitude
+//               // GlobalScope.launch { // launch new coroutine in background and continue
+//                     // non-blocking delay for 1 second (default time unit is ms)
+//                    gg.addWayPoint(lat, lon, alt)
+//                    coords.add(LatLng(lat, lon))
+//                    Log.d(Constants.TAG,"현재: $lat $lon $alt $coords")
+//                //}
+//                path2.coords = coords
+//            }
+//        path2.coords = coords
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
