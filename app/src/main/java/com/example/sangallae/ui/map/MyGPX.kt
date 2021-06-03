@@ -20,7 +20,8 @@ import java.util.stream.Stream
 @RequiresApi(Build.VERSION_CODES.N)
 class MyGPX {
 
-    private var wayPoints: MutableList<WayPoint> = ArrayList()
+    private var wayPointsRead: MutableList<WayPoint> = ArrayList()
+    private var wayPointsWrite: MutableList<WayPoint> = ArrayList()
     var movingDistance = 0.0
         private set
     private var startTime: LocalDateTime? = null
@@ -32,16 +33,19 @@ class MyGPX {
             return field
         }
         private set
-    val gpx: GPX? = null
+    lateinit var courseGPX: GPX
 
     /**
      * GPX File Functions
      */
     @Throws(IOException::class)
-    fun read(path: String?): GPX {
-        return GPX.read(path)
+    fun read(path: String?) {
+        courseGPX = GPX.read(path)
     }
 
+    fun getGPX(): GPX {
+        return courseGPX
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Throws(IOException::class, InterruptedException::class)
@@ -50,34 +54,34 @@ class MyGPX {
         if (startTime == null) {
             startTime = LocalDateTime.now()
         }
-        if (wayPoints.size > 0) {
-            val lastWayPoint = wayPoints[wayPoints.size - 1]
+        if (wayPointsWrite.size > 0) {
+            val lastWayPoint = wayPointsWrite[wayPointsWrite.size - 1]
             movingDistance += Geoid.WGS84.distance(lastWayPoint, newWayPoint).toDouble()
         }
-        wayPoints.add(newWayPoint)
+        wayPointsWrite.add(newWayPoint)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Throws(IOException::class)
     fun saveGPX(path: String?) {
         val gpx = GPX.builder()
-                .addTrack { track: Track.Builder ->
-                    track
-                            .addSegment { segment: TrackSegment.Builder -> segment.points(wayPoints) }
-                }
-                .build()
+            .addTrack { track: Track.Builder ->
+                track
+                    .addSegment { segment: TrackSegment.Builder -> segment.points(wayPointsWrite) }
+            }
+            .build()
 
 
         GPX.write(gpx, Paths.get(path))
     }
 
     @Throws(IOException::class)
-    fun getWayPoints(gpx: GPX): List<WayPoint> {
-        wayPoints = gpx.tracks()
-                .flatMap { obj: Track -> obj.segments() }
-                .flatMap { obj: TrackSegment -> obj.points() }
-                .collect(Collectors.toList())
-        return wayPoints
+    fun getWayPoints(): List<WayPoint> {
+        wayPointsRead = courseGPX.tracks()
+            .flatMap { obj: Track -> obj.segments() }
+            .flatMap { obj: TrackSegment -> obj.points() }
+            .collect(Collectors.toList())
+        return wayPointsRead
     }
 
     fun printGPX(wayPoints: List<WayPoint>) {
@@ -92,21 +96,21 @@ class MyGPX {
     /**
      * Distance Functions
      */
-    fun getTotalDistance(gpx: GPX): Double {
-        return gpx.tracks()
-                .flatMap { obj: Track -> obj.segments() }
-                .findFirst()
-                .map { obj: TrackSegment -> obj.points() }.orElse(Stream.empty())
-                .collect(Geoid.WGS84.toPathLength())
-                .toDouble()
+    fun getTotalDistance(): Double {
+        return courseGPX.tracks()
+            .flatMap { obj: Track -> obj.segments() }
+            .findFirst()
+            .map { obj: TrackSegment -> obj.points() }.orElse(Stream.empty())
+            .collect(Geoid.WGS84.toPathLength())
+            .toDouble()
     }
 
-    fun getLeftDistance(gpx: GPX): Double {
-        return getTotalDistance(gpx) - movingDistance
+    fun getLeftDistance(): Double {
+        return getTotalDistance() - movingDistance
     }
 
-    fun getProgress(gpx: GPX): String {
-        return Math.round(movingDistance / getTotalDistance(gpx) * 100).toString() + "%"
+    fun getProgress(): Long {
+        return Math.round(movingDistance / getTotalDistance() * 100)
     }
 
     /**
@@ -148,13 +152,13 @@ class MyGPX {
     val speed: Double
         get() = movingDistance / movingTimeSec
 
-    fun getLeftTime(gpx: GPX): Double {
-        return getLeftDistance(gpx) / speed
+    fun getLeftTime(): Double {
+        return getLeftDistance() / speed
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getExpectedTime(gpx: GPX): String {
-        var second = Math.round(getLeftTime(gpx))
+    fun getExpectedTime(): String {
+        var second = Math.round(getLeftTime())
         val hour = second / 3600
         second %= 3600
         val minute = second / 60
@@ -165,5 +169,18 @@ class MyGPX {
         val ampm = if (hour1 < 12) "AM " else "PM "
         hour1 = if (hour1 > 12) hour1 % 12 else hour1
         return ampm + hour1 + "H " + minute1 + "M"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(InterruptedException::class)
+    fun printInfo(gpx2: GPX): RecordInfo {
+        return RecordInfo(
+            progress = getProgress(),
+            total_time = convertSecondToTime(totalTimeSec),
+            moving_time = convertSecondToTime(movingTimeSec),
+            moving_distance = convertMeterToKillo(movingDistance),
+            left_distance = convertMeterToKillo(getLeftDistance()),
+            expected_time = convertMeterToKillo(getLeftDistance())
+        )
     }
 }
