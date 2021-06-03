@@ -63,7 +63,7 @@
 
     <fragment
         android:id="@+id/navigation_map"
-        android:name="com.example.sangallae.ui.map.MyMapFragment"
+        android:name="com.example.sangallae.ui.map.MainMapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
 

@@ -28,7 +28,7 @@ import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 
 
-class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
+class MainMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
 
     private lateinit var mapViewModel: MapViewModel
     private lateinit var fab: FloatingActionButton
@@ -123,87 +123,57 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
         }
     }
 
-//class MyMapFragment : Fragment() {
-//
-//    private lateinit var mapViewModel: MapViewModel
-//
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-//        val root = inflater.inflate(R.layout.fragment_map, container, false)
-//
-//        val fm = childFragmentManager
-//        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-//            ?: MapFragment.newInstance().also {
-//                fm.beginTransaction().add(R.id.map, it).commit()
-//            }
-//        mapFragment.getMapAsync(this)
-//
-//        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_TRANSIT, true)
-//        return root
-//    }
-//
-//    @UiThread
-//    override fun onMapReady(naverMap: NaverMap) {
-//        // ...
-//    }
-//}
+    @RequiresApi(Build.VERSION_CODES.O)
+    @UiThread
+    override fun onMapReady(naverMap: NaverMap) {
+        // ...
+        this.naverMap = naverMap
+        naverMap.locationSource = locationSource
+        val uiSettings = naverMap.uiSettings
 
-        @RequiresApi(Build.VERSION_CODES.O)
-        @UiThread
-        override fun onMapReady(naverMap: NaverMap) {
-            // ...
-            this.naverMap = naverMap
-            naverMap.locationSource = locationSource
-            val uiSettings = naverMap.uiSettings
+        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
+        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
+        //사용자 현재위치
+        uiSettings.isLocationButtonEnabled = true
+        naverMap.locationSource = locationSource
+        uiSettings.isScaleBarEnabled = false
+        uiSettings.isZoomControlEnabled = false
 
-            naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
-            naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
-            //사용자 현재위치
-            uiSettings.isLocationButtonEnabled = true
-            naverMap.locationSource = locationSource
-            uiSettings.isScaleBarEnabled = false
-            uiSettings.isZoomControlEnabled = false
+        val locationOverlay = naverMap.locationOverlay
+        locationOverlay.isVisible = true
+        //naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
 
-            val locationOverlay = naverMap.locationOverlay
-            locationOverlay.isVisible = true
-            naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
+        val path = PathOverlay() // 따라갈 경로 그리기
+        val path2 = PathOverlay() // 현재 위치 그리기
 
-            val path = PathOverlay() // 따라갈 경로 그리기
-            val path2 = PathOverlay() // 현재 위치 그리기
-
-            var gg = MyGPX()
+        var gg = MyGPX()
 //
-            if (PermissionUtils.requestPermission(
-                    requireActivity(),
-                    READ_STORAGE_PERMISSIONS_REQUEST,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.CAMERA
-                ) && PermissionUtils.requestPermission(
-                    requireActivity(),
-                    MANAGE_STORAGE_PERMISSIONS_REQUEST,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.CAMERA
-                )
-            ) {
-                drawFullCourse(
-                gg,
-                "/storage/emulated/0/gpxdata/4_sample[2].gpx",
-                path,
-                naverMap,
-                locationOverlay
+
+
+        drawFullCourse(
+            gg,
+            "/storage/emulated/0/gpxdata/4_sample[2].gpx",
+            path,
+            naverMap,
+            locationOverlay
+        )
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun drawFullCourse(
+        gg: MyGPX,
+        coursePath: String,
+        path: PathOverlay,
+        naverMap: NaverMap,
+        locationOverlay: LocationOverlay
+    ) {
+        if (PermissionUtils.requestPermission(
+                requireActivity(),
+                READ_STORAGE_PERMISSIONS_REQUEST,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.CAMERA
             )
-            }
-
-            drawCurrentCourse(gg, path2, naverMap)
-        }
-
-        @RequiresApi(Build.VERSION_CODES.N)
-        fun drawFullCourse(
-            gg: MyGPX,
-            coursePath: String,
-            path: PathOverlay,
-            naverMap: NaverMap,
-            locationOverlay: LocationOverlay
         ) {
             val gpx = gg.read(coursePath)
             val course = gg.getWayPoints(gpx)
@@ -226,39 +196,12 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
             path.width = 10
             path.color = Color.RED
         }
+    }
 
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun drawCurrentCourse(gg: MyGPX, path2: PathOverlay, naverMap: NaverMap) {
-            val coords = mutableListOf<LatLng>(
-                LatLng(131.0, 37.0),
-                LatLng(131.0, 37.0)
-            )
-            path2.coords = coords
-            path2.map = naverMap
-            path2.width = 10
-            path2.color = Color.BLUE
-
-            //GlobalScope.launch{
-            // 사용자의 위치가 변경되면 그 좌표를 토스트로 표시
-            naverMap.addOnLocationChangeListener { location ->
-                val lat = location.latitude
-                val lon = location.longitude
-                val alt = location.altitude
-                //GlobalScope.launch { // launch new coroutine in background and continue
-                //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
-                gg.addWayPoint(lat, lon, alt)
-                coords.add(LatLng(lat, lon))
-
-                Log.d(Constants.TAG, "현재: $lat $lon $alt $coords")
-                //}
-                path2.coords = coords
-            }
-            // }
-            // path2.coords = coords
-        }
-
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
         when (requestCode) {
             LOCATION_PERMISSION_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
@@ -280,9 +223,8 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
                         requestCode,
                         READ_STORAGE_PERMISSIONS_REQUEST,
                         grantResults
-                    )) {
-                    // Permission is granted. Continue the action or workflow
-                    // in your app.
+                    )
+                ) {
                 } else {
                     // Explain to the user that the feature is unavailable because
                     // the features requires a permission that the user has denied.
@@ -292,28 +234,14 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
                 }
                 return
             }
-            MANAGE_STORAGE_PERMISSIONS_REQUEST -> {
-                if (PermissionUtils.permissionGranted(
-                        requestCode,
-                        MANAGE_STORAGE_PERMISSIONS_REQUEST,
-                        grantResults
-                    )) {
-
-                } else {
-                }
-                return
-            }
-
-            else -> {
-            }
         }
     }
 
-        companion object {
-            private const val READ_STORAGE_PERMISSIONS_REQUEST = 1001
-            private const val MANAGE_STORAGE_PERMISSIONS_REQUEST = 1002
-            private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-        }
+    companion object {
+        private const val READ_STORAGE_PERMISSIONS_REQUEST = 1001
+        private const val WRITE_STORAGE_PERMISSIONS_REQUEST = 1002
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
 }
 
 

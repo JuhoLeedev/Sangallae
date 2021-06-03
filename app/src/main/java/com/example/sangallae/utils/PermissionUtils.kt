@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.sangallae.ui.map.MyMapFragment
 import java.util.*
 
 object PermissionUtils {
