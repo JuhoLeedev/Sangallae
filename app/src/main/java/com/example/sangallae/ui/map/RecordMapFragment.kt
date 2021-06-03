@@ -207,53 +207,6 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun recordCurrentCourse(gg: MyGPX, naverMap: NaverMap){
-//        val coords = mutableListOf<LatLng>(
-//            LatLng(131.0,37.0),
-//            LatLng(131.0,37.0)
-//        )
-//        path2.coords = coords
-//        path2.map = naverMap
-//        path2.width = 10
-//        path2.color = Color.BLUE
-//        mLocationManager = context?.getSystemService(LOCATION_SERVICE) as LocationManager
-//        mLocationListener = object : LocationListener {
-//            override fun onLocationChanged(location: Location?) {
-//                var lat = 0.0
-//                var lng = 0.0
-//                if (location != null) {
-//                    lat = location.latitude
-//                    lng = location.longitude
-//                    val alt = location.altitude
-//                    Log.d("GmapViewFragment", "Lat: ${lat}, lon: ${lng}, alt: $alt")
-//                }
-//                var currentLocation = LatLng(lat, lng)
-//            }
-//        }
-//
-//        if (this.context?.let {
-//                ActivityCompat.checkSelfPermission(
-//                    it,
-//                    Manifest.permission.ACCESS_FINE_LOCATION
-//                )
-//            } != PackageManager.PERMISSION_GRANTED && this.context?.let {
-//                ActivityCompat.checkSelfPermission(
-//                    it,
-//                    Manifest.permission.ACCESS_COARSE_LOCATION
-//                )
-//            } != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            mLocationManager!!.requestLocationUpdates(
-//                LocationManager.GPS_PROVIDER,
-//                3000L,
-//                30f,
-//                mLocationListener
-//            )
-//            return
-//        }
-//        val b = naverMap.locationOverlay
-//        b.position.latitude
-//        b.position.longitude
-
         var lastTime = LocalDateTime.now()
         naverMap.addOnLocationChangeListener { location ->
             val lat = location.latitude
@@ -273,28 +226,6 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
                 Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
             }
         }
-//        var info = gg.printInfo(gpx)
-//        Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
-
-//        info = gg.printInfo(gpx)
-//        Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
-//
-//        //GlobalScope.launch{
-//        // 사용자의 위치가 변경되면 그 좌표를 토스트로 표시
-//            //delay(2000)
-//            naverMap.addOnLocationChangeListener { location ->
-//                val lat = location.latitude
-//                val lon = location.longitude
-//                val alt = location.altitude
-//               // GlobalScope.launch { // launch new coroutine in background and continue
-//                     // non-blocking delay for 1 second (default time unit is ms)
-//                    gg.addWayPoint(lat, lon, alt)
-//                    coords.add(LatLng(lat, lon))
-//                    Log.d(Constants.TAG,"현재: $lat $lon $alt $coords")
-//                //}
-//                path2.coords = coords
-//            }
-//        path2.coords = coords
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
