@@ -1,27 +1,30 @@
 package com.example.sangallae.ui.map
 
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sangallae.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import android.graphics.Color
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import com.example.sangallae.utils.Constants
+import com.example.sangallae.utils.PermissionUtils
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.LocationOverlay
+import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 
 
@@ -169,14 +172,28 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
             val path2 = PathOverlay() // 현재 위치 그리기
 
             var gg = MyGPX()
-
-            drawFullCourse(
+//
+            if (PermissionUtils.requestPermission(
+                    requireActivity(),
+                    READ_STORAGE_PERMISSIONS_REQUEST,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.CAMERA
+                ) && PermissionUtils.requestPermission(
+                    requireActivity(),
+                    MANAGE_STORAGE_PERMISSIONS_REQUEST,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.CAMERA
+                )
+            ) {
+                drawFullCourse(
                 gg,
                 "/storage/emulated/0/gpxdata/4_sample[2].gpx",
                 path,
                 naverMap,
                 locationOverlay
             )
+            }
+
             drawCurrentCourse(gg, path2, naverMap)
         }
 
@@ -240,25 +257,61 @@ class MyMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
             // path2.coords = coords
         }
 
-        override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
-        ) {
-            if (locationSource.onRequestPermissionsResult(
-                    requestCode, permissions,
-                    grantResults
-                )
-            ) {
-                if (!locationSource.isActivated) { // 권한 거부됨
-                    naverMap.locationTrackingMode = LocationTrackingMode.None
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                // If request is cancelled, the result arrays are empty.
+                if (locationSource.onRequestPermissionsResult(
+                        requestCode, permissions,
+                        grantResults
+                    )
+                ) {
+                    if (!locationSource.isActivated) { // 권한 거부됨
+                        naverMap.locationTrackingMode = LocationTrackingMode.None
+                    }
+                    return
+                }
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+            READ_STORAGE_PERMISSIONS_REQUEST -> {
+                // If request is cancelled, the result arrays are empty.
+                if (PermissionUtils.permissionGranted(
+                        requestCode,
+                        READ_STORAGE_PERMISSIONS_REQUEST,
+                        grantResults
+                    )) {
+                    // Permission is granted. Continue the action or workflow
+                    // in your app.
+                } else {
+                    // Explain to the user that the feature is unavailable because
+                    // the features requires a permission that the user has denied.
+                    // At the same time, respect the user's decision. Don't link to
+                    // system settings in an effort to convince the user to change
+                    // their decision.
                 }
                 return
             }
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            MANAGE_STORAGE_PERMISSIONS_REQUEST -> {
+                if (PermissionUtils.permissionGranted(
+                        requestCode,
+                        MANAGE_STORAGE_PERMISSIONS_REQUEST,
+                        grantResults
+                    )) {
+
+                } else {
+                }
+                return
+            }
+
+            else -> {
+            }
         }
+    }
 
         companion object {
+            private const val READ_STORAGE_PERMISSIONS_REQUEST = 1001
+            private const val MANAGE_STORAGE_PERMISSIONS_REQUEST = 1002
             private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         }
 }
