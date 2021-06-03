@@ -18,36 +18,36 @@
         android:name="com.naver.maps.map.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="-199dp" />
+        tools:layout_editor_absoluteX="116dp"
+        tools:layout_editor_absoluteY="56dp" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="중지/저장"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/map" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/startBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="24dp"
         android:text="안내 시작"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/pauseBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="24dp"
         android:text="일시정지/시작"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintStart_toEndOf="@+id/startBtn" />
 
     <com.naver.maps.map.widget.LocationButtonView
         android:id="@+id/current"
@@ -63,7 +63,7 @@
         android:id="@+id/view"
         android:layout_width="wrap_content"
         android:layout_height="150dp"
-        android:alpha="0.6"
+        android:alpha="0.7"
         android:background="@color/white"
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -203,5 +203,24 @@
                 android:textColor="@color/black" />
         </LinearLayout>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="230dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:scaleY="4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="진행률"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:layout_constraintStart_toStartOf="@+id/progressBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

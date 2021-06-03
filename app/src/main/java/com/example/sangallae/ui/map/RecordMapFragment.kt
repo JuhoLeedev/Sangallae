@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -16,7 +17,15 @@ import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
 import com.example.sangallae.R
+import com.example.sangallae.utils.API.AWS_ACCESS_KEY
+import com.example.sangallae.utils.API.AWS_SECRET_KEY
+import com.example.sangallae.utils.API.S3_BUCKET
 import com.example.sangallae.utils.Constants
 import com.google.android.gms.location.LocationListener
 import com.naver.maps.geometry.LatLng
@@ -142,6 +151,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         btn.setOnClickListener {
             //목록 fragment로 넘어가기
             gg.saveGPX("/storage/emulated/0/gpxdata/테스트.gpx")
+            uploadGPX("/storage/emulated/0/gpxdata/테스트.gpx")
             Toast.makeText(this.context,"저장됨", Toast.LENGTH_SHORT).show()
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
@@ -166,6 +176,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             Log.d(Constants.TAG, "일시정지, flag: $listenerFlag")
         }
 
+        root.findViewById<ProgressBar>(R.id.progressBar)?.max = 100
 
         return root
     }
@@ -251,6 +262,9 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
                     activity?.findViewById<TextView>(R.id.left_distance_view)?.text = info.left_distance
                     activity?.findViewById<TextView>(R.id.cur_height_view)?.text = alt.toString().substring(0,4) +"m"
                     activity?.findViewById<TextView>(R.id.arrival_time_view)?.text = info.expected_time
+                    //activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = info.progress.toInt()
+                    activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = 50
+
                 }
             }
         }
@@ -298,4 +312,11 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 //            }
 //        }
 //    }
+
+    private fun uploadGPX(path:String) {
+        val awsCredentials: AWSCredentials = BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)
+        val s3Client = AmazonS3Client(awsCredentials, Region.getRegion(Regions.AP_NORTHEAST_2))
+        s3Client.putObject(S3_BUCKET, AWS_ACCESS_KEY, path);
+    }
+
 }
