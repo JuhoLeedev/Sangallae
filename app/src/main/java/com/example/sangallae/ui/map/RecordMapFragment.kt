@@ -1,24 +1,29 @@
 package com.example.sangallae.ui.map
 
 import android.graphics.Color
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import com.amazonaws.AmazonServiceException
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
 import com.example.sangallae.R
+import com.example.sangallae.utils.API.AWS_ACCESS_KEY
+import com.example.sangallae.utils.API.AWS_SECRET_KEY
+import com.example.sangallae.utils.API.S3_BUCKET
 import com.example.sangallae.utils.Constants
-import com.google.android.gms.location.LocationListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -27,65 +32,29 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.LocationOverlay
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
-import io.jenetics.jpx.GPX
+import com.naver.maps.map.widget.LocationButtonView
+import java.io.File
+import java.net.MalformedURLException
 import java.time.Duration
 import java.time.LocalDateTime
 
 class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var naverMap: NaverMap
+    private lateinit var naverMap_: NaverMap
     @RequiresApi(Build.VERSION_CODES.N)
     var gg = MyGPX()
-
+    var listenerFlag = false //위치 변경에 대한 리스너를 설정할 것인지 (일시정지/시작에 사용)
+    lateinit var locationListener:NaverMap.OnLocationChangeListener
     //퍼미션 응답 처리 코드
     private val multiplePermissionsCode = 100
-    //private lateinit var gpx: GPX
-
-    var mLocationManager: LocationManager? = null
-    var mLocationListener: LocationListener? = null
-
-//    //필요한 퍼미션 리스트
-//    @RequiresApi(Build.VERSION_CODES.R)
-//    private val requiredPermissions = arrayOf(
-//        Manifest.permission.ACCESS_FINE_LOCATION,
-//        Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+    var timeflag = false
+    var startFlag = true
+    var stopFlag = false
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-
-//        //퍼미션 체크 -> 그냥 앱설정 들어가서 해야됨.
-//        //checkPermissions()
-//        val permission1 = Manifest.permission.ACCESS_FINE_LOCATION
-//        val permissionResult1 = this.context?.let { ContextCompat.checkSelfPermission(it, permission1) }
-//        when(permissionResult1){
-//            PackageManager.PERMISSION_GRANTED -> {
-//                //Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-//                Log.d(Constants.TAG,"됨")
-//// Go Main Function
-//            }
-//            PackageManager.PERMISSION_DENIED -> {
-//                //Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-//                this.activity?.let { ActivityCompat.requestPermissions(it, arrayOf(permission1), 100) }
-//                Log.d(Constants.TAG,"거부됨")
-//                }
-//        }
-//
-//        val permission2 = Manifest.permission.READ_EXTERNAL_STORAGE
-//        val permissionResult2 = this.context?.let { ContextCompat.checkSelfPermission(it, permission2) }
-//        when(permissionResult2){
-//            PackageManager.PERMISSION_GRANTED -> {
-//                //Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-//                Log.d(Constants.TAG,"됨")
-//// Go Main Function
-//            }
-//            PackageManager.PERMISSION_DENIED -> {
-//                //Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-//                this.activity?.let { ActivityCompat.requestPermissions(it, arrayOf(permission1), 100) }
-//                Log.d(Constants.TAG,"거부됨")
-//            }
-//        }
 
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_recording, container, false)
@@ -103,27 +72,70 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
+        mapFragment.getMapAsync {
+            val locationButtonView = root.findViewById(R.id.current) as LocationButtonView
+            locationButtonView.map = naverMap_
+        }
 
-
-        val btn = root.findViewById<Button>(R.id.button)
-        btn.setOnClickListener {
+        // 저장 및 종료
+        val stopBtn = root.findViewById<ImageButton>(R.id.stopBtn)
+        stopBtn.setOnClickListener {
             //목록 fragment로 넘어가기
             gg.saveGPX("/storage/emulated/0/gpxdata/테스트.gpx")
-            Toast.makeText(this.context,"저장됨", Toast.LENGTH_SHORT).show()
+            uploadGPX("/storage/emulated/0/gpxdata/테스트.gpx", "test.gpx")
+            Toast.makeText(this.context,"기록이 저장되었습니다.", Toast.LENGTH_SHORT).show()
+            //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
+            listenerFlag = false
         }
 
-        val startBtn = root.findViewById<Button>(R.id.startBtn)
-        startBtn.setOnClickListener {
-            //목록 fragment로 넘어가기
-            recordCurrentCourse(gg, naverMap)
+        //안내 중단
+        val btn = root.findViewById<Button>(R.id.button)
+        btn.setOnClickListener {
+            Toast.makeText(this.context,"안내를 중단합니다.", Toast.LENGTH_SHORT).show()
+            stopFlag = true
+            //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
+            listenerFlag = false
         }
+//
+//        //시작 버튼
+//        val startBtn = root.findViewById<ImageButton>(R.id.startBtn)
+//        startBtn.setOnClickListener {
+//            //목록 fragment로 넘어가기
+//            listenerFlag = true
+//            recordCurrentCourse(gg, naverMap_)
+//
+//            startBtn.visibility = GONE //시작버튼 사라지게
+//            //startBtn.visibility = VISIBLE //일시정지 버튼 나타남
+//        }
 
-        val pauseBtn = root.findViewById<Button>(R.id.pauseBtn)
+        //일시정지 버튼
+        val pauseBtn = root.findViewById<ImageButton>(R.id.pauseBtn)
         pauseBtn.setOnClickListener {
+            if(startFlag){ //처음 시작할 때
+                startFlag = false
+                Toast.makeText(this.context,"측정을 시작합니다.", Toast.LENGTH_SHORT).show()
+                pauseBtn.setImageResource(R.drawable.ic_twotone_pause_circle_24)
+                recordCurrentCourse(gg, naverMap_)
+            }
             //목록 fragment로 넘어가기
+            else if(listenerFlag){ //측정중이었으면
+                pauseBtn.setImageResource(R.drawable.ic_twotone_play_circle_24)
+                Toast.makeText(this.context,"일시정지 되었습니다.", Toast.LENGTH_SHORT).show()
+                gg.pause()
+            }
+            else { //멈춰있으면
+                pauseBtn.setImageResource(R.drawable.ic_twotone_pause_circle_24)
+                Toast.makeText(this.context,"이어서 측정합니다.", Toast.LENGTH_SHORT).show()
+                gg.restart()
+            }
+            listenerFlag = !listenerFlag //토글
+
+            Log.d(Constants.TAG, "일시정지, flag: $listenerFlag")
 
 
         }
+
+        root.findViewById<ProgressBar>(R.id.progressBar)?.max = 100
 
         return root
     }
@@ -132,27 +144,25 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
         // ...
+        naverMap_ = naverMap
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true)
         //사용자 현재위치
         naverMap.locationSource = locationSource
 
         val uiSettings = naverMap.uiSettings
-        uiSettings.isLocationButtonEnabled = true
+        //uiSettings.isLocationButtonEnabled = true
         uiSettings.isScaleBarEnabled = false
         uiSettings.isZoomControlEnabled = false
+        uiSettings.isCompassEnabled = false
 
         val locationOverlay = naverMap.locationOverlay
         locationOverlay.isVisible = true
         naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
 
         val path = PathOverlay() // 따라갈 경로 그리기
-        val path2 = PathOverlay() // 현재 위치 그리기
-
-
 
         drawFullCourse(gg,"/storage/emulated/0/gpxdata/문학산.gpx", path, naverMap, locationOverlay)
         //drawFullCourse(gg,"/storage/emulated/0/gpxdata/inha (1).gpx", path, naverMap, locationOverlay)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -183,21 +193,32 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     fun recordCurrentCourse(gg: MyGPX, naverMap: NaverMap){
         var lastTime = LocalDateTime.now()
         naverMap.addOnLocationChangeListener { location ->
-            val lat = location.latitude
-            val lon = location.longitude
-            val alt = location.altitude
-            //GlobalScope.launch { // launch new coroutine in background and continue
-            //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
-            var currentTime = LocalDateTime.now()
-            if(Duration.between(lastTime, currentTime).seconds > 3){
-                gg.addWayPoint(lat, lon, alt)
-                //coords.add(LatLng(lat, lon))
-                lastTime = currentTime
-                Log.d(Constants.TAG,"현재: $lat $lon $alt")
-                //path2.coords = coords
+            //Log.d(Constants.TAG, "record함수 flag: $listenerFlag")
+            if(timeflag && !stopFlag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
+                activity?.findViewById<TextView>(R.id.total_time_view2)?.text = gg.printInfo(gg.getGPX()).total_time
 
-                var info = gg.printInfo(gg.getGPX())
-                Log.d(Constants.TAG,"${info.moving_distance}, ${info.moving_time}")
+            if(listenerFlag){ // 일시정지 아닐 때만 동작하게
+                val lat = location.latitude
+                val lon = location.longitude
+                val alt = location.altitude
+
+                var currentTime = LocalDateTime.now()
+                if(Duration.between(lastTime, currentTime).seconds > 3){
+                    gg.addWayPoint(lat, lon, alt)
+                    timeflag = true
+                    lastTime = currentTime
+
+                    var info = gg.printInfo(gg.getGPX())
+                    Log.d(Constants.TAG,"$info")
+
+                    activity?.findViewById<TextView>(R.id.moving_time_view)?.text = info.moving_time
+                    activity?.findViewById<TextView>(R.id.moving_distance_view)?.text = info.moving_distance
+                    activity?.findViewById<TextView>(R.id.left_distance_view)?.text = info.left_distance
+                    activity?.findViewById<TextView>(R.id.cur_height_view)?.text = alt.toString().substring(0,4) +"m"
+                    activity?.findViewById<TextView>(R.id.arrival_time_view)?.text = info.expected_time
+                    activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = info.progress.toInt()
+                    //activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = 50
+                }
             }
         }
     }
@@ -208,7 +229,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         if (locationSource.onRequestPermissionsResult(requestCode, permissions,
                 grantResults)) {
             if (!locationSource.isActivated) { // 권한 거부됨
-                naverMap.locationTrackingMode = LocationTrackingMode.None
+                naverMap_.locationTrackingMode = LocationTrackingMode.None
                 Log.d(Constants.TAG, "요청3")
                 //checkPermissions()
             }
@@ -221,27 +242,24 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
-//    //퍼미션 체크 및 권한 요청 함수
-//    @RequiresApi(Build.VERSION_CODES.R)
-//    private fun checkPermissions() {
-//        //거절되었거나 아직 수락하지 않은 권한(퍼미션)을 저장할 문자열 배열 리스트
-//        var rejectedPermissionList = ArrayList<String>()
-//
-//        //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
-//        for(permission in requiredPermissions){
-//            if(context?.let { ContextCompat.checkSelfPermission(it, permission) } != PackageManager.PERMISSION_GRANTED) {
-//                //만약 권한이 없다면 rejectedPermissionList에 추가
-//                rejectedPermissionList.add(permission)
-//                Log.d(Constants.TAG, "요청1: $rejectedPermissionList")
-//            }
-//        }
-//        //거절된 퍼미션이 있다면...
-//        if(rejectedPermissionList.isNotEmpty()){
-//            //권한 요청!
-//            val array = arrayOfNulls<String>(rejectedPermissionList.size)
-//            activity?.let { ActivityCompat.requestPermissions(it, rejectedPermissionList.toArray(array), multiplePermissionsCode)
-//            Log.d(Constants.TAG, "요청2")
-//            }
-//        }
-//    }
+    private fun uploadGPX(path: String, filename: String) {
+        object : Thread() {
+            override fun run() {
+                try {
+                    val awsCredentials: AWSCredentials = BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)
+                    val s3Client = AmazonS3Client(awsCredentials, Region.getRegion(Regions.AP_NORTHEAST_2))
+                    try {
+                        var s3Directory = "save_test/"
+                        val file: File = File(path)
+                        s3Client.putObject(S3_BUCKET, s3Directory+filename, file)
+
+                    } catch (e: AmazonServiceException) {
+                        System.err.println(e.errorMessage)
+                    }
+                } catch (e: MalformedURLException) {
+                    e.printStackTrace()
+                }
+            }
+        }.start()
+    }
 }

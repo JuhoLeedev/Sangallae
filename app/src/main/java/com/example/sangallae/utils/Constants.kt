@@ -46,4 +46,11 @@ object API {
     const val REC_COURSE_LIST : String = "course/recommendation"
     const val HOT_COURSE_LIST : String = "course/hot"
     const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
+
+    //aws
+    const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL745KZGIEQ"
+    const val AWS_SECRET_KEY: String = "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"
+    const val S3_BUCKET: String = "gpxfiles"
+
+
 }
