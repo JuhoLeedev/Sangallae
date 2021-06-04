@@ -48,9 +48,7 @@ object API {
     const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
 
     //aws
-    const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL745KZGIEQ"
-    const val AWS_SECRET_KEY: String = "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"
+    const val AWS_ACCESS_KEY: String = ""
+    const val AWS_SECRET_KEY: String = ""
     const val S3_BUCKET: String = "gpxfiles"
-
-
 }
