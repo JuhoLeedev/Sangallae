@@ -47,10 +47,19 @@ object API {
     const val HOT_COURSE_LIST : String = "course/hot"
     const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
 
-    //aws
+    //aws 가짜
     const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL745KZGIEQ"
     const val AWS_SECRET_KEY: String = "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"
+
+    //이게 진짜 push 할 때 주석처리 할것!!
+//    const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL7TULZFYJZ"
+//    const val AWS_SECRET_KEY: String = "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"
     const val S3_BUCKET: String = "gpxfiles"
+    const val GPX_DIR: String = "/storage/emulated/0/gpxdata/"
+
+    const val READ_STORAGE_PERMISSIONS_REQUEST = 1001
+    const val WRITE_STORAGE_PERMISSIONS_REQUEST = 1002
+    const val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
 
 }

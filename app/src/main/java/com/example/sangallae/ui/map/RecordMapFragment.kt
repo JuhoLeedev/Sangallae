@@ -22,8 +22,11 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.example.sangallae.R
 import com.example.sangallae.utils.API.AWS_ACCESS_KEY
 import com.example.sangallae.utils.API.AWS_SECRET_KEY
+import com.example.sangallae.utils.API.GPX_DIR
+import com.example.sangallae.utils.API.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.sangallae.utils.API.S3_BUCKET
 import com.example.sangallae.utils.Constants
+import com.example.sangallae.utils.S3FileManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -42,6 +45,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap_: NaverMap
+    private var fileName: String? = null
     @RequiresApi(Build.VERSION_CODES.N)
     var gg = MyGPX()
     var listenerFlag = false //위치 변경에 대한 리스너를 설정할 것인지 (일시정지/시작에 사용)
@@ -82,7 +86,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         stopBtn.setOnClickListener {
             //목록 fragment로 넘어가기
             gg.saveGPX("/storage/emulated/0/gpxdata/테스트.gpx")
-            uploadGPX("/storage/emulated/0/gpxdata/테스트.gpx", "test.gpx")
+            S3FileManager().uploadGPX("/storage/emulated/0/gpxdata/테스트.gpx", "test.gpx")
             Toast.makeText(this.context,"기록이 저장되었습니다.", Toast.LENGTH_SHORT).show()
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
@@ -161,8 +165,18 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 
         val path = PathOverlay() // 따라갈 경로 그리기
 
-        drawFullCourse(gg,"/storage/emulated/0/gpxdata/문학산.gpx", path, naverMap, locationOverlay)
-        //drawFullCourse(gg,"/storage/emulated/0/gpxdata/inha (1).gpx", path, naverMap, locationOverlay)
+//        fileName = arguments?.getString("name")
+//        val dir = GPX_DIR + fileName
+//        if(fileName != null) {
+//            drawFullCourse(
+//                gg,
+//                dir,
+//                path,
+//                naverMap,
+//                locationOverlay
+//            )
+//        }
+        drawFullCourse(gg,"/storage/emulated/0/gpx_data/4_sample[2].gpx", path, naverMap, locationOverlay)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -238,28 +252,5 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-    }
 
-    private fun uploadGPX(path: String, filename: String) {
-        object : Thread() {
-            override fun run() {
-                try {
-                    val awsCredentials: AWSCredentials = BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)
-                    val s3Client = AmazonS3Client(awsCredentials, Region.getRegion(Regions.AP_NORTHEAST_2))
-                    try {
-                        var s3Directory = "save_test/"
-                        val file: File = File(path)
-                        s3Client.putObject(S3_BUCKET, s3Directory+filename, file)
-
-                    } catch (e: AmazonServiceException) {
-                        System.err.println(e.errorMessage)
-                    }
-                } catch (e: MalformedURLException) {
-                    e.printStackTrace()
-                }
-            }
-        }.start()
-    }
 }
