@@ -90,6 +90,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             Toast.makeText(this.context,"기록이 저장되었습니다.", Toast.LENGTH_SHORT).show()
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
+            stopFlag = true
         }
 
         //안내 중단
@@ -99,6 +100,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             stopFlag = true
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
+            stopFlag = true
         }
 //
 //        //시작 버튼
@@ -134,9 +136,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             }
             listenerFlag = !listenerFlag //토글
 
-            Log.d(Constants.TAG, "일시정지, flag: $listenerFlag")
-
-
+            //Log.d(Constants.TAG, "일시정지, flag: $listenerFlag")
         }
 
         root.findViewById<ProgressBar>(R.id.progressBar)?.max = 100
@@ -208,7 +208,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         var lastTime = LocalDateTime.now()
         naverMap.addOnLocationChangeListener { location ->
             //Log.d(Constants.TAG, "record함수 flag: $listenerFlag")
-            if(timeflag && !stopFlag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
+            if(timeflag and !stopFlag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
                 activity?.findViewById<TextView>(R.id.total_time_view2)?.text = gg.printInfo(gg.getGPX()).total_time
 
             if(listenerFlag){ // 일시정지 아닐 때만 동작하게
