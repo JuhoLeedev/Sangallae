@@ -48,12 +48,12 @@ object API {
     const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
 
     //aws 가짜
-    const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL745KZGIEQ"
-    const val AWS_SECRET_KEY: String = "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"
+    const val AWS_ACCESS_KEY: String = ""
+    const val AWS_SECRET_KEY: String = ""
 
     //이게 진짜 push 할 때 주석처리 할것!!
-//    const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL7TULZFYJZ"
-//    const val AWS_SECRET_KEY: String = "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"
+//    const val AWS_ACCESS_KEY: String = ""
+//    const val AWS_SECRET_KEY: String = ""
     const val S3_BUCKET: String = "gpxfiles"
     const val GPX_DIR: String = "/storage/emulated/0/gpxdata/"
 
