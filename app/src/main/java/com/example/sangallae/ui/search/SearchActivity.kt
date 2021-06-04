@@ -57,6 +57,14 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                     putExtra("id", data)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }.run { startActivity(this) }
+//                supportFragmentManager.beginTransaction().replace(
+//                    R.id.search,
+//                   CourseDetailFragment().apply {
+//                        arguments = Bundle().apply {
+//                            putInt("id", data)
+//                        }
+//                    }
+//                ).commit()
             }
         })
 

@@ -31,32 +31,6 @@ import io.jenetics.jpx.GPX
 import java.time.Duration
 import java.time.LocalDateTime
 
-//class MyMapFragment : Fragment() {
-//
-//    private lateinit var mapViewModel: MapViewModel
-//
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-//        val root = inflater.inflate(R.layout.fragment_map, container, false)
-//
-//        val fm = childFragmentManager
-//        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-//            ?: MapFragment.newInstance().also {
-
-//                fm.beginTransaction().add(R.id.map, it).commit()
-//            }
-//        mapFragment.getMapAsync(this)
-//
-//        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_TRANSIT, true)
-//        return root
-//    }
-//
-//    @UiThread
-//    override fun onMapReady(naverMap: NaverMap) {
-//        // ...
-//    }
-//}
-
 class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationSource: FusedLocationSource

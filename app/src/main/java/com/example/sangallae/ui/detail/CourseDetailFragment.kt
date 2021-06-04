@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.databinding.CourseDetailFragmentBinding
 import com.example.sangallae.retrofit.models.Course
@@ -21,37 +23,43 @@ import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 class CourseDetailFragment : Fragment() {
     private lateinit var detailViewModel: CourseDetailViewModel
-    private lateinit var detailToolbar: Toolbar
-    private lateinit var course: Course
-    private lateinit var binding: CourseDetailFragmentBinding
-    private val args: CourseDetailFragmentArgs by navArgs()
+    private val courseId: Int by lazy { requireArguments().getInt("id") }
+    private var _binding: CourseDetailFragmentBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.course_detail_fragment, container, false)
-        detailToolbar = root.findViewById(R.id.detail_course_toolbar)
-        val intent = Intent(activity, CourseDetailFragment::class.java)
-        startActivity(intent)
-        val courseId = args.courseId
+        _binding = CourseDetailFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        binding.detailCourseToolbar.inflateMenu(R.menu.detail_course_menu)
         setHasOptionsMenu(true)
         getCourseDetailApiCall(courseId)
-        return root
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-//        detailViewModel = ViewModelProvider(this).get(CourseDetailViewModel::class.java)
-//        detailViewModel.courseDetailValue.observe(viewLifecycleOwner, Observer {
-//            binding.detailLocationValue.text = it.location.toString()
-//            binding.detailDifficultyValue.text = it.distance.toString()
-//            binding.detailTimeValue.text = it.time.toString()
-//            binding.detailSpeedValue.text = it.speed.toString()
-//            binding.detailHeightValue.text = it.height.toString()
-//            binding.detailDifficultyValue.text = it.diffiulty.toString()
-//            binding.detailScoreValue.text = it.score.toString()
-//        })
+        detailViewModel = ViewModelProvider(this).get(CourseDetailViewModel::class.java)
+        detailViewModel.courseDetailValue.observe(viewLifecycleOwner, {
+            binding.detailCourseTitle.text = it.name
+            binding.detailLocationValue.text = it.location
+            binding.detailDistanceValue.text = it.distance
+            binding.detailMovingTimeValue.text = it.moving_time
+            binding.detailTotalTimeValue.text = it.total_time
+            binding.detailAvgSpeedValue.text = it.avg_speed
+            binding.detailAvgPaceValue.text = it.avg_pace
+            binding.detailMaxHeightValue.text = it.max_height
+            binding.detailMinHeightValue.text = it.min_height
+            binding.detailEleDifValue.text = it.ele_dif
+            binding.detailDifficultyValue.text = it.difficulty
+            binding.detailUphillValue.text = it.uphill
+            binding.detailDownhillValue.text = it.downhill
+            binding.detailDateValue.text = it.date
+            Glide.with(GlobalApplication.instance).load(it.thumbnail)
+                .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -78,6 +86,12 @@ class CourseDetailFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
     }
 
 }

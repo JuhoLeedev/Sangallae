@@ -138,64 +138,6 @@ class MainMapFragment : Fragment(), View.OnClickListener, OnMapReadyCallback {
         naverMap.locationSource = locationSource
         uiSettings.isScaleBarEnabled = false
         uiSettings.isZoomControlEnabled = false
-
-        val locationOverlay = naverMap.locationOverlay
-        locationOverlay.isVisible = true
-        //naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
-
-        val path = PathOverlay() // 따라갈 경로 그리기
-        val path2 = PathOverlay() // 현재 위치 그리기
-
-        var gg = MyGPX()
-//
-
-
-        drawFullCourse(
-            gg,
-            "/storage/emulated/0/gpxdata/4_sample[2].gpx",
-            path,
-            naverMap,
-            locationOverlay
-        )
-
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun drawFullCourse(
-        gg: MyGPX,
-        coursePath: String,
-        path: PathOverlay,
-        naverMap: NaverMap,
-        locationOverlay: LocationOverlay
-    ) {
-        if (PermissionUtils.requestPermission(
-                requireActivity(),
-                READ_STORAGE_PERMISSIONS_REQUEST,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA
-            )
-        ) {
-            val gpx = gg.read(coursePath)
-            val course = gg.getWayPoints(gpx)
-
-            val coords = mutableListOf( // 첫 점을 넣어야 되는데
-                LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
-            )
-            Log.d(Constants.TAG, "$coords")
-
-            //locationOverlay.position = LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
-            //naverMap.locationTrackingMode = LocationTrackingMode.Face
-
-            course.forEach { track ->
-                val lat = track.latitude.toDouble()
-                val lon = track.longitude.toDouble()
-                coords.add(LatLng(lat, lon))
-            }
-            path.coords = coords
-            path.map = naverMap
-            path.width = 10
-            path.color = Color.RED
-        }
     }
 
     override fun onRequestPermissionsResult(

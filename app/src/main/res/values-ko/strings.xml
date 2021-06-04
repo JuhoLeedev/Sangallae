@@ -84,4 +84,5 @@
     <string name="hotCourseList">인기 등산로 목록</string>
     <string name="hotMountainList">인기 산 목록</string>
     <string name="location">위치</string>
+    <string name="course_detail">상세 정보</string>
 </resources>

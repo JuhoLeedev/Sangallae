@@ -55,16 +55,17 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+
         // 추천 화면 갱신
         //refreshHome()
         this.recommendedCourseAdapter = RecommendedCourseAdapter()
-        this.recommendedCourseAdapter.submitList(recCourseList)
+//        this.recommendedCourseAdapter.submitList(recCourseList)
 //
         this.popularCourseAdapter = PopularCourseAdapter()
-        this.popularCourseAdapter.submitList(hotCourseList)
+//        this.popularCourseAdapter.submitList(hotCourseList)
 
         this.popularMountainAdapter = PopularMountainAdapter()
-        this.popularMountainAdapter.submitList(hotMtnList)
+//        this.popularMountainAdapter.submitList(hotMtnList)
 
         //root activity view context this.context 중에 root만 되네
         root.findViewById<RecyclerView>(R.id.recCourse)?.layoutManager =
@@ -103,7 +104,7 @@ class HomeFragment : Fragment() {
 //            }
 //        })
         //homeLoadApiCall()
-        homeLoadApiCall()
+
 
         // 추천 등산로 더보기 버튼
         val recCourseMore = root.findViewById<TextView>(R.id.recCourseMore)
@@ -131,6 +132,11 @@ class HomeFragment : Fragment() {
 //    fun refreshHome(){
 //
 //    }
+
+    override fun onStart() {
+        homeLoadApiCall()
+        super.onStart()
+    }
 
     private fun homeLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)

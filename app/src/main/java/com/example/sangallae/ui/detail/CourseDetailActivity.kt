@@ -61,6 +61,7 @@ class CourseDetailActivity : AppCompatActivity() {
             Glide.with(GlobalApplication.instance).load(it.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
         })
+        binding.detailDownload.setOnClickListener {  }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

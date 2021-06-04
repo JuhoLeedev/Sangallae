@@ -54,7 +54,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
                 android:background="#FFFFFF"
-                android:tint="@color/custom_black"
+                app:tint="@color/custom_black"
                 android:contentDescription="TODO"
                 android:src="@drawable/ic_favorite_outline"
                 app:layout_constraintEnd_toEndOf="parent"
