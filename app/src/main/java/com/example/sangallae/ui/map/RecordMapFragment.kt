@@ -38,32 +38,6 @@ import java.net.MalformedURLException
 import java.time.Duration
 import java.time.LocalDateTime
 
-//class MyMapFragment : Fragment() {
-//
-//    private lateinit var mapViewModel: MapViewModel
-//
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-//        val root = inflater.inflate(R.layout.fragment_map, container, false)
-//
-//        val fm = childFragmentManager
-//        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-//            ?: MapFragment.newInstance().also {
-
-//                fm.beginTransaction().add(R.id.map, it).commit()
-//            }
-//        mapFragment.getMapAsync(this)
-//
-//        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_TRANSIT, true)
-//        return root
-//    }
-//
-//    @UiThread
-//    override fun onMapReady(naverMap: NaverMap) {
-//        // ...
-//    }
-//}
-
 class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationSource: FusedLocationSource
@@ -76,6 +50,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private val multiplePermissionsCode = 100
     var timeflag = false
     var startFlag = true
+    var stopFlag = false
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -117,6 +92,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         val btn = root.findViewById<Button>(R.id.button)
         btn.setOnClickListener {
             Toast.makeText(this.context,"안내를 중단합니다.", Toast.LENGTH_SHORT).show()
+            stopFlag = true
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
         }
@@ -218,27 +194,22 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         var lastTime = LocalDateTime.now()
         naverMap.addOnLocationChangeListener { location ->
             //Log.d(Constants.TAG, "record함수 flag: $listenerFlag")
-            if(timeflag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고
+            if(timeflag && !stopFlag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
                 activity?.findViewById<TextView>(R.id.total_time_view2)?.text = gg.printInfo(gg.getGPX()).total_time
 
             if(listenerFlag){ // 일시정지 아닐 때만 동작하게
                 val lat = location.latitude
                 val lon = location.longitude
                 val alt = location.altitude
-                //GlobalScope.launch { // launch new coroutine in background and continue
-                //delay(2000) // non-blocking delay for 1 second (default time unit is ms)
+
                 var currentTime = LocalDateTime.now()
                 if(Duration.between(lastTime, currentTime).seconds > 3){
                     gg.addWayPoint(lat, lon, alt)
-                    timeflag=true
-                    //coords.add(LatLng(lat, lon))
+                    timeflag = true
                     lastTime = currentTime
-                    //Log.d(Constants.TAG,"현재: $lat $lon $alt")
-                    //path2.coords = coords
 
                     var info = gg.printInfo(gg.getGPX())
                     Log.d(Constants.TAG,"$info")
-
 
                     activity?.findViewById<TextView>(R.id.moving_time_view)?.text = info.moving_time
                     activity?.findViewById<TextView>(R.id.moving_distance_view)?.text = info.moving_distance
@@ -270,30 +241,6 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
-
-//    //퍼미션 체크 및 권한 요청 함수
-//    @RequiresApi(Build.VERSION_CODES.R)
-//    private fun checkPermissions() {
-//        //거절되었거나 아직 수락하지 않은 권한(퍼미션)을 저장할 문자열 배열 리스트
-//        var rejectedPermissionList = ArrayList<String>()
-//
-//        //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
-//        for(permission in requiredPermissions){
-//            if(context?.let { ContextCompat.checkSelfPermission(it, permission) } != PackageManager.PERMISSION_GRANTED) {
-//                //만약 권한이 없다면 rejectedPermissionList에 추가
-//                rejectedPermissionList.add(permission)
-//                Log.d(Constants.TAG, "요청1: $rejectedPermissionList")
-//            }
-//        }
-//        //거절된 퍼미션이 있다면...
-//        if(rejectedPermissionList.isNotEmpty()){
-//            //권한 요청!
-//            val array = arrayOfNulls<String>(rejectedPermissionList.size)
-//            activity?.let { ActivityCompat.requestPermissions(it, rejectedPermissionList.toArray(array), multiplePermissionsCode)
-//            Log.d(Constants.TAG, "요청2")
-//            }
-//        }
-//    }
 
     private fun uploadGPX(path: String, filename: String) {
         object : Thread() {

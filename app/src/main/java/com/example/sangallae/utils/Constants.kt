@@ -50,6 +50,7 @@ object API {
     //aws
     const val AWS_ACCESS_KEY: String = "AKIAVHYMFOL745KZGIEQ"
     const val AWS_SECRET_KEY: String = "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"
-    const val S3_BUCKET: String = "s3://gpxfiles/test/"
+    const val S3_BUCKET: String = "gpxfiles"
+
 
 }
