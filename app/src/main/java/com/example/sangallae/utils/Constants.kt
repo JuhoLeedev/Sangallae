@@ -47,8 +47,13 @@ object API {
     const val HOT_COURSE_LIST : String = "course/hot"
     const val HOT_MOUNTAIN_LIST: String = "mountain/hot"
 
-    //aws
+    //aws 가짜
+    const val AWS_ACCESS_KEY: String = ""
+    const val AWS_SECRET_KEY: String = ""
 
+    //이게 진짜 push 할 때 주석처리 할것!!
+//    const val AWS_ACCESS_KEY: String = ""
+//    const val AWS_SECRET_KEY: String = ""
     const val S3_BUCKET: String = "gpxfiles"
     const val GPX_DIR: String = "/storage/emulated/0/gpxdata/"
 
