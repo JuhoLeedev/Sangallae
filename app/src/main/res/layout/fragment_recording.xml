@@ -23,13 +23,12 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/difficulty_red"
-        android:backgroundTint="@color/difficulty_red"
-        android:text="안내 중단"
+        android:layout_width="114dp"
+        android:layout_height="53dp"
+        android:background="@android:color/transparent"
+        android:text="측정 중단"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,10 +36,10 @@
         android:id="@+id/current"
         android:layout_width="0dp"
         android:layout_height="52dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
 <!--    <View-->
@@ -105,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="00:00:00"
                 android:textColor="@color/black" />
 
             <TextView
@@ -113,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="00:00:00"
                 android:textColor="@color/black" />
         </LinearLayout>
 
@@ -147,7 +146,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="0.0km"
                 android:textColor="@color/black" />
 
             <TextView
@@ -155,7 +154,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="0.0km"
                 android:textColor="@color/black" />
         </LinearLayout>
 
@@ -189,7 +188,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="0.0m"
                 android:textColor="@color/black" />
 
             <TextView
@@ -197,7 +196,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="PM 0H 0M"
                 android:textColor="@color/black" />
         </LinearLayout>
     </LinearLayout>
@@ -218,6 +217,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="진행률"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/progressBar"
         app:layout_constraintStart_toStartOf="@+id/progressBar" />
 
@@ -226,7 +226,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="120dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="2dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_twotone_play_circle_24"
         app:layout_constraintBottom_toTopOf="@+id/imageView3"
@@ -237,7 +237,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="120dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="2dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_twotone_stop_circle_24"
         app:layout_constraintBottom_toTopOf="@+id/imageView3"

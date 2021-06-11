@@ -16,12 +16,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread
 import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.example.sangallae.R
-import com.example.sangallae.utils.API.AWS_ACCESS_KEY
-import com.example.sangallae.utils.API.AWS_SECRET_KEY
 import com.example.sangallae.utils.API.GPX_DIR
 import com.example.sangallae.utils.API.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.sangallae.utils.API.S3_BUCKET
@@ -40,6 +39,7 @@ import java.io.File
 import java.net.MalformedURLException
 import java.time.Duration
 import java.time.LocalDateTime
+import java.util.*
 
 class RecordMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
@@ -52,9 +52,11 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
     lateinit var locationListener:NaverMap.OnLocationChangeListener
     //퍼미션 응답 처리 코드
     private val multiplePermissionsCode = 100
-    var timeflag = false
+    //var timeflag = false
     var startFlag = true
     var stopFlag = false
+
+    var timerTask: Timer? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -114,13 +116,14 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 //            //startBtn.visibility = VISIBLE //일시정지 버튼 나타남
 //        }
 
-        //일시정지 버튼
+        //시작/일시정지 버튼
         val pauseBtn = root.findViewById<ImageButton>(R.id.pauseBtn)
         pauseBtn.setOnClickListener {
             if(startFlag){ //처음 시작할 때
-                startFlag = false
+                // startFlag = false
                 Toast.makeText(this.context,"측정을 시작합니다.", Toast.LENGTH_SHORT).show()
                 pauseBtn.setImageResource(R.drawable.ic_twotone_pause_circle_24)
+                timeUpdate()
                 recordCurrentCourse(gg, naverMap_)
             }
             //목록 fragment로 넘어가기
@@ -176,7 +179,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 //                locationOverlay
 //            )
 //        }
-        drawFullCourse(gg,"/storage/emulated/0/gpx_data/4_sample[2].gpx", path, naverMap, locationOverlay)
+        drawFullCourse(gg,"/storage/emulated/0/gpxdata/문학산.gpx", path, naverMap, locationOverlay)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -208,30 +211,35 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         var lastTime = LocalDateTime.now()
         naverMap.addOnLocationChangeListener { location ->
             //Log.d(Constants.TAG, "record함수 flag: $listenerFlag")
-            if(timeflag and !stopFlag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
-                activity?.findViewById<TextView>(R.id.total_time_view2)?.text = gg.printInfo(gg.getGPX()).total_time
+//            if(timeflag and !stopFlag) //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
+//                activity?.findViewById<TextView>(R.id.total_time_view2)?.text = gg.printInfo(gg.getGPX()).total_time
 
             if(listenerFlag){ // 일시정지 아닐 때만 동작하게
                 val lat = location.latitude
                 val lon = location.longitude
                 val alt = location.altitude
-
                 var currentTime = LocalDateTime.now()
-                if(Duration.between(lastTime, currentTime).seconds > 3){
+                if(startFlag){ // 처음 시작했을 때 -> 3초 기다리지 않고 바로 점 입력
+                    startFlag = false
                     gg.addWayPoint(lat, lon, alt)
-                    timeflag = true
+                    //Log.d(Constants.TAG,"시작함.")
+                }
+                else if(Duration.between(lastTime, currentTime).seconds > 3){
+                    gg.addWayPoint(lat, lon, alt)
+                    //timeflag = true
                     lastTime = currentTime
 
-                    var info = gg.printInfo(gg.getGPX())
-                    Log.d(Constants.TAG,"$info")
+                    //var info = gg.printInfo(gg.getGPX())
+                    //Log.d(Constants.TAG,"$info")
 
-                    activity?.findViewById<TextView>(R.id.moving_time_view)?.text = info.moving_time
-                    activity?.findViewById<TextView>(R.id.moving_distance_view)?.text = info.moving_distance
-                    activity?.findViewById<TextView>(R.id.left_distance_view)?.text = info.left_distance
+                    //activity?.findViewById<TextView>(R.id.moving_time_view)?.text = info.moving_time
+                    //activity?.findViewById<TextView>(R.id.moving_distance_view)?.text = info.moving_distance
+                    //activity?.findViewById<TextView>(R.id.left_distance_view)?.text = info.left_distance
                     activity?.findViewById<TextView>(R.id.cur_height_view)?.text = alt.toString().substring(0,4) +"m"
-                    activity?.findViewById<TextView>(R.id.arrival_time_view)?.text = info.expected_time
-                    activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = info.progress.toInt()
+                    //activity?.findViewById<TextView>(R.id.arrival_time_view)?.text = info.expected_time
+                    //a/ctivity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = info.progress.toInt()
                     //activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress = 50
+                    Log.d(Constants.TAG, "uphill: ${gg.upHill}, downhill: ${gg.downHill}")
                 }
             }
         }
@@ -244,7 +252,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
                 grantResults)) {
             if (!locationSource.isActivated) { // 권한 거부됨
                 naverMap_.locationTrackingMode = LocationTrackingMode.None
-                Log.d(Constants.TAG, "요청3")
+                //Log.d(Constants.TAG, "요청3")
                 //checkPermissions()
             }
             return
@@ -252,5 +260,31 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun timeUpdate(){
+        timerTask = kotlin.concurrent.timer(period = 1000) {
+            var info: RecordInfo? = null
+            if (!startFlag and !stopFlag) { //처음에 리스트에 점 없을 때 시간 null 들어가는거 막으려고, 중단했을때 전체시간 증가x
+                info = gg.printInfo(gg.getGPX())
+            }
+            runOnUiThread {
+                if (!startFlag and !stopFlag) {
+                    activity?.findViewById<TextView>(R.id.total_time_view2)?.text = info?.total_time
+                    if(listenerFlag) {
+                        activity?.findViewById<TextView>(R.id.moving_time_view)?.text =
+                            info?.moving_time
+                        activity?.findViewById<TextView>(R.id.moving_distance_view)?.text =
+                            info?.moving_distance
+                        activity?.findViewById<TextView>(R.id.left_distance_view)?.text =
+                            info?.left_distance
+                        //activity?.findViewById<TextView>(R.id.cur_height_view)?.text = alt.toString().substring(0,4) +"m"
+                        activity?.findViewById<TextView>(R.id.arrival_time_view)?.text =
+                            info?.expected_time
+                        activity?.findViewById<ProgressBar>(R.id.progressBar)?.progress =
+                            info?.progress?.toInt()!!
+                    }
+                }
+            }
+        }
+    }
 }

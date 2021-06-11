@@ -35,6 +35,10 @@ class MyGPX {
         private set
     lateinit var courseGPX: GPX
 
+    var prevEle: Double = 0.0
+    var upHill:Double = 0.0
+    var downHill:Double = 0.0
+
     /**
      * GPX File Functions
      */
@@ -53,11 +57,20 @@ class MyGPX {
         val newWayPoint = WayPoint.builder().lat(lat).lon(lon).ele(ele).time(ZonedDateTime.now().plusHours(9)).build()
         if (startTime == null) {
             startTime = LocalDateTime.now()
+            prevEle = ele
+        }
+        else {
+            if(prevEle > ele)
+                downHill += (prevEle - ele)
+            else if (prevEle < ele)
+                upHill += (ele - prevEle)
+            prevEle = ele
         }
         if (wayPointsWrite.size > 0) {
             val lastWayPoint = wayPointsWrite[wayPointsWrite.size - 1]
             movingDistance += Geoid.WGS84.distance(lastWayPoint, newWayPoint).toDouble()
         }
+
         wayPointsWrite.add(newWayPoint)
     }
 
@@ -178,7 +191,6 @@ class MyGPX {
             hour %= 24
         }
 //        val localDateTime = now.plusDays(day).plusHours(hour).plusMinutes(minute)
-//
 //
 //        var hour1 = localDateTime.hour
 //        val minute1 = localDateTime.minute
