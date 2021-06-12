@@ -179,7 +179,13 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 //                locationOverlay
 //            )
 //        }
-        drawFullCourse(gg,"/storage/emulated/0/gpxdata/문학산.gpx", path, naverMap, locationOverlay)
+        val fileName by lazy { requireArguments().getString("name") }
+
+
+        var filePath = "/storage/emulated/0/gpxdata/"
+        Log.d(Constants.TAG, "경로 + 파일명?: " +filePath+fileName)
+        drawFullCourse(gg,filePath+fileName, path, naverMap, locationOverlay)
+//        drawFullCourse(gg,"/storage/emulated/0/gpxdata/해오름동산.gpx", path, naverMap, locationOverlay)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
