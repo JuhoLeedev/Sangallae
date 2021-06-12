@@ -1,7 +1,6 @@
 package com.example.sangallae.utils
 
-import AWS_ACCESS_KEY
-import AWS_SECRET_KEY
+
 import android.util.Log
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.auth.AWSCredentials
@@ -10,6 +9,8 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.AmazonS3URI
+import com.example.sangallae.utils.API.AWS_ACCESS_KEY
+import com.example.sangallae.utils.API.AWS_SECRET_KEY
 import com.example.sangallae.utils.API.S3_BUCKET
 import java.io.*
 import java.net.MalformedURLException

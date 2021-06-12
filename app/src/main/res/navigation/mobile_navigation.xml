@@ -71,7 +71,11 @@
         android:id="@+id/navigation_profile"
         android:name="com.example.sangallae.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_myRecordFragment"
+            app:destination="@id/myRecordFragment" />
+    </fragment>
     <fragment
         android:id="@+id/courseDetailFragment"
         android:name="com.example.sangallae.ui.detail.CourseDetailFragment"
@@ -93,4 +97,9 @@
             android:id="@+id/action_global_courseDetailFragment"
             app:destination="@id/courseDetailFragment" />
     </navigation>
+    <fragment
+        android:id="@+id/myRecordFragment"
+        android:name="com.example.sangallae.ui.profile.MyRecordFragment"
+        android:label="fragment_myrecord"
+        tools:layout="@layout/fragment_myrecord" />
 </navigation>

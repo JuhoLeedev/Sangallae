@@ -12,6 +12,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
@@ -139,6 +140,11 @@ class ProfileFragment : Fragment() {
             cancelButton.setOnClickListener {
                 mAlertDialog?.dismiss()
             }
+        }
+
+        val recordButton = root.findViewById<ImageButton>(R.id.my_record_btn)
+        recordButton.setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_profile_to_myRecordFragment)
         }
 
         return root
