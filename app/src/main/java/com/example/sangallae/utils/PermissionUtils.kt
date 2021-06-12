@@ -1,8 +1,10 @@
 package com.example.sangallae.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import java.util.*
 
@@ -23,7 +25,7 @@ object PermissionUtils {
         return if (granted) {
             true
         } else {
-            ActivityCompat.requestPermissions(
+            requestPermissions(
                 activity,
                 permissionsNeeded.toTypedArray(),
                 requestCode

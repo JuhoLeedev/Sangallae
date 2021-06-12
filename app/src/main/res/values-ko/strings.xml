@@ -91,4 +91,5 @@
     <string name="cur_height">현재 고도</string>
     <string name="arrival_time">예상 도착 시간</string>
     <string name="course_detail">상세 정보</string>
+    <string name="my_records">내 등산기록</string>
 </resources>

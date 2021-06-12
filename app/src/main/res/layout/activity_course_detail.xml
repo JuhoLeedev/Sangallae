@@ -127,7 +127,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:clickable="true"
+                            android:orientation="vertical"
+                            android:focusable="true">
 
                             <ImageView
                                 android:layout_width="match_parent"

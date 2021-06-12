@@ -424,15 +424,16 @@ class RetrofitManager(usage: Usage) {
 
     //홈화면 목록 업데이트
     fun homeLoad(
-        completion: (RESPONSE_STATUS, ArrayList<Home>?, ArrayList<Home>?, ArrayList<Mountain>?) -> Unit
+        lat: Double, lon: Double,
+        completion: (RESPONSE_STATUS, ArrayList<Home>?, ArrayList<Home>?, ArrayList<Mountain>?, ArrayList<Mountain>?) -> Unit
     ) {
-        val call = iRetrofit?.homeLoad() ?: return
+        val call = iRetrofit?.homeLoad(lat = lat, lon = lon) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
-                completion(RESPONSE_STATUS.FAIL, null, null, null)
+                completion(RESPONSE_STATUS.FAIL, null, null, null, null)
             }
 
             // 응답 성공시
@@ -444,6 +445,7 @@ class RetrofitManager(usage: Usage) {
                         val parsedCourseDataArray1 = ArrayList<Home>()
                         val parsedCourseDataArray2 = ArrayList<Home>()
                         val parsedCourseDataArray3 = ArrayList<Mountain>()
+                        val parsedCourseDataArray4 = ArrayList<Mountain>()
                         val body = it.asJsonObject
                         //val results = body.getAsJsonArray("data")
 
@@ -451,6 +453,7 @@ class RetrofitManager(usage: Usage) {
                         val rec = data.getAsJsonArray("recommendCourse")
                         val hot = data.getAsJsonArray("hotCourse")
                         val hotM = data.getAsJsonArray("hotMountain")
+                        val nearM = data.getAsJsonArray("nearMountain")
 
                         val message = body.get("message")
 
@@ -514,26 +517,41 @@ class RetrofitManager(usage: Usage) {
                                     )
                                     parsedCourseDataArray3.add(courseItem)
                                 }
-                                completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray1, parsedCourseDataArray2, parsedCourseDataArray3)
+                                nearM.forEach { resultItem ->
+                                    val resultItemObject = resultItem.asJsonObject
+                                    val courseId = resultItemObject.get("id").asInt
+                                    val courseName = resultItemObject.get("name").asString
+                                    val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
+
+                                    val courseItem = Mountain(
+                                        id = courseId,
+                                        name = courseName,
+                                        thumbnail = courseThumbnailUrl,
+                                        location="",
+                                        height=""
+                                    )
+                                    parsedCourseDataArray4.add(courseItem)
+                                }
+                                completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray1, parsedCourseDataArray2, parsedCourseDataArray3, parsedCourseDataArray4)
                             }
-//                            "NO_CONTENT" -> {
-//                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-//                                completion(RESPONSE_STATUS.NO_CONTENT, null)
-//                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null, null, null, null)
+                            }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.BAD_REQUEST, null, null, null)
+                                completion(RESPONSE_STATUS.BAD_REQUEST, null, null, null, null)
                             }
                             "UNAUTHORIZED" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.UNAUTHORIZED, null, null, null)
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, null, null, null, null)
                             }
                         }
                     }
                 }
                 else {
                     Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
-                    completion(RESPONSE_STATUS.NOT_FOUND, null, null, null)
+                    completion(RESPONSE_STATUS.NOT_FOUND, null, null, null, null)
                 }
             }
         })

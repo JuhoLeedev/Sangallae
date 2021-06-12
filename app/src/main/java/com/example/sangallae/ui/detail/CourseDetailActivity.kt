@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -14,15 +15,11 @@ import com.bumptech.glide.Glide
 import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.databinding.ActivityCourseDetailBinding
-import com.example.sangallae.ui.map.MainMapFragment
 import com.example.sangallae.ui.map.RecordMapFragment
 import com.example.sangallae.utils.*
 import com.example.sangallae.utils.API.GPX_DIR
-import com.example.sangallae.utils.API.LOCATION_PERMISSION_REQUEST_CODE
-import com.example.sangallae.utils.API.READ_STORAGE_PERMISSIONS_REQUEST
 import com.example.sangallae.utils.API.WRITE_STORAGE_PERMISSIONS_REQUEST
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
-import com.naver.maps.map.LocationTrackingMode
 
 
 class CourseDetailActivity : AppCompatActivity() {
@@ -62,48 +59,56 @@ class CourseDetailActivity : AppCompatActivity() {
             Glide.with(GlobalApplication.instance).load(it.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
         })
-        binding.detailDownload.setOnClickListener {
-            if(PermissionUtils.requestPermission(this,WRITE_STORAGE_PERMISSIONS_REQUEST,
-                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
-                        fileName = S3FileManager().downloadGPX(url, GPX_DIR)
-                if(fileName != null) {
-                    Toast.makeText(this, "Gpx가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-                }
-                else {
-                    Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        binding.detailFollow.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(binding.courseDetail.id, RecordMapFragment())
-                .addToBackStack(CourseDetailActivity::class.java.simpleName)
-                .commit()
-//            if(PermissionUtils.requestPermission(this,WRITE_STORAGE_PERMISSIONS_REQUEST,
-//                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
-//                fileName = S3FileManager().downloadGPX(url, GPX_DIR)
-//                if(fileName != null) {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.course_detail, RecordMapFragment().apply {
-//                            arguments = Bundle().apply {
-//                                putString("name", fileName)
-//                            }
-//                        })
-//                        .addToBackStack(CourseDetailActivity::class.java.simpleName)
-//                        .commit()
-//                }
-//                else {
-//                    Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-        }
+        binding.detailDownload.setOnClickListener(clickDownloadLinearLayout())
+        binding.detailFollow.setOnClickListener(clickFollowLinearLayout())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.detail_course_menu, menu)
         return true
+    }
+
+    private fun clickDownloadLinearLayout(): View.OnClickListener {
+        return View.OnClickListener {
+            download(url)
+        }
+    }
+
+    private fun clickFollowLinearLayout(): View.OnClickListener {
+        return View.OnClickListener {
+            download(url)
+//            supportFragmentManager.beginTransaction()
+//                .replace(binding.courseDetail.id, RecordMapFragment())
+//                .addToBackStack(CourseDetailActivity::class.java.simpleName)
+//                .commit()
+            Log.d("test", "$fileName")
+            if(fileName != null) {
+                Log.d("test", "$fileName")
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.course_detail, RecordMapFragment().apply {
+                        arguments = Bundle().apply {
+                            putString("name", fileName)
+                        }
+                    })
+                    .addToBackStack(CourseDetailActivity::class.java.simpleName).commit()
+            }
+        }
+    }
+
+    private fun download(url: String){
+//        if(PermissionUtils.requestPermission(this,WRITE_STORAGE_PERMISSIONS_REQUEST,
+//                Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
+                    Log.d("test","여기는 다운로드")
+            fileName = S3FileManager().downloadGPX(url, GPX_DIR)
+        fileName = S3FileManager().fileName
+            if(fileName != null) {
+                Toast.makeText(this, "Gpx가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+//        }
     }
 
     private fun getCourseDetailApiCall(id: Int) {
@@ -144,16 +149,10 @@ class CourseDetailActivity : AppCompatActivity() {
         when (requestCode) {
             WRITE_STORAGE_PERMISSIONS_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
-                if (PermissionUtils.permissionGranted(
-                        requestCode,
-                        WRITE_STORAGE_PERMISSIONS_REQUEST,
-                        grantResults
-                    )
+                if (PermissionUtils.permissionGranted(requestCode, WRITE_STORAGE_PERMISSIONS_REQUEST, grantResults)
                 ) {
-                    fileName = S3FileManager().downloadGPX(url, GPX_DIR)
-                } else {
+                    download(url)
                 }
-                return
             }
         }
     }

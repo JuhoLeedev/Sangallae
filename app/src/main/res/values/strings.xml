@@ -93,4 +93,6 @@
     <string name="left_distance">Left distance</string>
     <string name="cur_height">Current height</string>
     <string name="arrival_time">Expected arrival time</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="my_records">My Records</string>
 </resources>

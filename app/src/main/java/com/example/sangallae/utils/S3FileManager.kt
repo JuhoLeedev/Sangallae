@@ -16,6 +16,7 @@ import java.net.MalformedURLException
 import java.net.URI
 
 class S3FileManager {
+    @Volatile var  fileName: String? = null
     fun uploadGPX(path: String, filename: String) {
         object : Thread() {
             override fun run() {
@@ -44,7 +45,6 @@ class S3FileManager {
     }
 
     fun downloadGPX(url: String, savepath: String): String? {
-        var fileName: String? = null
         object : Thread() {
             override fun run() {
                 try {
@@ -67,8 +67,9 @@ class S3FileManager {
                                 `s3Object`.getObjectContent()
                             )
                         )
-                        val file = File(savepath)
-                        fileName = file.name
+                        fileName = s3URI.key.split("/")[1]
+                        Log.d(Constants.TAG, fileName!!)
+                        val file = File(savepath+fileName)
                         val writer: Writer = OutputStreamWriter(FileOutputStream(file))
 
                         while (true) {

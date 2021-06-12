@@ -41,8 +41,9 @@ interface RetrofitService {
 
     @GET(API.FAVORITES)
     fun favoriteCourses(): Call<JsonElement>
+
     @GET(API.HOME_LOAD)
-    fun homeLoad(): Call<JsonElement>
+    fun homeLoad(@Query("latitude") lat: Double, @Query("longitude") lon: Double): Call<JsonElement>
 
     @GET(API.REC_COURSE_LIST)
     fun recCourseList(): Call<JsonElement>

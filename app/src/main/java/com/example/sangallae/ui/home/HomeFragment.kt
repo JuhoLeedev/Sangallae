@@ -1,29 +1,27 @@
 package com.example.sangallae.ui.home
 
-import android.content.Intent
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
-import com.example.sangallae.retrofit.models.CourseItem
 import com.example.sangallae.retrofit.models.Home
 import com.example.sangallae.retrofit.models.Mountain
-import com.example.sangallae.ui.MainActivity
-import com.example.sangallae.ui.detail.CourseDetailActivity
-import com.example.sangallae.utils.Constants
-import com.example.sangallae.utils.RESPONSE_STATUS
-import com.example.sangallae.utils.Usage
+import com.example.sangallae.utils.*
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 
@@ -34,10 +32,19 @@ class HomeFragment : Fragment() {
     private var recCourseList = ArrayList<Home>()
     private var hotCourseList = ArrayList<Home>()
     private var hotMtnList = ArrayList<Mountain>()
+    private var nearMtnList = ArrayList<Mountain>()
     private lateinit var recommendedCourseAdapter: RecommendedCourseAdapter
     private lateinit var popularCourseAdapter: PopularCourseAdapter
     private lateinit var popularMountainAdapter: PopularMountainAdapter
+    private lateinit var nearMountainAdapter: NearMountainAdapter
     lateinit var navController: NavController
+    private lateinit var locationManager: LocationManager
+//    private var lat = 0.0
+//    private var lon = 0.0
+    // 일단 눈속임
+    private var lat = 37.44659903926295
+    private var lon = 126.65384268084867
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +74,8 @@ class HomeFragment : Fragment() {
         this.popularMountainAdapter = PopularMountainAdapter()
 //        this.popularMountainAdapter.submitList(hotMtnList)
 
+        this.nearMountainAdapter = NearMountainAdapter()
+
         //root activity view context this.context 중에 root만 되네
         root.findViewById<RecyclerView>(R.id.recCourse)?.layoutManager =
             LinearLayoutManager(
@@ -94,6 +103,15 @@ class HomeFragment : Fragment() {
             )
         root.findViewById<RecyclerView>(R.id.popMtn)?.adapter =
             this.popularMountainAdapter
+
+        root.findViewById<RecyclerView>(R.id.nearMtn)?.layoutManager =
+            LinearLayoutManager(
+                context, //activity?
+                RecyclerView.HORIZONTAL,
+                false
+            )
+        root.findViewById<RecyclerView>(R.id.nearMtn)?.adapter =
+            this.nearMountainAdapter
 
 //        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
 //            override fun onItemClick(v: View, data: Int, pos : Int) {
@@ -126,6 +144,11 @@ class HomeFragment : Fragment() {
             //목록 fragment로 넘어가기
             findNavController().navigate(R.id.action_navigation_home_to_navigation_hot_mountain)
         }
+
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        getLatLon()
+        Log.d("gps", "$lat, $lon")
+        homeLoadApiCall()
         return root
     }
 //
@@ -133,14 +156,14 @@ class HomeFragment : Fragment() {
 //
 //    }
 
-    override fun onStart() {
-        homeLoadApiCall()
-        super.onStart()
-    }
+//    override fun onStart() {
+//        homeLoadApiCall()
+//        super.onStart()
+//    }
 
     private fun homeLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.homeLoad(completion = { status, list1, list2, list3 ->
+        retrofit.homeLoad(lat = lat, lon = lon, completion = { status, list1, list2, list3, list4 ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
@@ -165,6 +188,13 @@ class HomeFragment : Fragment() {
                         popularMountainAdapter.notifyDataSetChanged()
                         //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
                     }
+                    if (list4 != null) {
+                        this.nearMtnList.clear()
+                        this.nearMtnList = list4
+                        nearMountainAdapter.submitList(this.nearMtnList)
+                        nearMountainAdapter.notifyDataSetChanged()
+                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                    }
                 }
                 else -> {
                     Log.d(
@@ -175,6 +205,31 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun getLatLon(){
+//        if(PermissionUtils.requestPermission(requireActivity(),
+//                API.LOCATION_PERMISSION_REQUEST_CODE,
+//                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)){
+            try {
+                Log.d("gps","여기는 try")
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    10000,  // 10-second interval.
+                    10.0f,  // 10 meters
+                    gpsListener)
+
+                val location : Location? = locationManager
+                    .getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                if (location != null) {
+                    lat = location.latitude
+                    lon = location.longitude
+                    Log.d("gps", "GPS Location changed, Latitude: $lat" +
+                            ", Longitude: $lon")
+                }
+            } catch (e: SecurityException) {
+                Toast.makeText(this.context, "GPS 권한이 없습니다", Toast.LENGTH_SHORT).show()
+            }
+ //       }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -189,6 +244,39 @@ class HomeFragment : Fragment() {
         }
         else -> {
             super.onOptionsItemSelected(item)
+        }
+    }
+
+    private var gpsListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            lat = location.latitude
+            lon = location.longitude
+            Log.d("gps", "GPS Location changed, Latitude: $lat" +
+                    ", Longitude: $lon")
+        }
+
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+        }
+        override fun onProviderEnabled(provider: String) {
+        }
+        override fun onProviderDisabled(provider: String) {
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            API.LOCATION_PERMISSION_REQUEST_CODE -> {
+                // If request is cancelled, the result arrays are empty.
+                if (PermissionUtils.permissionGranted(requestCode,
+                        API.LOCATION_PERMISSION_REQUEST_CODE, grantResults)
+                ) {
+                    getLatLon()
+                }
+            }
         }
     }
 }
