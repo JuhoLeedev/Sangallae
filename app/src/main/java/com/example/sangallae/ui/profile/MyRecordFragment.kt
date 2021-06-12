@@ -30,22 +30,23 @@ class MyRecordFragment : Fragment() {
     private lateinit var recordViewAdapter: MyRecordViewAdapter
     private var courseList = ArrayList<CourseItem>()
 
-    private var _binding: FragmentMyrecordBinding? = null
-    private val binding get() = _binding!!
+//    private var _binding: FragmentMyrecordBinding? = null
+//    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentMyrecordBinding.inflate(inflater, container, false)
-        val view = binding.root
-        binding.myRecordToolbar.inflateMenu(R.menu.profile_menu)
+//        // Inflate the layout for this fragment
+//        _binding = FragmentMyrecordBinding.inflate(inflater, container, false)
+//        val view = binding.root
+//        binding.myRecordToolbar.inflateMenu(R.menu.profile_menu)
+//        val root = inflater.inflate(R.layout.fragment_myrecord, container, false)
         val root = inflater.inflate(R.layout.fragment_myrecord, container, false)
         setHasOptionsMenu(true)
 
         this.recordViewAdapter = MyRecordViewAdapter()
-        this.recordViewAdapter.submitList(courseList)
+        //this.recordViewAdapter.submitList(courseList)
 
         //root activity view context this.context 중에 root만 되네
         root.findViewById<RecyclerView>(R.id.my_record)?.layoutManager =
@@ -56,6 +57,7 @@ class MyRecordFragment : Fragment() {
             )
         root.findViewById<RecyclerView>(R.id.my_record)?.adapter =
             this.recordViewAdapter
+
 
         recordApiCall()
 
@@ -73,7 +75,7 @@ class MyRecordFragment : Fragment() {
                         this.courseList = list
                         recordViewAdapter.submitList(this.courseList)
                         recordViewAdapter.notifyDataSetChanged()
-                        Log.d(Constants.TAG,"여기까지 됨 $courseList")
+                        Log.d(Constants.TAG,"사용자 정보 $courseList")
                         //
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()

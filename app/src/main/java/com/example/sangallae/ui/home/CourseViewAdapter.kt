@@ -1,6 +1,7 @@
 package com.example.sangallae.ui.home
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.databinding.LayoutCourseItemBinding
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.utils.Constants
 
 class CourseViewAdapter : RecyclerView.Adapter<CourseViewAdapter.CourseItemViewHolder>() {
 
@@ -30,6 +32,7 @@ class CourseViewAdapter : RecyclerView.Adapter<CourseViewAdapter.CourseItemViewH
             }
             Glide.with(GlobalApplication.instance).load(courseItem.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(itemBinding.courseImageView)
+
 
             val pos = adapterPosition
             if(pos!= RecyclerView.NO_POSITION)

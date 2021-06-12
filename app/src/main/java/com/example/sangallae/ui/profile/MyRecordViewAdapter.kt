@@ -1,11 +1,13 @@
 package com.example.sangallae.ui.profile
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.databinding.LayoutRecordItemBinding
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.utils.Constants
 
 class MyRecordViewAdapter : RecyclerView.Adapter<MyRecordViewAdapter.RecordItemViewHolder>(){
     private var recCourseList = ArrayList<CourseItem>()
@@ -51,5 +53,6 @@ class MyRecordViewAdapter : RecyclerView.Adapter<MyRecordViewAdapter.RecordItemV
 
     fun submitList(courseList: ArrayList<CourseItem>){
         this.recCourseList = courseList
+        Log.d(Constants.TAG, "submit: $recCourseList")
     }
 }
