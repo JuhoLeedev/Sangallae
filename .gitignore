@@ -9,6 +9,7 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+/src/main/java/com/example/sangallae/utils/Info
 /captures
 .externalNativeBuild
 .cxx
