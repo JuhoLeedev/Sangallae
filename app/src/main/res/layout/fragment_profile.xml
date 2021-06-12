@@ -119,15 +119,17 @@
                     android:layout_weight="1"
                     android:textSize="20sp"/>
 
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="10"
+                <ImageButton
+                    android:id="@+id/my_record_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     android:src="@drawable/ic_arrow_forward" />
             </LinearLayout>
 
             <include layout="@layout/content_profile" />
+
+
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
