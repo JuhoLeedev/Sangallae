@@ -93,6 +93,8 @@
     <string name="left_distance">Left distance</string>
     <string name="cur_height">Current height</string>
     <string name="arrival_time">Expected arrival time</string>
+    <string name="rest_time">Rest time</string>
+    <string name="calories">Used Calories</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="my_records">My Records</string>
 </resources>

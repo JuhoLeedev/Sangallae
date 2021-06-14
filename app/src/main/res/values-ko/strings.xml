@@ -92,4 +92,6 @@
     <string name="arrival_time">예상 도착 시간</string>
     <string name="course_detail">상세 정보</string>
     <string name="my_records">내 등산기록</string>
+    <string name="rest_time">휴식한 시간</string>
+    <string name="calories">소모한 칼로리</string>
 </resources>
