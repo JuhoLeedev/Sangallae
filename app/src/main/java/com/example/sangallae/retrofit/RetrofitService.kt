@@ -1,13 +1,10 @@
 package com.example.sangallae.retrofit
 
-import com.example.sangallae.retrofit.models.Favorite
-import com.example.sangallae.retrofit.models.JsonToken
+import com.example.sangallae.retrofit.models.*
 import com.example.sangallae.utils.API
 import com.google.gson.JsonElement
 import retrofit2.Call
 import retrofit2.http.*
-import com.example.sangallae.retrofit.models.KakaoLogin
-import com.example.sangallae.retrofit.models.NewProfile
 
 interface RetrofitService {
 
@@ -43,6 +40,9 @@ interface RetrofitService {
     @GET(API.FAVORITES)
     fun favoriteCourses(): Call<JsonElement>
 
+    /**
+     * 찜 목록 추가 / 제거
+     */
     @POST(API.FAVORITES)
     fun toggleFavorite(@Body body: Favorite): Call<JsonElement>
 
@@ -61,4 +61,9 @@ interface RetrofitService {
     @GET(API.RECORD)
     fun recordList(): Call<JsonElement>
 
+    /**
+     * 등산기록 업로드
+     */
+    @POST(API.RECORD)
+    fun uploadRecord(@Body body: Record): Call<JsonElement>
 }

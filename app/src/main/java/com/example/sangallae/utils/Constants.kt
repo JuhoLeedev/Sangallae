@@ -56,6 +56,8 @@ object API {
     //이게 진짜 push 할 때 주석처리 할것!!
 //    const val AWS_ACCESS_KEY: String = ""
 //    const val AWS_SECRET_KEY: String = ""
+    const val S3_UPLOADURL: String = "https://gpxfiles.s3.ap-northeast-2.amazonaws.com/save_test/"
+    const val S3_THUMBNAILURL: String = "https://gpxfiles.s3.ap-northeast-2.amazonaws.com/gpx+thumbnail/default_image.JPG"
     const val S3_BUCKET: String = "gpxfiles"
     const val GPX_DIR: String = "/storage/emulated/0/gpxdata/"
 

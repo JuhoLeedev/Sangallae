@@ -35,6 +35,8 @@ class MyGPX {
         private set
     lateinit var courseGPX: GPX
 
+    var maxEle: Double = 0.0
+    var minEle: Double = 0.0
     var prevEle: Double = 0.0
     var upHill:Double = 0.0
     var downHill:Double = 0.0
@@ -55,22 +57,31 @@ class MyGPX {
     @Throws(IOException::class, InterruptedException::class)
     fun addWayPoint(lat: Double, lon: Double, ele: Double) {
         val newWayPoint = WayPoint.builder().lat(lat).lon(lon).ele(ele).time(ZonedDateTime.now().plusHours(9)).build()
+
+        // 기록된 데이터가 없음
         if (startTime == null) {
             startTime = LocalDateTime.now()
             prevEle = ele
+            maxEle = ele
+            minEle = ele
         }
+
+        // 기록된 데이터가 있음
         else {
             if(prevEle > ele)
                 downHill += (prevEle - ele)
             else if (prevEle < ele)
                 upHill += (ele - prevEle)
             prevEle = ele
-        }
-        if (wayPointsWrite.size > 0) {
             val lastWayPoint = wayPointsWrite[wayPointsWrite.size - 1]
             movingDistance += Geoid.WGS84.distance(lastWayPoint, newWayPoint).toDouble()
+            if(ele > maxEle)
+                maxEle = ele
+            if(ele < minEle)
+                minEle = ele
         }
 
+        // 좌표 추가
         wayPointsWrite.add(newWayPoint)
     }
 
@@ -145,6 +156,9 @@ class MyGPX {
     fun restart() {
         restTimeSec += Duration.between(pauseTime, LocalDateTime.now()).seconds
     }
+    fun getStartTime(): LocalDateTime?{
+        return startTime
+    }
 
     /**
      * Convert Functions
@@ -162,7 +176,8 @@ class MyGPX {
         return (Math.round(distance * 100 / 1000.0) / 100.0).toString() + "km"
     }
 
-    val speed: Double
+    val speed
+    : Double
         get() = movingDistance / movingTimeSec
 
     fun getLeftTime(): Double {
@@ -194,9 +209,9 @@ class MyGPX {
 //
 //        var hour1 = localDateTime.hour
 //        val minute1 = localDateTime.minute
-        val ampm = if (hour < 12) "AM " else "PM "
+        val ampm = if (hour < 12) "오전 " else "오후 "
         hour = if (hour > 12) hour % 12 else hour
-        return ampm + hour + "H " + minute + "M"
+        return ampm + hour + "시 " + minute + "분"
     }
 
 //    @RequiresApi(Build.VERSION_CODES.O)

@@ -6,26 +6,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.amazonaws.AmazonServiceException
-import com.amazonaws.auth.AWSCredentials
-import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread
-import com.amazonaws.regions.Region
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.s3.AmazonS3Client
 import com.example.sangallae.R
-import com.example.sangallae.utils.API.GPX_DIR
+import com.example.sangallae.retrofit.models.Record
 import com.example.sangallae.utils.API.LOCATION_PERMISSION_REQUEST_CODE
-import com.example.sangallae.utils.API.S3_BUCKET
+import com.example.sangallae.utils.API.S3_THUMBNAILURL
+import com.example.sangallae.utils.API.S3_UPLOADURL
 import com.example.sangallae.utils.Constants
+import com.example.sangallae.utils.RESPONSE_STATUS
 import com.example.sangallae.utils.S3FileManager
+import com.example.sangallae.utils.Usage
+import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -35,8 +32,7 @@ import com.naver.maps.map.overlay.LocationOverlay
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
-import java.io.File
-import java.net.MalformedURLException
+import java.lang.Math.round
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
@@ -87,12 +83,52 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         val stopBtn = root.findViewById<ImageButton>(R.id.stopBtn)
         stopBtn.setOnClickListener {
             //목록 fragment로 넘어가기
-            gg.saveGPX("/storage/emulated/0/gpxdata/테스트.gpx")
-            S3FileManager().uploadGPX("/storage/emulated/0/gpxdata/테스트.gpx", "test.gpx")
+            val saveName = "저장테스트_" + LocalDateTime.now().toString() + ".gpx"
+            val uploadName = "업로드테스트_" + LocalDateTime.now().toString() + ".gpx"
+
+            // 1. 휴대폰에 저장
+            gg.saveGPX("/storage/emulated/0/gpxdata/" + saveName)
+            Log.d(Constants.TAG, "저장완료~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+            // 2. S3에 업로드
+            S3FileManager().uploadGPX("/storage/emulated/0/gpxdata/" + saveName, uploadName)
+            Log.d(Constants.TAG, "업로드완료~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             Toast.makeText(this.context,"기록이 저장되었습니다.", Toast.LENGTH_SHORT).show()
+
+
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
             stopFlag = true
+
+            // 3. DB에 삽입
+            val record = Record(
+                course = 1,                             // courseId 받아오는 법을 모르겠음
+                title = LocalDateTime.now().toString(), // 업로드 시간으로
+                filename = uploadName,
+                distance = round(gg.movingDistance*100) / 100.0,
+                moving_time_sec = gg.movingTimeSec,
+                total_time_sec = gg.totalTimeSec,
+                moving_time_str = gg.convertSecondToTime(gg.movingTimeSec),
+                total_time_str = gg.convertSecondToTime(gg.totalTimeSec),
+                avg_speed = round(gg.speed*100)/100.0,
+                avg_pace = round(60.0/gg.speed*100)/100.0,
+                location = "",                          // 주소 어떻게 하지?
+                latitude = gg.getWayPoints()[0].latitude.toDouble(),
+                longitude = gg.getWayPoints()[0].longitude.toDouble(),
+                max_height = gg.maxEle.toInt(),
+                min_height = gg.minEle.toInt(),
+                ele_dif = (gg.maxEle.toInt() - gg.minEle.toInt()),
+                total_uphill = gg.upHill.toInt(),
+                total_downhill =gg.downHill.toInt(),
+                difficulty = "중",                       // 난이도 일단 "중"으로
+                calorie = 100,                          // 칼로리 일단 100으로
+                date = gg.getStartTime().toString(),
+                gpx_url = S3_UPLOADURL + uploadName,
+                thumbnail = S3_THUMBNAILURL
+            )
+
+            uploadRecordApiCall(record)
+
         }
 
         //안내 중단
@@ -292,5 +328,22 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    private fun uploadRecordApiCall(record : Record) {
+        val retrofit = RetrofitManager(Usage.ACCESS)
+        retrofit.uploadRecord(record, completion = { status ->
+            Log.d(Constants.TAG, "status는?"+status)
+            when (status) {
+                RESPONSE_STATUS.OKAY -> {
+                    Log.d(Constants.TAG, "DB삽입완료~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+//                    Toast.makeText(this, "찜 목록에 추가했습니다.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Log.d(Constants.TAG, "DB삽입실패~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+//                    Toast.makeText(this, "찜 목록을 업데이트 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 }

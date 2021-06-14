@@ -1024,7 +1024,6 @@ class RetrofitManager(usage: Usage) {
     }
 
 
-
     // 찜 목록 토글
     fun toggleFavorite(
         favorite: Favorite,
@@ -1055,6 +1054,53 @@ class RetrofitManager(usage: Usage) {
                             }
                             "REMOVED" -> { // 제거 성공
                                 completion(RESPONSE_STATUS.DELETE_SUCCESS)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND)
+                }
+            }
+        })
+    }
+
+    // 레코드 업로드
+    fun uploadRecord(
+        record: Record,
+        completion: (RESPONSE_STATUS) -> Unit
+    ) {
+        val call = iRetrofit?.uploadRecord(body = record) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+
+                completion(RESPONSE_STATUS.FAIL)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val body = it.asJsonObject
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "OK" -> { // 등록 성공
+                                completion(RESPONSE_STATUS.OKAY)
                             }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
