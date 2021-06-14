@@ -6,14 +6,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.databinding.LayoutRecordItemBinding
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.retrofit.models.RecordItem
 
 class MyRecordViewAdapter : RecyclerView.Adapter<MyRecordViewAdapter.RecordItemViewHolder>(){
-    private var recCourseList = ArrayList<CourseItem>()
+    private var recCourseList = ArrayList<RecordItem>()
 
     inner class RecordItemViewHolder(private val itemBinding: LayoutRecordItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
-        fun bindWithView(recordItem: CourseItem) {
-            itemBinding.recordTitle.text = recordItem.name
-            itemBinding.recordTime.text = recordItem.moving_time
+        fun bindWithView(recordItem: RecordItem) {
+            itemBinding.recordTitle.text = recordItem.fileName
+            itemBinding.recordTime.text = recordItem.date
 
             val pos = adapterPosition
             if(pos!= RecyclerView.NO_POSITION)
@@ -49,7 +50,7 @@ class MyRecordViewAdapter : RecyclerView.Adapter<MyRecordViewAdapter.RecordItemV
         return this.recCourseList.size
     }
 
-    fun submitList(courseList: ArrayList<CourseItem>){
+    fun submitList(courseList: ArrayList<RecordItem>){
         this.recCourseList = courseList
     }
 }

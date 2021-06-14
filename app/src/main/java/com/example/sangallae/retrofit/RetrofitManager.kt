@@ -215,6 +215,7 @@ class RetrofitManager(usage: Usage) {
                                 val courseDate = result.get("date").asString
                                 val courseUphill = result.get("total_uphill").asString
                                 val courseDownhill = result.get("total_downhill").asString
+                                val courseLikeState = result.get("like_status").asBoolean
                                 val course = Course(
                                     id = courseId,
                                     name = courseName,
@@ -234,7 +235,8 @@ class RetrofitManager(usage: Usage) {
                                     thumbnail = courseThumbnailUrl,
                                     location = courseLocation,
                                     score = "",
-                                    review_cnt = ""
+                                    review_cnt = "",
+                                    like_status = courseLikeState
                                 )
                                 parsedCourseData = course
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseData)
@@ -780,9 +782,9 @@ class RetrofitManager(usage: Usage) {
 
     // 등산기록 목록
     fun recordList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        completion: (RESPONSE_STATUS, ArrayList<RecordItem>?) -> Unit
     ) {
-        val call = iRetrofit?.recCourseList() ?: return
+        val call = iRetrofit?.recordList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -797,7 +799,7 @@ class RetrofitManager(usage: Usage) {
 
                 if(response.isSuccessful) {
                     response.body()?.let {
-                        val parsedCourseDataArray = ArrayList<CourseItem>()
+                        val parsedCourseDataArray = ArrayList<RecordItem>()
                         val body = it.asJsonObject
                         val result1 = body.getAsJsonObject("data")
                         val results = result1.getAsJsonArray("content")
@@ -809,24 +811,26 @@ class RetrofitManager(usage: Usage) {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
-                                    val courseId = resultItemObject.get("id").asInt
-                                    val courseName = resultItemObject.get("name").asString
-                                    val courseDistance = resultItemObject.get("distance").asString
-                                    val courseMovingTime = resultItemObject.get("moving_time").asString
-                                    val courseElevation = resultItemObject.get("ele_dif").asString
-                                    val courseDifficulty = resultItemObject.get("difficulty").asString
-                                    val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
+                                    val recordId = resultItemObject.get("id").asInt
+                                    val recordFileName = resultItemObject.get("name").asString
+                                    val recordDistance = resultItemObject.get("distance").asString
+                                    val recordTime = resultItemObject.get("time").asString
+                                    val recordElevation = resultItemObject.get("height").asString
+                                    val recordCalorie = resultItemObject.get("calorie").asString
+                                    val recordThumbnailUrl = resultItemObject.get("thumbnail").asString
+                                    val recordDate = resultItemObject.get("date").asString
 
-                                    val courseItem = CourseItem(
-                                        id = courseId,
-                                        name = courseName,
-                                        distance = courseDistance,
-                                        moving_time = courseMovingTime,
-                                        ele_dif = courseElevation + "m",
-                                        thumbnail = courseThumbnailUrl,
-                                        difficulty = courseDifficulty
+                                    val recordItem = RecordItem(
+                                        id = recordId,
+                                        fileName = recordFileName,
+                                        distance = recordDistance,
+                                        time = recordTime,
+                                        height = recordElevation,
+                                        thumbnail = recordThumbnailUrl,
+                                        calorie = recordCalorie,
+                                        date = recordDate
                                     )
-                                    parsedCourseDataArray.add(courseItem)
+                                    parsedCourseDataArray.add(recordItem)
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
                             }
