@@ -75,6 +75,7 @@ class CourseDetailActivity : AppCompatActivity() {
             url = it.url
             Glide.with(GlobalApplication.instance).load(it.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
+            binding.favoriteBtn.isSelected = it.like_status
         })
         binding.detailDownload.setOnClickListener(clickDownloadLinearLayout())
         binding.detailFollow.setOnClickListener(clickFollowLinearLayout())

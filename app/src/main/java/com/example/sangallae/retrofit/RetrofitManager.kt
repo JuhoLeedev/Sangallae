@@ -215,6 +215,7 @@ class RetrofitManager(usage: Usage) {
                                 val courseDate = result.get("date").asString
                                 val courseUphill = result.get("total_uphill").asString
                                 val courseDownhill = result.get("total_downhill").asString
+                                val courseLikeState = result.get("like_status").asBoolean
                                 val course = Course(
                                     id = courseId,
                                     name = courseName,
@@ -234,7 +235,8 @@ class RetrofitManager(usage: Usage) {
                                     thumbnail = courseThumbnailUrl,
                                     location = courseLocation,
                                     score = "",
-                                    review_cnt = ""
+                                    review_cnt = "",
+                                    like_status = courseLikeState
                                 )
                                 parsedCourseData = course
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseData)
