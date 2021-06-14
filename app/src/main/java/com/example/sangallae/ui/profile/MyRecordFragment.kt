@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
@@ -17,6 +18,7 @@ import com.example.sangallae.databinding.ActivityCourseDetailBinding
 import com.example.sangallae.databinding.CourseDetailFragmentBinding
 import com.example.sangallae.databinding.FragmentMyrecordBinding
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.retrofit.models.RecordItem
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.ui.home.CourseViewAdapter
 import com.example.sangallae.ui.home.HomeViewModel
@@ -28,7 +30,7 @@ import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 class MyRecordFragment : Fragment() {
     private lateinit var recordViewModel: MyRecordViewModel
     private lateinit var recordViewAdapter: MyRecordViewAdapter
-    private var courseList = ArrayList<CourseItem>()
+    private var courseList = ArrayList<RecordItem>()
 
     private var _binding: FragmentMyrecordBinding? = null
     private val binding get() = _binding!!
@@ -41,21 +43,21 @@ class MyRecordFragment : Fragment() {
         _binding = FragmentMyrecordBinding.inflate(inflater, container, false)
         val view = binding.root
         binding.myRecordToolbar.inflateMenu(R.menu.profile_menu)
-        val root = inflater.inflate(R.layout.fragment_myrecord, container, false)
         setHasOptionsMenu(true)
 
         this.recordViewAdapter = MyRecordViewAdapter()
         this.recordViewAdapter.submitList(courseList)
 
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.my_record)?.layoutManager =
+        binding.myRecord.layoutManager =
             LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.my_record)?.adapter =
+        binding.myRecord.adapter =
             this.recordViewAdapter
+        binding.myRecord.addItemDecoration(DividerItemDecoration(context,1))
 
         recordApiCall()
 
