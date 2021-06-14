@@ -3,6 +3,7 @@ package com.example.sangallae.ui.home
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.Home
 import com.example.sangallae.retrofit.models.Mountain
+import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.*
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
@@ -113,15 +115,28 @@ class HomeFragment : Fragment() {
         root.findViewById<RecyclerView>(R.id.nearMtn)?.adapter =
             this.nearMountainAdapter
 
-//        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
-//            override fun onItemClick(v: View, data: Int, pos : Int) {
-//                Intent(activity, CourseDetailActivity::class.java).apply {
-//                    putExtra("id", data)
-//                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                }.run { startActivity(this) }
-//            }
-//        })
-        //homeLoadApiCall()
+
+        // 메인 추천 등산로 -> 등산로 상세
+        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
+            override fun onItemClick(v: View, data: Int, pos : Int) {
+                Intent(activity, CourseDetailActivity::class.java).apply {
+                    putExtra("id", data)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.run { startActivity(this) }
+            }
+        })
+
+        // 메인 인기 등산로 -> 등산로 상세
+        popularCourseAdapter.setOnItemClickListener(object : PopularCourseAdapter.OnItemClickListener{
+            override fun onItemClick(v: View, data: Int, pos : Int) {
+                Intent(activity, CourseDetailActivity::class.java).apply {
+                    putExtra("id", data)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.run { startActivity(this) }
+            }
+        })
+
+        homeLoadApiCall()
 
 
         // 추천 등산로 더보기 버튼
