@@ -101,9 +101,11 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             stopFlag = true
 
             // 3. DB에 삽입
+            val now = LocalDateTime.now()
+            val title = "Track_"+String.format("%04d-%02d-%02d %02d:%02d:%02d", now.year, now.monthValue, now.dayOfMonth, now.hour, now.minute, now.second)
             val record = Record(
                 course = 1,                             // courseId 받아오는 법을 모르겠음
-                title = LocalDateTime.now().toString(), // 업로드 시간으로
+                title = title,
                 filename = uploadName,
                 distance = round(gg.movingDistance*100) / 100.0,
                 moving_time_sec = gg.movingTimeSec,
