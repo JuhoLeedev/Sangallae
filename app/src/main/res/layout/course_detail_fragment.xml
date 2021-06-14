@@ -379,7 +379,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/detail_ele_dif"
+                android:text="@string/ele_dif"
                 android:textColor="@color/custom_black"
                 android:textSize="16sp"
                 app:layout_constraintHorizontal_weight="1"

@@ -67,7 +67,7 @@
     <string name="detail_moving_time">Moving Time</string>
     <string name="detail_avg_pace">Average Pace</string>
     <string name="detail_min_height">Min Elevation</string>
-    <string name="detail_ele_dif">Ele Difference</string>
+    <string name="ele_dif">Elevation Diff</string>
     <string name="detail_uphill">Uphill</string>
     <string name="detail_downhill">Downhill</string>
     <string name="str_my_record">My Records</string>
@@ -78,7 +78,7 @@
     <string name="mycourse">Courses that suit you</string>
     <string name="popular">Hot Courses</string>
     <string name="popMtn">Hot Mountains</string>
-    <string name="near">Nearby Courses</string>
+    <string name="near">Nearby Mountains</string>
     <string name="recCourseList">Recommended Course List</string>
     <string name="hotCourseList">Hot Course List</string>
     <string name="hotMountainList">Hot Mountain List</string>
@@ -95,4 +95,5 @@
     <string name="arrival_time">Expected arrival time</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="my_records">My Records</string>
+    <string name="no_near_mountain">Sorry, couldn\'t find nearby mountains</string>
 </resources>

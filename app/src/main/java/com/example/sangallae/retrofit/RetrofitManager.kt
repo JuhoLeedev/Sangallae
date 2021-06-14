@@ -226,7 +226,7 @@ class RetrofitManager(usage: Usage) {
                                     min_height = courseMinHeight + "m",
                                     avg_speed = courseAvgSpeed + "km/h",
                                     avg_pace = courseAvgPace + "min/h",
-                                    ele_dif = courseEleDif,
+                                    ele_dif = courseEleDif + "m",
                                     difficulty = courseDifficulty,
                                     url = courseUrl,
                                     date = courseDate,
@@ -562,9 +562,9 @@ class RetrofitManager(usage: Usage) {
     
     //추천 등산로 더보기
     fun recCourseList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        page:Int, completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
-        val call = iRetrofit?.recCourseList() ?: return
+        val call = iRetrofit?.recCourseList(page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -581,13 +581,13 @@ class RetrofitManager(usage: Usage) {
                     response.body()?.let {
                         val parsedCourseDataArray = ArrayList<CourseItem>()
                         val body = it.asJsonObject
-                        val result1 = body.getAsJsonObject("data")
-                        val results = result1.getAsJsonArray("content")
+
                        // val results = body.getAsJsonArray("data")
                         val message = body.get("message")
-
                         when (val status = body.get("status").asString) {
                             "OK" -> {
+                                val result1 = body.getAsJsonObject("data")
+                                val results = result1.getAsJsonArray("content")
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
@@ -602,7 +602,7 @@ class RetrofitManager(usage: Usage) {
                                     val courseItem = CourseItem(
                                         id = courseId,
                                         name = courseName,
-                                        distance = courseDistance,
+                                        distance = courseDistance + "km",
                                         moving_time = courseMovingTime,
                                         ele_dif = courseElevation + "m",
                                         thumbnail = courseThumbnailUrl,
@@ -612,10 +612,10 @@ class RetrofitManager(usage: Usage) {
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
                             }
-//                            "NO_CONTENT" -> {
-//                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-//                                completion(RESPONSE_STATUS.NO_CONTENT, null)
-//                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
+                            }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 completion(RESPONSE_STATUS.BAD_REQUEST, null)
@@ -677,7 +677,7 @@ class RetrofitManager(usage: Usage) {
                                     val courseItem = CourseItem(
                                         id = courseId,
                                         name = courseName,
-                                        distance = courseDistance,
+                                        distance = courseDistance + "km",
                                         moving_time = courseMovingTime,
                                         ele_dif = courseElevation + "m",
                                         thumbnail = courseThumbnailUrl,

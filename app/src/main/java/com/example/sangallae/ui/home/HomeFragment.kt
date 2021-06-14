@@ -40,11 +40,8 @@ class HomeFragment : Fragment() {
     lateinit var navController: NavController
     private lateinit var locationManager: LocationManager
     private lateinit var greetingTextView: TextView
-//    private var lat = 0.0
-//    private var lon = 0.0
-    // 일단 눈속임
-    private var lat = 37.44659903926295
-    private var lon = 126.65384268084867
+    private var lat = 0.0
+    private var lon = 0.0
 
 
     override fun onCreateView(
@@ -64,7 +61,8 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
 
         greetingTextView = root.findViewById(R.id.home_greeting1)
-
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        getLatLon()
 
         // 추천 화면 갱신
         //refreshHome()
@@ -117,6 +115,7 @@ class HomeFragment : Fragment() {
             this.nearMountainAdapter
 
 
+
         // 메인 추천 등산로 -> 등산로 상세
         recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
             override fun onItemClick(v: View, data: Int, pos : Int) {
@@ -161,10 +160,8 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_navigation_home_to_navigation_hot_mountain)
         }
 
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        getLatLon()
+
         Log.d("gps", "$lat, $lon")
-        homeLoadApiCall()
         return root
     }
 //
@@ -210,6 +207,13 @@ class HomeFragment : Fragment() {
                         this.nearMtnList = list4
                         nearMountainAdapter.submitList(this.nearMtnList)
                         nearMountainAdapter.notifyDataSetChanged()
+                        if(list4.size == 0){
+                            val textView = view?.findViewById<TextView>(R.id.no_nearMtn_textview)
+                            if (textView != null) {
+                                Log.d("야야", "여기는 null안")
+                                textView.visibility = View.VISIBLE
+                            }
+                        }
                         //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
                     }
                 }
@@ -235,8 +239,15 @@ class HomeFragment : Fragment() {
                     10.0f,  // 10 meters
                     gpsListener)
 
-                val location : Location? = locationManager
+                var location : Location? = locationManager
                     .getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                if (location != null) {
+                    lat = location.latitude
+                    lon = location.longitude
+                    Log.d("gps", "GPS Location changed, Latitude: $lat" +
+                            ", Longitude: $lon")
+                }
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                 if (location != null) {
                     lat = location.latitude
                     lon = location.longitude

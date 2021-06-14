@@ -10,16 +10,19 @@ import com.example.sangallae.GlobalApplication
 
 import com.example.sangallae.R
 import com.example.sangallae.databinding.LayoutCourseItemBinding
+import com.example.sangallae.databinding.LayoutLoadingItemBinding
 import com.example.sangallae.retrofit.models.CourseItem
 
-class CourseViewAdapter : RecyclerView.Adapter<CourseViewAdapter.CourseItemViewHolder>() {
+class CourseViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val VIEW_TYPE_ITEM = 0
+    private val VIEW_TYPE_LOADING = 1
+    private var items = ArrayList<CourseItem>()
 
-    private var courseList = ArrayList<CourseItem>()
-
+    // course item이 들어가는 경우
     inner class CourseItemViewHolder(private val itemBinding: LayoutCourseItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bindWithView(courseItem: CourseItem) {
             itemBinding.courseTitle.text = courseItem.name
-            itemBinding.itemDistanceValue.text = courseItem.distance + "km"
+            itemBinding.itemDistanceValue.text = courseItem.distance
             itemBinding.itemHeighValue.text = courseItem.ele_dif
             itemBinding.itemTimeValue.text = courseItem.moving_time
             itemBinding.itemDifficulty.text = courseItem.difficulty
@@ -41,6 +44,9 @@ class CourseViewAdapter : RecyclerView.Adapter<CourseViewAdapter.CourseItemViewH
         }
     }
 
+    // progress bar item이 들어가는 경우
+    inner class LoadingViewHolder(private val binding: LayoutLoadingItemBinding) : RecyclerView.ViewHolder(binding.root)
+
     interface OnItemClickListener{
         fun onItemClick(v:View, data: Int, pos : Int)
     }
@@ -49,23 +55,45 @@ class CourseViewAdapter : RecyclerView.Adapter<CourseViewAdapter.CourseItemViewH
         this.listener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseItemViewHolder {
-        val itemBinding = LayoutCourseItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CourseItemViewHolder(itemBinding)
+    override fun getItemViewType(position: Int): Int {
+        // 게시물과 프로그레스바 아이템뷰를 구분할 기준이 필요하다.
+        return when (items[position].id) {
+            -1 -> VIEW_TYPE_LOADING
+            else -> VIEW_TYPE_ITEM
+        }
     }
 
-    override fun onBindViewHolder(
-        holder: CourseItemViewHolder,
-        position: Int
-    ) {
-        holder.bindWithView(this.courseList[position])
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : RecyclerView.ViewHolder {
+        return when (viewType) {
+            VIEW_TYPE_ITEM -> {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = LayoutCourseItemBinding.inflate(layoutInflater, parent, false)
+                CourseItemViewHolder(binding)
+            }
+            else -> {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = LayoutLoadingItemBinding.inflate(layoutInflater, parent, false)
+                LoadingViewHolder(binding)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
-        return this.courseList.size
+        return this.items.size
     }
 
     fun submitList(courseList: ArrayList<CourseItem>){
-        this.courseList = courseList
+        items.addAll(courseList)
+        items.add(CourseItem(-1, " ", " ", " ", " ", " ", " "))
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if(holder is CourseItemViewHolder){
+            holder.bindWithView(items[position])
+        }
+    }
+
+    fun deleteLoading(){
+        items.removeAt(items.lastIndex) // 로딩이 완료되면 프로그레스바를 지움
     }
 }
