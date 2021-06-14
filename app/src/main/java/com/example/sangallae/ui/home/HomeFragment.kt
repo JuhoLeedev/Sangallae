@@ -1,7 +1,5 @@
 package com.example.sangallae.ui.home
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -41,6 +39,7 @@ class HomeFragment : Fragment() {
     private lateinit var nearMountainAdapter: NearMountainAdapter
     lateinit var navController: NavController
     private lateinit var locationManager: LocationManager
+    private lateinit var greetingTextView: TextView
 //    private var lat = 0.0
 //    private var lon = 0.0
     // 일단 눈속임
@@ -63,6 +62,8 @@ class HomeFragment : Fragment() {
         //hToolbar?.elevation = 0f
 
         setHasOptionsMenu(true)
+
+        greetingTextView = root.findViewById(R.id.home_greeting1)
 
 
         // 추천 화면 갱신
@@ -178,9 +179,10 @@ class HomeFragment : Fragment() {
 
     private fun homeLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.homeLoad(lat = lat, lon = lon, completion = { status, list1, list2, list3, list4 ->
+        retrofit.homeLoad(lat = lat, lon = lon, completion = { status, nickName, list1, list2, list3, list4 ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
+                    greetingTextView.text = nickName + resources.getString(R.string.greeting1)
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
                     if (list1 != null) {
                         this.recCourseList.clear()
