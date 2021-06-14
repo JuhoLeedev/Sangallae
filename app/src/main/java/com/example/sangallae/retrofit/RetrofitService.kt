@@ -53,7 +53,7 @@ interface RetrofitService {
     fun recCourseList(@Query("page") page: Int): Call<JsonElement>
 
     @GET(API.HOT_COURSE_LIST)
-    fun hotCourseList(): Call<JsonElement>
+    fun hotCourseList(@Query("page") page: Int): Call<JsonElement>
 
     @GET(API.HOT_MOUNTAIN_LIST)
     fun hotMountainList(): Call<JsonElement>

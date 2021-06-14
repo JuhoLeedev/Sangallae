@@ -60,7 +60,7 @@ class RecCourseList : Fragment() {
 
         this.recCourseListAdapter.submitList(courseList)
         // 페이지당 아이템 20개
-        //recCourseListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
+        recCourseListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
 
         recCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
             override fun onItemClick(v: View, data: Int, pos : Int) {

@@ -637,9 +637,9 @@ class RetrofitManager(usage: Usage) {
 
     //인기 등산로 더보기
     fun hotCourseList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        page: Int, completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
-        val call = iRetrofit?.hotCourseList() ?: return
+        val call = iRetrofit?.hotCourseList(page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -686,6 +686,10 @@ class RetrofitManager(usage: Usage) {
                                     parsedCourseDataArray.add(courseItem)
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
+                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
                             }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
