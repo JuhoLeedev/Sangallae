@@ -1,5 +1,6 @@
 package com.example.sangallae.retrofit
 
+import com.example.sangallae.retrofit.models.Favorite
 import com.example.sangallae.retrofit.models.JsonToken
 import com.example.sangallae.utils.API
 import com.google.gson.JsonElement
@@ -42,6 +43,9 @@ interface RetrofitService {
     @GET(API.FAVORITES)
     fun favoriteCourses(): Call<JsonElement>
 
+    @POST(API.FAVORITES)
+    fun toggleFavorite(@Body body: Favorite): Call<JsonElement>
+
     @GET(API.HOME_LOAD)
     fun homeLoad(@Query("latitude") lat: Double, @Query("longitude") lon: Double): Call<JsonElement>
 
@@ -56,4 +60,5 @@ interface RetrofitService {
 
     @GET(API.RECORD)
     fun recordList(): Call<JsonElement>
+
 }

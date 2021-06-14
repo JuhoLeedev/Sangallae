@@ -8,7 +8,17 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
-
+//    packagingOptions {
+//        exclude 'META-INF/DEPENDENCIES'
+//        exclude 'META-INF/LICENSE'
+//        exclude 'META-INF/LICENSE.txt'
+//        exclude 'META-INF/license.txt'
+//        exclude 'META-INF/NOTICE'
+//        exclude 'META-INF/NOTICE.txt'
+//        exclude 'META-INF/notice.txt'
+//        exclude 'META-INF/ASL2.0'
+//        exclude("META-INF/*.kotlin_module")
+//    }
     defaultConfig {
         applicationId "com.example.sangallae"
         minSdkVersion 23
@@ -89,15 +99,21 @@ dependencies {
     implementation 'com.naver.maps:map-sdk:3.11.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
 
-    implementation 'io.jenetics:jpx:2.2.0'
-    implementation 'stax:stax-api:1.0.1'
-    implementation 'com.fasterxml:aalto-xml:1.1.1'
+
+    // 특정 gpx 파일 안읽히는 문제 -> jpx 2.2.0에서 jpx1.4.0으로 변경 (호환성 문제인듯)
+//    implementation 'io.jenetics:jpx:2.2.0'
+    implementation 'io.jenetics:jpx:1.4.0'  // jpx 최신버전: https://github.com/jenetics/jpx
+    implementation 'stax:stax-api:1.0.1'    // stax 최신버전: https://mvnrepository.com/artifact/stax/stax-api
+    implementation 'com.fasterxml:aalto-xml:1.1.0'  // aalto-xml 최신버전: https://mvnrepository.com/artifact/com.fasterxml/aalto-xml
+
+
+//    implementation 'javax.xml.stream:stax-api:1.0'
    // implementation 'commons-codec:commons-codec:1.10'
-    //implementation 'javax.xml.stream:stax-api:1.0'
 
     // S3
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.5'
     implementation 'com.amazonaws:aws-android-sdk-s3:2.13.5'
     implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.13.5'
 
+//    implementation 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
 }
