@@ -59,14 +59,14 @@ class HotMountainList : Fragment() {
         root.findViewById<RecyclerView>(R.id.hot_mountain_recycler_view)?.adapter =
             this.hotMountainListAdapter
 
-        hotMountainListAdapter.setOnItemClickListener(object : MountainViewAdapter.OnItemClickListener{
-            override fun onItemClick(v: View, data: Int, pos : Int) {
-                Intent(activity, CourseDetailActivity::class.java).apply {
-                    putExtra("id", data)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }.run { startActivity(this) }
-            }
-        })
+//        hotMountainListAdapter.setOnItemClickListener(object : MountainViewAdapter.OnItemClickListener{
+//            override fun onItemClick(v: View, data: Int, pos : Int) {
+//                Intent(activity, CourseDetailActivity::class.java).apply {
+//                    putExtra("id", data)
+//                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                }.run { startActivity(this) }
+//            }
+//        })
 
         hotMountainApiCall()
 
