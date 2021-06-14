@@ -427,7 +427,7 @@ class RetrofitManager(usage: Usage) {
     //홈화면 목록 업데이트
     fun homeLoad(
         lat: Double, lon: Double,
-        completion: (RESPONSE_STATUS, ArrayList<Home>?, ArrayList<Home>?, ArrayList<Mountain>?, ArrayList<Mountain>?) -> Unit
+        completion: (RESPONSE_STATUS, String, ArrayList<Home>?, ArrayList<Home>?, ArrayList<Mountain>?, ArrayList<Mountain>?) -> Unit
     ) {
         val call = iRetrofit?.homeLoad(lat = lat, lon = lon) ?: return
 
@@ -435,7 +435,7 @@ class RetrofitManager(usage: Usage) {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
-                completion(RESPONSE_STATUS.FAIL, null, null, null, null)
+                completion(RESPONSE_STATUS.FAIL, "", null, null, null, null)
             }
 
             // 응답 성공시
@@ -456,6 +456,7 @@ class RetrofitManager(usage: Usage) {
                         val hot = data.getAsJsonArray("hotCourse")
                         val hotM = data.getAsJsonArray("hotMountain")
                         val nearM = data.getAsJsonArray("nearMountain")
+                        val nickName = data.get("nickname").asString
 
                         val message = body.get("message")
 
@@ -534,26 +535,26 @@ class RetrofitManager(usage: Usage) {
                                     )
                                     parsedCourseDataArray4.add(courseItem)
                                 }
-                                completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray1, parsedCourseDataArray2, parsedCourseDataArray3, parsedCourseDataArray4)
+                                completion(RESPONSE_STATUS.OKAY, nickName, parsedCourseDataArray1, parsedCourseDataArray2, parsedCourseDataArray3, parsedCourseDataArray4)
                             }
                             "NO_CONTENT" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.NO_CONTENT, null, null, null, null)
+                                completion(RESPONSE_STATUS.NO_CONTENT, "", null, null, null, null)
                             }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.BAD_REQUEST, null, null, null, null)
+                                completion(RESPONSE_STATUS.BAD_REQUEST, "", null, null, null, null)
                             }
                             "UNAUTHORIZED" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.UNAUTHORIZED, null, null, null, null)
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, "", null, null, null, null)
                             }
                         }
                     }
                 }
                 else {
                     Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
-                    completion(RESPONSE_STATUS.NOT_FOUND, null, null, null, null)
+                    completion(RESPONSE_STATUS.NOT_FOUND, "", null, null, null, null)
                 }
             }
         })
