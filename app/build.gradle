@@ -2,12 +2,23 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.google.gms.google-services'
+    id "androidx.navigation.safeargs.kotlin"
 }
 
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
-
+//    packagingOptions {
+//        exclude 'META-INF/DEPENDENCIES'
+//        exclude 'META-INF/LICENSE'
+//        exclude 'META-INF/LICENSE.txt'
+//        exclude 'META-INF/license.txt'
+//        exclude 'META-INF/NOTICE'
+//        exclude 'META-INF/NOTICE.txt'
+//        exclude 'META-INF/notice.txt'
+//        exclude 'META-INF/ASL2.0'
+//        exclude("META-INF/*.kotlin_module")
+//    }
     defaultConfig {
         applicationId "com.example.sangallae"
         minSdkVersion 23
@@ -31,12 +42,16 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
@@ -45,9 +60,13 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:26.8.0')
@@ -55,18 +74,46 @@ dependencies {
     // Declare the dependencies for any other desired Firebase products
     // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
     implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-auth:20.0.4'
+    implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
-    //카카오
+    // 카카오
     implementation "com.kakao.sdk:v2-user:2.5.0"
+    implementation "com.kakao.sdk:usermgmt:1.27.0"
 
     // 네이버 아이디로 로그인
     implementation 'com.naver.nid:naveridlogin-android-sdk:4.2.6'
 
-    //
-    implementation 'com.squareup.retrofit2:retrofit:2.6.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
 
+    // retrofit
+    def retrofit_version = "2.8.1"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    // naver map
+    implementation 'com.naver.maps:map-sdk:3.11.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+
+    // 특정 gpx 파일 안읽히는 문제 -> jpx 2.2.0에서 jpx1.4.0으로 변경 (호환성 문제인듯)
+//    implementation 'io.jenetics:jpx:2.2.0'
+    implementation 'io.jenetics:jpx:1.4.0'  // jpx 최신버전: https://github.com/jenetics/jpx
+    implementation 'stax:stax-api:1.0.1'    // stax 최신버전: https://mvnrepository.com/artifact/stax/stax-api
+    implementation 'com.fasterxml:aalto-xml:1.1.0'  // aalto-xml 최신버전: https://mvnrepository.com/artifact/com.fasterxml/aalto-xml
+
+
+//    implementation 'javax.xml.stream:stax-api:1.0'
+   // implementation 'commons-codec:commons-codec:1.10'
+
+    // S3
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.13.5'
+
+//    implementation 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
 }
-apply plugin: "androidx.navigation.safeargs.kotlin"

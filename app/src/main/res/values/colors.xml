@@ -11,4 +11,10 @@
     <color name="light_gray">#FFD1D3D4</color>
     <color name="white">#FFFFFFFF</color>
     <color name="custom_white">#FFFAFAFA</color>
+    <color name="custom_yellow">#FFF7E600</color>
+    <color name="difficulty_red">#FFFF3120</color>
+    <color name="difficulty_yellow">#FFF7E600</color>
+    <color name="difficulty_green">#FF87ff52</color>
+    <color name="kakao_yellow">#FEE500</color>
+    <color name="sky_blue">#4285F4</color>
 </resources>

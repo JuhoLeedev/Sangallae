@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardUseCompatPadding="false"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/course_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_baseline_photo_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/course_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="연인산 남두봉 "
+            android:textColor="@color/custom_black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/course_image_view" />
+
+        <TextView
+            android:id="@+id/item_distance"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/str_course_distance"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/course_title" />
+
+        <TextView
+            android:id="@+id/item_height"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/ele_dif"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@+id/item_distance"
+            app:layout_constraintTop_toBottomOf="@+id/course_title" />
+
+        <TextView
+            android:id="@+id/item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/str_course_time"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@+id/item_height"
+            app:layout_constraintTop_toBottomOf="@+id/course_title" />
+
+        <TextView
+            android:id="@+id/item_distance_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1km"
+            android:textColor="@color/custom_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_distance" />
+
+        <TextView
+            android:id="@+id/item_heigh_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="500m"
+            android:textColor="@color/custom_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/item_height"
+            app:layout_constraintTop_toBottomOf="@+id/item_height" />
+
+        <TextView
+            android:id="@+id/item_time_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5시간 18분 23초"
+            android:textColor="@color/custom_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/item_time"
+            app:layout_constraintTop_toBottomOf="@+id/item_time" />
+
+
+        <LinearLayout
+            android:id="@+id/difficulty_layout"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background_yellow"
+            android:gravity="center"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/item_difficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/str_difficulty_easy"
+                android:textAlignment="center"
+                android:textColor="@color/custom_white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

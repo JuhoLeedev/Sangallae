@@ -14,7 +14,7 @@
         app:itemIconTint="@color/icons_selector"
         app:itemRippleColor="@color/white"
         app:itemTextColor="@color/icons_selector"
-        app:labelVisibilityMode="auto"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

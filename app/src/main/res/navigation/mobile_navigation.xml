@@ -9,17 +9,61 @@
         android:id="@+id/navigation_home"
         android:name="com.example.sangallae.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_searchActivity"
+            app:destination="@id/navigation"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popUpTo="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_rec_course"
+            app:destination="@id/navigation_rec_course" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_hot_course"
+            app:destination="@id/navigation_hot_course" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_hot_mountain"
+            app:destination="@id/navigation_hot_mountain" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_rec_course"
+        android:name="com.example.sangallae.ui.home.RecCourseList"
+        android:label="@string/recCourseList"
+        tools:layout="@layout/recommended_course_list" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_hot_course"
+        android:name="com.example.sangallae.ui.home.HotCourseList"
+        android:label="@string/hotCourseList"
+        tools:layout="@layout/hot_course_list" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_hot_mountain"
+        android:name="com.example.sangallae.ui.home.HotMountainList"
+        android:label="@string/hotMountainList"
+        tools:layout="@layout/hot_course_list" >
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_favorites"
         android:name="com.example.sangallae.ui.favorites.FavoritesFragment"
         android:label="@string/title_favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_navigation_favorites_to_searchActivity"
+            app:destination="@id/navigation"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popUpTo="@id/navigation_favorites" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_map"
-        android:name="com.example.sangallae.ui.map.MapFragment"
+        android:name="com.example.sangallae.ui.map.MainMapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
 
@@ -27,5 +71,35 @@
         android:id="@+id/navigation_profile"
         android:name="com.example.sangallae.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_myRecordFragment"
+            app:destination="@id/myRecordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/courseDetailFragment"
+        android:name="com.example.sangallae.ui.detail.CourseDetailFragment"
+        android:label="course_detail_fragment"
+        tools:layout="@layout/course_detail_fragment" >
+        <argument
+            android:name="courseId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <navigation android:id="@+id/navigation"
+        app:startDestination="@id/searchActivity">
+        <activity
+            android:id="@+id/searchActivity"
+            android:name="com.example.sangallae.ui.search.SearchActivity"
+            android:label="activity_search"
+            tools:layout="@layout/activity_search" />
+        <action
+            android:id="@+id/action_global_courseDetailFragment"
+            app:destination="@id/courseDetailFragment" />
+    </navigation>
+    <fragment
+        android:id="@+id/myRecordFragment"
+        android:name="com.example.sangallae.ui.profile.MyRecordFragment"
+        android:label="fragment_myrecord"
+        tools:layout="@layout/fragment_myrecord" />
 </navigation>

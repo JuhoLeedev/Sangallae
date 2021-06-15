@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardUseCompatPadding="false"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/mountain_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_baseline_photo_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/mountain_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="연인산 남두봉 "
+            android:textColor="@color/custom_black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mountain_image_view" />
+
+<!--        <TextView-->
+<!--            android:id="@+id/item_location"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@color/custom_black"-->
+<!--            android:textSize="14sp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />-->
+
+        <TextView
+            android:id="@+id/item_height"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/str_course_height"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />
+
+
+        <TextView
+            android:id="@+id/item_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/location"
+            android:textColor="@color/dark_gray"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@+id/item_height"
+            app:layout_constraintTop_toBottomOf="@+id/mountain_title" />
+
+        <TextView
+            android:id="@+id/item_heigh_value"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="500m"
+            android:textColor="@color/custom_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/item_distance_value"
+            app:layout_constraintTop_toBottomOf="@+id/item_height" />
+
+        <TextView
+            android:id="@+id/item_location_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인천광역시 미추홀구 용현동"
+            android:textColor="@color/custom_black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/item_heigh_value"
+            app:layout_constraintTop_toBottomOf="@+id/item_time" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
