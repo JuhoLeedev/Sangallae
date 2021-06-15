@@ -25,6 +25,8 @@ class HotCourseList : Fragment() {
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
     private var courseList = ArrayList<CourseItem>()
     private lateinit var hotCourseListAdapter: CourseViewAdapter
+    private lateinit var recyclerView: RecyclerView
+    private var page = 1;
     //private lateinit var callback: OnBackPressedCallback
 
     override fun onCreateView(
@@ -45,18 +47,21 @@ class HotCourseList : Fragment() {
 
         // 추천 화면 갱신
         //refreshHome()
-        this.hotCourseListAdapter = CourseViewAdapter()
-        this.hotCourseListAdapter.submitList(courseList)
+        hotCourseApiCall()
+
+        recyclerView = root.findViewById(R.id.hot_course_recycler_view)
 
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.hot_course_recycler_view)?.layoutManager =
+        recyclerView.layoutManager =
             LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.hot_course_recycler_view)?.adapter =
-            this.hotCourseListAdapter
+        this.hotCourseListAdapter = CourseViewAdapter()
+        recyclerView.adapter = this.hotCourseListAdapter
+        this.hotCourseListAdapter.submitList(courseList)
+        hotCourseListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
 
         hotCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
             override fun onItemClick(v: View, data: Int, pos : Int) {
@@ -67,14 +72,30 @@ class HotCourseList : Fragment() {
             }
         })
 
-        hotCourseApiCall()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter!!.itemCount-1
+
+                // 스크롤이 끝에 도달했는지 확인
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
+                    hotCourseListAdapter.deleteLoading()
+                    hotCourseApiCall(++page)
+                }
+            }
+        })
+
+
 
         return root
     }
 
-    private fun hotCourseApiCall() {
+    private fun hotCourseApiCall(page : Int) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.hotCourseList(completion = { status, list ->
+        retrofit.hotCourseList(page, completion = { status, list ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
@@ -88,6 +109,12 @@ class HotCourseList : Fragment() {
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()
                     }
+                }
+                RESPONSE_STATUS.NO_CONTENT -> {
+                    if (!recyclerView.canScrollVertically(1)) {
+                        hotCourseListAdapter.deleteLoading()
+                    }
+                    Toast.makeText(this.context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     Log.d(

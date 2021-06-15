@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
+import com.example.sangallae.databinding.RecommendedCourseListBinding
 import com.example.sangallae.retrofit.models.CourseItem
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.Constants
@@ -23,6 +24,8 @@ class RecCourseList : Fragment() {
     private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
     private var courseList = ArrayList<CourseItem>()
     private lateinit var recCourseListAdapter: CourseViewAdapter
+    private lateinit var recyclerView: RecyclerView
+    private var page = 1  // 현재 페이지
 
 
     override fun onCreateView(
@@ -43,18 +46,21 @@ class RecCourseList : Fragment() {
 
         // 추천 화면 갱신
         //refreshHome()
-        this.recCourseListAdapter = CourseViewAdapter()
-        this.recCourseListAdapter.submitList(courseList)
+        recCourseApiCall(page)
 
+        recyclerView = root.findViewById(R.id.rec_course_recycler_view)
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.rec_course_recycler_view)?.layoutManager =
-            LinearLayoutManager(
+        recyclerView.layoutManager = LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.rec_course_recycler_view)?.adapter =
-            this.recCourseListAdapter
+        this.recCourseListAdapter = CourseViewAdapter()
+        recyclerView.adapter = this.recCourseListAdapter
+
+        this.recCourseListAdapter.submitList(courseList)
+        // 페이지당 아이템 20개
+        recCourseListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
 
         recCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
             override fun onItemClick(v: View, data: Int, pos : Int) {
@@ -64,15 +70,28 @@ class RecCourseList : Fragment() {
                 }.run { startActivity(this) }
             }
         })
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
 
-        recCourseApiCall()
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter!!.itemCount-1
+
+                // 스크롤이 끝에 도달했는지 확인
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
+                    recCourseListAdapter.deleteLoading()
+                    recCourseApiCall(++page)
+                }
+            }
+        })
 
         return root
     }
 
-    private fun recCourseApiCall() {
+    private fun recCourseApiCall(page: Int) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.recCourseList(completion = { status, list ->
+        retrofit.recCourseList(page, completion = { status, list ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
@@ -86,6 +105,12 @@ class RecCourseList : Fragment() {
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()
                     }
+                }
+                RESPONSE_STATUS.NO_CONTENT -> {
+                    if (!recyclerView.canScrollVertically(1)) {
+                        recCourseListAdapter.deleteLoading()
+                    }
+                    Toast.makeText(this.context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     Log.d(

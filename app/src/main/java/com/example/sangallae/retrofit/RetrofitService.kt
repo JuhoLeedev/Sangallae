@@ -50,10 +50,10 @@ interface RetrofitService {
     fun homeLoad(@Query("latitude") lat: Double, @Query("longitude") lon: Double): Call<JsonElement>
 
     @GET(API.REC_COURSE_LIST)
-    fun recCourseList(): Call<JsonElement>
+    fun recCourseList(@Query("page") page: Int): Call<JsonElement>
 
     @GET(API.HOT_COURSE_LIST)
-    fun hotCourseList(): Call<JsonElement>
+    fun hotCourseList(@Query("page") page: Int): Call<JsonElement>
 
     @GET(API.HOT_MOUNTAIN_LIST)
     fun hotMountainList(): Call<JsonElement>

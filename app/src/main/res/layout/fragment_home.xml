@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.home.HomeFragment"
+    android:layout_marginBottom="?attr/actionBarSize">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -167,24 +168,25 @@
                     android:id="@+id/popMtn"
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
-                    android:layout_marginStart="14dp"
-
-                    />
+                    android:layout_marginStart="14dp" />
             </LinearLayout>
 
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/nearMtn_title"
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/textView179"
@@ -207,11 +209,28 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/nearMtn"
                     android:layout_width="match_parent"
-                    android:layout_height="220dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
-                    android:layout_marginBottom="38dp"/>
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/nearMtn_title"/>
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/no_nearMtn_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_near_mountain"
+                    android:textSize="16sp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/nearMtn_title"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

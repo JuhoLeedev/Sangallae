@@ -75,7 +75,10 @@ class CourseDetailActivity : AppCompatActivity() {
             url = it.url
             Glide.with(GlobalApplication.instance).load(it.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
-            binding.favoriteBtn.isSelected = it.like_status
+            if(it.like_status)
+                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_filled)
+            else
+                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_outline)
         })
         binding.detailDownload.setOnClickListener(clickDownloadLinearLayout())
         binding.detailFollow.setOnClickListener(clickFollowLinearLayout())
@@ -245,10 +248,12 @@ class CourseDetailActivity : AppCompatActivity() {
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     Log.d(Constants.TAG, "toggleFavoriteApiCall()")
+                    binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_filled)
                     Toast.makeText(this, "찜 목록에 추가했습니다.", Toast.LENGTH_SHORT).show()
                 }
                 RESPONSE_STATUS.DELETE_SUCCESS -> {
                     Log.d(Constants.TAG, "toggleFavoriteApiCall()")
+                    binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_outline)
                     Toast.makeText(this, "찜 목록에서 제거했습니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
