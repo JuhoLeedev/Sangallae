@@ -1,8 +1,7 @@
 package com.example.sangallae.ui.home
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -21,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.Home
 import com.example.sangallae.retrofit.models.Mountain
+import com.example.sangallae.ui.MainActivity
+import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.*
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
@@ -39,11 +40,9 @@ class HomeFragment : Fragment() {
     private lateinit var nearMountainAdapter: NearMountainAdapter
     lateinit var navController: NavController
     private lateinit var locationManager: LocationManager
-//    private var lat = 0.0
-//    private var lon = 0.0
-    // 일단 눈속임
-    private var lat = 37.44659903926295
-    private var lon = 126.65384268084867
+    private lateinit var greetingTextView: TextView
+    private var lat = 0.0
+    private var lon = 0.0
 
 
     override fun onCreateView(
@@ -62,6 +61,9 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+        greetingTextView = root.findViewById(R.id.home_greeting1)
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        getLatLon()
 
         // 추천 화면 갱신
         //refreshHome()
@@ -113,15 +115,31 @@ class HomeFragment : Fragment() {
         root.findViewById<RecyclerView>(R.id.nearMtn)?.adapter =
             this.nearMountainAdapter
 
-//        recommendedCourseAdapter.setOnItemClickListener(object : RecommendedCourseAdapter.OnItemClickListener{
-//            override fun onItemClick(v: View, data: Int, pos : Int) {
-//                Intent(activity, CourseDetailActivity::class.java).apply {
-//                    putExtra("id", data)
-//                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                }.run { startActivity(this) }
-//            }
-//        })
-        //homeLoadApiCall()
+
+
+        // 메인 추천 등산로 -> 등산로 상세
+        recommendedCourseAdapter.setOnItemClickListener(object :
+            RecommendedCourseAdapter.OnItemClickListener {
+            override fun onItemClick(v: View, data: Int, pos: Int) {
+                Intent(activity, CourseDetailActivity::class.java).apply {
+                    putExtra("id", data)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.run { startActivity(this) }
+            }
+        })
+
+        // 메인 인기 등산로 -> 등산로 상세
+        popularCourseAdapter.setOnItemClickListener(object :
+            PopularCourseAdapter.OnItemClickListener {
+            override fun onItemClick(v: View, data: Int, pos: Int) {
+                Intent(activity, CourseDetailActivity::class.java).apply {
+                    putExtra("id", data)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.run { startActivity(this) }
+            }
+        })
+
+        homeLoadApiCall()
 
 
         // 추천 등산로 더보기 버튼
@@ -145,10 +163,8 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_navigation_home_to_navigation_hot_mountain)
         }
 
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        getLatLon()
+
         Log.d("gps", "$lat, $lon")
-        homeLoadApiCall()
         return root
     }
 //
@@ -163,48 +179,60 @@ class HomeFragment : Fragment() {
 
     private fun homeLoadApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.homeLoad(lat = lat, lon = lon, completion = { status, list1, list2, list3, list4 ->
-            when (status) {
-                RESPONSE_STATUS.OKAY -> {
-                    //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
-                    if (list1 != null) {
-                        this.recCourseList.clear()
-                        this.recCourseList = list1
-                        recommendedCourseAdapter.submitList(this.recCourseList)
-                        recommendedCourseAdapter.notifyDataSetChanged()
-                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+        retrofit.homeLoad(
+            lat = lat,
+            lon = lon,
+            completion = { status, nickName, list1, list2, list3, list4 ->
+                when (status) {
+                    RESPONSE_STATUS.OKAY -> {
+                        greetingTextView.text = nickName + resources.getString(R.string.greeting1)
+                        //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
+                        if (list1 != null) {
+                            this.recCourseList.clear()
+                            this.recCourseList = list1
+                            recommendedCourseAdapter.submitList(this.recCourseList)
+                            recommendedCourseAdapter.notifyDataSetChanged()
+                            //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                        }
+                        if (list2 != null) {
+                            this.hotCourseList.clear()
+                            this.hotCourseList = list2
+                            popularCourseAdapter.submitList(this.hotCourseList)
+                            popularCourseAdapter.notifyDataSetChanged()
+                            //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                        }
+                        if (list3 != null) {
+                            this.hotMtnList.clear()
+                            this.hotMtnList = list3
+                            popularMountainAdapter.submitList(this.hotMtnList)
+                            popularMountainAdapter.notifyDataSetChanged()
+                            //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                        }
+                        if (list4 != null) {
+                            this.nearMtnList.clear()
+                            this.nearMtnList = list4
+                            nearMountainAdapter.submitList(this.nearMtnList)
+                            nearMountainAdapter.notifyDataSetChanged()
+                            if (list4.size == 0) {
+                                val textView =
+                                    view?.findViewById<TextView>(R.id.no_nearMtn_textview)
+                                if (textView != null) {
+                                    Log.d("야야", "여기는 null안")
+                                    textView.visibility = View.VISIBLE
+                                }
+                            }
+                            //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                        }
                     }
-                    if (list2 != null) {
-                        this.hotCourseList.clear()
-                        this.hotCourseList = list2
-                        popularCourseAdapter.submitList(this.hotCourseList)
-                        popularCourseAdapter.notifyDataSetChanged()
-                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
-                    }
-                    if (list3 != null) {
-                        this.hotMtnList.clear()
-                        this.hotMtnList = list3
-                        popularMountainAdapter.submitList(this.hotMtnList)
-                        popularMountainAdapter.notifyDataSetChanged()
-                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
-                    }
-                    if (list4 != null) {
-                        this.nearMtnList.clear()
-                        this.nearMtnList = list4
-                        nearMountainAdapter.submitList(this.nearMtnList)
-                        nearMountainAdapter.notifyDataSetChanged()
-                        //Log.d(Constants.TAG,"여기까지 됨1 $recCourseList")
+                    else -> {
+                        Log.d(
+                            Constants.TAG,
+                            "ProfileFragment-OncreateView-homeLoadApiCall() ${list1.toString()}"
+                        )
+                        Toast.makeText(this.context, "페이지를 로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
                     }
                 }
-                else -> {
-                    Log.d(
-                        Constants.TAG,
-                        "ProfileFragment-OncreateView-homeLoadApiCall() ${list1.toString()}"
-                    )
-                    Toast.makeText(this.context, "페이지를 로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
+            })
     }
 
     private fun getLatLon(){
@@ -212,19 +240,32 @@ class HomeFragment : Fragment() {
 //                API.LOCATION_PERMISSION_REQUEST_CODE,
 //                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)){
             try {
-                Log.d("gps","여기는 try")
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                Log.d("gps", "여기는 try")
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
                     10000,  // 10-second interval.
                     10.0f,  // 10 meters
-                    gpsListener)
+                    gpsListener
+                )
 
-                val location : Location? = locationManager
+                var location : Location? = locationManager
                     .getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 if (location != null) {
                     lat = location.latitude
                     lon = location.longitude
-                    Log.d("gps", "GPS Location changed, Latitude: $lat" +
-                            ", Longitude: $lon")
+                    Log.d(
+                        "gps", "GPS Location changed, Latitude: $lat" +
+                                ", Longitude: $lon"
+                    )
+                }
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                if (location != null) {
+                    lat = location.latitude
+                    lon = location.longitude
+                    Log.d(
+                        "gps", "GPS Location changed, Latitude: $lat" +
+                                ", Longitude: $lon"
+                    )
                 }
             } catch (e: SecurityException) {
                 Toast.makeText(this.context, "GPS 권한이 없습니다", Toast.LENGTH_SHORT).show()
@@ -251,8 +292,10 @@ class HomeFragment : Fragment() {
         override fun onLocationChanged(location: Location) {
             lat = location.latitude
             lon = location.longitude
-            Log.d("gps", "GPS Location changed, Latitude: $lat" +
-                    ", Longitude: $lon")
+            Log.d(
+                "gps", "GPS Location changed, Latitude: $lat" +
+                        ", Longitude: $lon"
+            )
         }
 
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
@@ -262,7 +305,11 @@ class HomeFragment : Fragment() {
         override fun onProviderDisabled(provider: String) {
         }
     }
-
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        activity?.hideUpButton()
+    }
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>, grantResults: IntArray
@@ -271,8 +318,10 @@ class HomeFragment : Fragment() {
         when (requestCode) {
             API.LOCATION_PERMISSION_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
-                if (PermissionUtils.permissionGranted(requestCode,
-                        API.LOCATION_PERMISSION_REQUEST_CODE, grantResults)
+                if (PermissionUtils.permissionGranted(
+                        requestCode,
+                        API.LOCATION_PERMISSION_REQUEST_CODE, grantResults
+                    )
                 ) {
                     getLatLon()
                 }

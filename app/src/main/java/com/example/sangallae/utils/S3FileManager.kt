@@ -9,8 +9,6 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.AmazonS3URI
-import com.example.sangallae.utils.API.AWS_ACCESS_KEY
-import com.example.sangallae.utils.API.AWS_SECRET_KEY
 import com.example.sangallae.utils.API.S3_BUCKET
 import java.io.*
 import java.net.MalformedURLException
@@ -23,8 +21,8 @@ class S3FileManager {
             override fun run() {
                 try {
                     val awsCredentials: AWSCredentials = BasicAWSCredentials(
-                        AWS_ACCESS_KEY,
-                        AWS_SECRET_KEY
+                        Info.AWS_ACCESS_KEY,
+                        Info.AWS_SECRET_KEY
                     )
                     val s3Client = AmazonS3Client(
                         awsCredentials,
@@ -50,8 +48,8 @@ class S3FileManager {
             override fun run() {
                 try {
                     val awsCredentials: AWSCredentials = BasicAWSCredentials(
-                        AWS_ACCESS_KEY,
-                        AWS_SECRET_KEY
+                        Info.AWS_ACCESS_KEY,
+                        Info.AWS_SECRET_KEY
                     )
                     val s3Client = AmazonS3Client(
                         awsCredentials,

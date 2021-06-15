@@ -1,5 +1,6 @@
 package com.example.sangallae.ui.favorites
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -14,6 +15,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.ui.MainActivity
+import com.example.sangallae.ui.detail.CourseDetailActivity
+import com.example.sangallae.ui.home.RecommendedCourseAdapter
 import com.example.sangallae.ui.search.CourseRecyclerViewAdapter
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -42,6 +46,15 @@ class FavoritesFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         favoritesRecyclerViewSetting(courseList)
         favoritesCourseApiCall()
+
+        favoritesRecyclerViewAdapter.setOnItemClickListener(object : FavoritesRecyclerViewAdapter.OnItemClickListener{
+            override fun onItemClick(v: View, data: Int, pos : Int) {
+                Intent(activity, CourseDetailActivity::class.java).apply {
+                    putExtra("id", data)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.run { startActivity(this) }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -74,7 +87,11 @@ class FavoritesFragment : Fragment() {
             super.onOptionsItemSelected(item)
         }
     }
-
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        activity?.hideUpButton()
+    }
     private fun favoritesCourseApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
         retrofit.favoriteCourses(completion = { status, list ->

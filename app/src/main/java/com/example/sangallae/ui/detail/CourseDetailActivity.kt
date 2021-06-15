@@ -3,10 +3,12 @@ package com.example.sangallae.ui.detail
 import android.Manifest
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +24,8 @@ import com.bumptech.glide.Glide
 import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.databinding.ActivityCourseDetailBinding
+import com.example.sangallae.retrofit.models.Favorite
+import com.example.sangallae.retrofit.models.NewProfile
 import com.example.sangallae.ui.map.RecordMapFragment
 import com.example.sangallae.utils.*
 import com.example.sangallae.utils.API.GPX_DIR
@@ -37,6 +41,7 @@ class CourseDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCourseDetailBinding
     private lateinit var url: String
     private var fileName: String? = null
+
     private val args: CourseDetailFragmentArgs by navArgs()
 
 
@@ -70,10 +75,16 @@ class CourseDetailActivity : AppCompatActivity() {
             url = it.url
             Glide.with(GlobalApplication.instance).load(it.thumbnail)
                 .placeholder(R.drawable.ic_baseline_photo_24).into(binding.detailThumbnail)
+            if(it.like_status)
+                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_filled)
+            else
+                binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_outline)
         })
         binding.detailDownload.setOnClickListener(clickDownloadLinearLayout())
         binding.detailFollow.setOnClickListener(clickFollowLinearLayout())
+        binding.favoriteBtn.setOnClickListener(clickFavoriteLinearLayout())
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
@@ -81,6 +92,12 @@ class CourseDetailActivity : AppCompatActivity() {
         return true
     }
 
+    private fun clickFavoriteLinearLayout(): View.OnClickListener? {
+        return View.OnClickListener {
+            val courseId = intent.getSerializableExtra("id") as Int
+            toggleFavoriteApiCall(courseId)
+        }
+    }
     private fun clickDownloadLinearLayout(): View.OnClickListener {
         return View.OnClickListener {
             download(url)
@@ -161,10 +178,10 @@ class CourseDetailActivity : AppCompatActivity() {
     }
     private fun download(url: String){
 //        if(PermissionUtils.requestPermission(this,WRITE_STORAGE_PERMISSIONS_REQUEST,
-//                Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
         Log.d("test","여기는 다운로드")
 
-        var s3fm = S3FileManager()
+
         downloadGPX(url, GPX_DIR)
         Log.d("test","다운로드 성공~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         Log.d(Constants.TAG, "다운로드 받은 파일명은???" + fileName)
@@ -172,7 +189,7 @@ class CourseDetailActivity : AppCompatActivity() {
             Toast.makeText(this, "Gpx가 저장되었습니다.", Toast.LENGTH_SHORT).show()
         }
         else {
-            Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
 //        }
     }
@@ -221,5 +238,32 @@ class CourseDetailActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    private fun toggleFavoriteApiCall(course_id : Int) {
+        val retrofit = RetrofitManager(Usage.ACCESS)
+        retrofit.toggleFavorite(Favorite(course_id), completion = { status ->
+            Log.d(Constants.TAG, "status는?"+status)
+            when (status) {
+                RESPONSE_STATUS.OKAY -> {
+                    Log.d(Constants.TAG, "toggleFavoriteApiCall()")
+                    binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_filled)
+                    Toast.makeText(this, "찜 목록에 추가했습니다.", Toast.LENGTH_SHORT).show()
+                }
+                RESPONSE_STATUS.DELETE_SUCCESS -> {
+                    Log.d(Constants.TAG, "toggleFavoriteApiCall()")
+                    binding.favoriteBtn.setImageResource(R.drawable.ic_favorite_outline)
+                    Toast.makeText(this, "찜 목록에서 제거했습니다.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Log.d(
+                        Constants.TAG,
+                        "CourseDetailActivity-OncreateView-toggleFavoriteApiCall() Error"
+                    )
+                    Toast.makeText(this, "찜 목록을 업데이트 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 }

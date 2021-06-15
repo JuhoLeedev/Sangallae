@@ -20,12 +20,12 @@ class RetrofitManager(usage: Usage) {
 
     // 등산로 검색 api 호출
     fun searchCourses(
-        keyword: String?, order: String?,
+        keyword: String?, order: String?, page: Int,
         completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
         val term = keyword ?: ""
 
-        val call = iRetrofit?.searchCourses(keyword = term, order = "") ?: return
+        val call = iRetrofit?.searchCourses(keyword = term, order = "", page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -215,6 +215,7 @@ class RetrofitManager(usage: Usage) {
                                 val courseDate = result.get("date").asString
                                 val courseUphill = result.get("total_uphill").asString
                                 val courseDownhill = result.get("total_downhill").asString
+                                val courseLikeState = result.get("like_status").asBoolean
                                 val course = Course(
                                     id = courseId,
                                     name = courseName,
@@ -225,7 +226,7 @@ class RetrofitManager(usage: Usage) {
                                     min_height = courseMinHeight + "m",
                                     avg_speed = courseAvgSpeed + "km/h",
                                     avg_pace = courseAvgPace + "min/h",
-                                    ele_dif = courseEleDif,
+                                    ele_dif = courseEleDif + "m",
                                     difficulty = courseDifficulty,
                                     url = courseUrl,
                                     date = courseDate,
@@ -234,7 +235,8 @@ class RetrofitManager(usage: Usage) {
                                     thumbnail = courseThumbnailUrl,
                                     location = courseLocation,
                                     score = "",
-                                    review_cnt = ""
+                                    review_cnt = "",
+                                    like_status = courseLikeState
                                 )
                                 parsedCourseData = course
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseData)
@@ -425,7 +427,7 @@ class RetrofitManager(usage: Usage) {
     //홈화면 목록 업데이트
     fun homeLoad(
         lat: Double, lon: Double,
-        completion: (RESPONSE_STATUS, ArrayList<Home>?, ArrayList<Home>?, ArrayList<Mountain>?, ArrayList<Mountain>?) -> Unit
+        completion: (RESPONSE_STATUS, String, ArrayList<Home>?, ArrayList<Home>?, ArrayList<Mountain>?, ArrayList<Mountain>?) -> Unit
     ) {
         val call = iRetrofit?.homeLoad(lat = lat, lon = lon) ?: return
 
@@ -433,7 +435,7 @@ class RetrofitManager(usage: Usage) {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
-                completion(RESPONSE_STATUS.FAIL, null, null, null, null)
+                completion(RESPONSE_STATUS.FAIL, "", null, null, null, null)
             }
 
             // 응답 성공시
@@ -454,6 +456,7 @@ class RetrofitManager(usage: Usage) {
                         val hot = data.getAsJsonArray("hotCourse")
                         val hotM = data.getAsJsonArray("hotMountain")
                         val nearM = data.getAsJsonArray("nearMountain")
+                        val nickName = data.get("nickname").asString
 
                         val message = body.get("message")
 
@@ -532,26 +535,26 @@ class RetrofitManager(usage: Usage) {
                                     )
                                     parsedCourseDataArray4.add(courseItem)
                                 }
-                                completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray1, parsedCourseDataArray2, parsedCourseDataArray3, parsedCourseDataArray4)
+                                completion(RESPONSE_STATUS.OKAY, nickName, parsedCourseDataArray1, parsedCourseDataArray2, parsedCourseDataArray3, parsedCourseDataArray4)
                             }
                             "NO_CONTENT" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.NO_CONTENT, null, null, null, null)
+                                completion(RESPONSE_STATUS.NO_CONTENT, "", null, null, null, null)
                             }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.BAD_REQUEST, null, null, null, null)
+                                completion(RESPONSE_STATUS.BAD_REQUEST, "", null, null, null, null)
                             }
                             "UNAUTHORIZED" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-                                completion(RESPONSE_STATUS.UNAUTHORIZED, null, null, null, null)
+                                completion(RESPONSE_STATUS.UNAUTHORIZED, "", null, null, null, null)
                             }
                         }
                     }
                 }
                 else {
                     Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
-                    completion(RESPONSE_STATUS.NOT_FOUND, null, null, null, null)
+                    completion(RESPONSE_STATUS.NOT_FOUND, "", null, null, null, null)
                 }
             }
         })
@@ -559,9 +562,9 @@ class RetrofitManager(usage: Usage) {
     
     //추천 등산로 더보기
     fun recCourseList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        page:Int, completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
-        val call = iRetrofit?.recCourseList() ?: return
+        val call = iRetrofit?.recCourseList(page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -578,13 +581,13 @@ class RetrofitManager(usage: Usage) {
                     response.body()?.let {
                         val parsedCourseDataArray = ArrayList<CourseItem>()
                         val body = it.asJsonObject
-                        val result1 = body.getAsJsonObject("data")
-                        val results = result1.getAsJsonArray("content")
+
                        // val results = body.getAsJsonArray("data")
                         val message = body.get("message")
-
                         when (val status = body.get("status").asString) {
                             "OK" -> {
+                                val result1 = body.getAsJsonObject("data")
+                                val results = result1.getAsJsonArray("content")
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
@@ -599,7 +602,7 @@ class RetrofitManager(usage: Usage) {
                                     val courseItem = CourseItem(
                                         id = courseId,
                                         name = courseName,
-                                        distance = courseDistance,
+                                        distance = courseDistance + "km",
                                         moving_time = courseMovingTime,
                                         ele_dif = courseElevation + "m",
                                         thumbnail = courseThumbnailUrl,
@@ -609,10 +612,10 @@ class RetrofitManager(usage: Usage) {
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
                             }
-//                            "NO_CONTENT" -> {
-//                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
-//                                completion(RESPONSE_STATUS.NO_CONTENT, null)
-//                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
+                            }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 completion(RESPONSE_STATUS.BAD_REQUEST, null)
@@ -634,9 +637,9 @@ class RetrofitManager(usage: Usage) {
 
     //인기 등산로 더보기
     fun hotCourseList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        page: Int, completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
-        val call = iRetrofit?.hotCourseList() ?: return
+        val call = iRetrofit?.hotCourseList(page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -653,13 +656,13 @@ class RetrofitManager(usage: Usage) {
                     response.body()?.let {
                         val parsedCourseDataArray = ArrayList<CourseItem>()
                         val body = it.asJsonObject
-                        val result1 = body.getAsJsonObject("data")
-                        val results = result1.getAsJsonArray("content")
                         // val results = body.getAsJsonArray("data")
                         val message = body.get("message")
 
                         when (val status = body.get("status").asString) {
                             "OK" -> {
+                                val result1 = body.getAsJsonObject("data")
+                                val results = result1.getAsJsonArray("content")
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
@@ -674,7 +677,7 @@ class RetrofitManager(usage: Usage) {
                                     val courseItem = CourseItem(
                                         id = courseId,
                                         name = courseName,
-                                        distance = courseDistance,
+                                        distance = courseDistance + "km",
                                         moving_time = courseMovingTime,
                                         ele_dif = courseElevation + "m",
                                         thumbnail = courseThumbnailUrl,
@@ -683,6 +686,10 @@ class RetrofitManager(usage: Usage) {
                                     parsedCourseDataArray.add(courseItem)
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
+                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
                             }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
@@ -705,9 +712,9 @@ class RetrofitManager(usage: Usage) {
 
     //인기 산 더보기
     fun hotMountainList(
-        completion: (RESPONSE_STATUS, ArrayList<Mountain>?) -> Unit
+        page: Int, completion: (RESPONSE_STATUS, ArrayList<Mountain>?) -> Unit
     ) {
-        val call = iRetrofit?.hotMountainList() ?: return
+        val call = iRetrofit?.hotMountainList(page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -759,6 +766,10 @@ class RetrofitManager(usage: Usage) {
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
                             }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
+                            }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 completion(RESPONSE_STATUS.BAD_REQUEST, null)
@@ -780,9 +791,9 @@ class RetrofitManager(usage: Usage) {
 
     // 등산기록 목록
     fun recordList(
-        completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
+        completion: (RESPONSE_STATUS, ArrayList<RecordItem>?) -> Unit
     ) {
-        val call = iRetrofit?.recCourseList() ?: return
+        val call = iRetrofit?.recordList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -797,7 +808,7 @@ class RetrofitManager(usage: Usage) {
 
                 if(response.isSuccessful) {
                     response.body()?.let {
-                        val parsedCourseDataArray = ArrayList<CourseItem>()
+                        val parsedCourseDataArray = ArrayList<RecordItem>()
                         val body = it.asJsonObject
                         val result1 = body.getAsJsonObject("data")
                         val results = result1.getAsJsonArray("content")
@@ -809,24 +820,26 @@ class RetrofitManager(usage: Usage) {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
-                                    val courseId = resultItemObject.get("id").asInt
-                                    val courseName = resultItemObject.get("name").asString
-                                    val courseDistance = resultItemObject.get("distance").asString
-                                    val courseMovingTime = resultItemObject.get("moving_time").asString
-                                    val courseElevation = resultItemObject.get("ele_dif").asString
-                                    val courseDifficulty = resultItemObject.get("difficulty").asString
-                                    val courseThumbnailUrl = resultItemObject.get("thumbnail").asString
+                                    val recordId = resultItemObject.get("id").asInt
+                                    val recordFileName = resultItemObject.get("name").asString
+                                    val recordDistance = resultItemObject.get("distance").asString
+                                    val recordTime = resultItemObject.get("time").asString
+                                    val recordElevation = resultItemObject.get("height").asString
+                                    val recordCalorie = resultItemObject.get("calorie").asString
+                                    val recordThumbnailUrl = resultItemObject.get("thumbnail").asString
+                                    val recordDate = resultItemObject.get("date").asString
 
-                                    val courseItem = CourseItem(
-                                        id = courseId,
-                                        name = courseName,
-                                        distance = courseDistance,
-                                        moving_time = courseMovingTime,
-                                        ele_dif = courseElevation + "m",
-                                        thumbnail = courseThumbnailUrl,
-                                        difficulty = courseDifficulty
+                                    val recordItem = RecordItem(
+                                        id = recordId,
+                                        fileName = recordFileName,
+                                        distance = recordDistance,
+                                        time = recordTime,
+                                        height = recordElevation,
+                                        thumbnail = recordThumbnailUrl,
+                                        calorie = recordCalorie,
+                                        date = recordDate
                                     )
-                                    parsedCourseDataArray.add(courseItem)
+                                    parsedCourseDataArray.add(recordItem)
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
                             }
@@ -1018,6 +1031,104 @@ class RetrofitManager(usage: Usage) {
                 else {
                     Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
                     completion(RESPONSE_STATUS.NOT_FOUND, null)
+                }
+            }
+        })
+    }
+
+
+    // 찜 목록 토글
+    fun toggleFavorite(
+        favorite: Favorite,
+        completion: (RESPONSE_STATUS) -> Unit
+    ) {
+        val call = iRetrofit?.toggleFavorite(body = favorite) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+
+                completion(RESPONSE_STATUS.FAIL)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val body = it.asJsonObject
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "ADDED" -> { // 추가 성공
+                                completion(RESPONSE_STATUS.OKAY)
+                            }
+                            "REMOVED" -> { // 제거 성공
+                                completion(RESPONSE_STATUS.DELETE_SUCCESS)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND)
+                }
+            }
+        })
+    }
+
+    // 레코드 업로드
+    fun uploadRecord(
+        record: Record,
+        completion: (RESPONSE_STATUS) -> Unit
+    ) {
+        val call = iRetrofit?.uploadRecord(body = record) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "RetrofitManager - onFailure() called / t: $t")
+
+                completion(RESPONSE_STATUS.FAIL)
+            }
+
+            // 응답 성공시
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "RetrofitManager - onResponse() called / response : ${response.body()}")
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val body = it.asJsonObject
+                        val message = body.get("message")
+
+                        when (val status = body.get("status").asString) {
+                            "OK" -> { // 등록 성공
+                                completion(RESPONSE_STATUS.OKAY)
+                            }
+                            "BAD_REQUEST" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.BAD_REQUEST)
+                            }
+                            "UNAUTHORIZED" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.UNAUTHORIZED)
+                            }
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "RetrofitManager - onResponse() called / 404 NOT FOUND")
+                    completion(RESPONSE_STATUS.NOT_FOUND)
                 }
             }
         })

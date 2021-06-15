@@ -6,6 +6,7 @@ object Constants {
 
 enum class RESPONSE_STATUS {
     OKAY,
+    DELETE_SUCCESS,
     FAIL,
     NO_CONTENT,
     NOT_FOUND,
@@ -24,7 +25,7 @@ object API {
 
     // admin jwt token
     //const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmFkbWluYWRtaW5hZG1pbiIsImlkIjoxMDA4MSwiZXhwIjoxNjIyNjM1MzIwLCJ1c2VybmFtZSI6ImFkbWluYWRtaW5hZG1pbmFkbWluIn0.2BJvol8Xwth_bMX12TzTY9qMW6aDsjPhn3qFIaMdmBtpBF5ftd7sHXooxWCdzcXiTCVpAe0xCqNxDQplH38ZCQ"
-    const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmYXRoZXIiLCJpZCI6MCwiZXhwIjoxNjIzNjUxMjE0LCJ1c2VybmFtZSI6ImZhdGhlciJ9.MrZo6o7a3C3LnJoubu-nJjq09nBMq96YZDlE-vEkB12WBdgx5hUdDnvS1zTmFNee5_GFXY8m_RSqziiQSRiPRw"
+    const val ADMIN_JWT : String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmYXRoZXIiLCJpZCI6MCwiZXhwIjoxNjI1MzY0MTgwLCJ1c2VybmFtZSI6ImZhdGhlciJ9.g-PpF5bT6igQTNRp6pKMj96DXtpcKTmsNDgG7owRIYlVuFMUHZ4Ij5i0ouGhYJxbFqJIbyM_C9VrU-rTUC5b3Q"
 
     // social login
     const val NAVER_CLIENT_ID = "CrwgIv6IKrpcPDkNYllP"
@@ -55,6 +56,8 @@ object API {
     //이게 진짜 push 할 때 주석처리 할것!!
 //    const val AWS_ACCESS_KEY: String = ""
 //    const val AWS_SECRET_KEY: String = ""
+    const val S3_UPLOADURL: String = "https://gpxfiles.s3.ap-northeast-2.amazonaws.com/save_test/"
+    const val S3_THUMBNAILURL: String = "https://gpxfiles.s3.ap-northeast-2.amazonaws.com/gpx+thumbnail/default_image.JPG"
     const val S3_BUCKET: String = "gpxfiles"
     const val GPX_DIR: String = "/storage/emulated/0/gpxdata/"
 

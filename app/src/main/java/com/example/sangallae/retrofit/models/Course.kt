@@ -21,5 +21,6 @@ data class Course(
     var review_cnt: String?,
     var score: String?,
     var thumbnail: String,
-    var date: String
+    var date: String,
+    var like_status: Boolean
 ):Serializable

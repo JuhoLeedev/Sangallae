@@ -1,63 +1,65 @@
 package com.example.sangallae.ui.profile
 
-import android.content.Intent
+import android.app.ActionBar
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.fragment.findNavController
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
-import com.example.sangallae.databinding.ActivityCourseDetailBinding
-import com.example.sangallae.databinding.CourseDetailFragmentBinding
 import com.example.sangallae.databinding.FragmentMyrecordBinding
-import com.example.sangallae.retrofit.models.CourseItem
-import com.example.sangallae.ui.detail.CourseDetailActivity
-import com.example.sangallae.ui.home.CourseViewAdapter
-import com.example.sangallae.ui.home.HomeViewModel
+import com.example.sangallae.retrofit.models.RecordItem
+import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
 import com.example.sangallae.utils.Usage
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 class MyRecordFragment : Fragment() {
+    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var recordViewModel: MyRecordViewModel
     private lateinit var recordViewAdapter: MyRecordViewAdapter
-    private var courseList = ArrayList<CourseItem>()
+    private var courseList = ArrayList<RecordItem>()
 
-//    private var _binding: FragmentMyrecordBinding? = null
-//    private val binding get() = _binding!!
+    private var _binding: FragmentMyrecordBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        // Inflate the layout for this fragment
-//        _binding = FragmentMyrecordBinding.inflate(inflater, container, false)
-//        val view = binding.root
-//        binding.myRecordToolbar.inflateMenu(R.menu.profile_menu)
-//        val root = inflater.inflate(R.layout.fragment_myrecord, container, false)
-        val root = inflater.inflate(R.layout.fragment_myrecord, container, false)
+        // Inflate the layout for this fragment
+        _binding = FragmentMyrecordBinding.inflate(inflater, container, false)
+        val view = binding.root
+        binding.myRecordToolbar.inflateMenu(R.menu.profile_menu)
         setHasOptionsMenu(true)
+        binding.myRecordToolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        binding.myRecordToolbar.setNavigationOnClickListener {
+            (activity as MainActivity?)!!.onBackPressed()
+        }
+
 
         this.recordViewAdapter = MyRecordViewAdapter()
-        //this.recordViewAdapter.submitList(courseList)
+        this.recordViewAdapter.submitList(courseList)
 
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.my_record)?.layoutManager =
+        binding.myRecord.layoutManager =
             LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.my_record)?.adapter =
+        binding.myRecord.adapter =
             this.recordViewAdapter
-
+        binding.myRecord.addItemDecoration(DividerItemDecoration(context, 1))
 
         recordApiCall()
 
@@ -75,7 +77,7 @@ class MyRecordFragment : Fragment() {
                         this.courseList = list
                         recordViewAdapter.submitList(this.courseList)
                         recordViewAdapter.notifyDataSetChanged()
-                        Log.d(Constants.TAG,"사용자 정보 $courseList")
+                        Log.d(Constants.TAG, "여기까지 됨 $courseList")
                         //
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()
@@ -92,7 +94,12 @@ class MyRecordFragment : Fragment() {
         })
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        android.R.id.home -> {
+            (activity as MainActivity?)!!.onBackPressed()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }

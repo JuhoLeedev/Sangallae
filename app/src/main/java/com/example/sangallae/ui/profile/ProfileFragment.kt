@@ -18,6 +18,7 @@ import com.example.sangallae.GlobalApplication
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.NewProfile
 import com.example.sangallae.retrofit.models.Profile
+import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.ui.SplashActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -215,7 +216,11 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        activity?.hideUpButton()
+    }
     private fun profileUpdateApiCall(newnick: String, newhei: String, newwei: String) {
         val retrofit = RetrofitManager(Usage.ACCESS)
         retrofit.profileUpdate(NewProfile(newnick, newhei, newwei), completion = { status ->
