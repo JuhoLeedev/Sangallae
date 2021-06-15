@@ -25,7 +25,8 @@ class RecCourseList : Fragment() {
     private var courseList = ArrayList<CourseItem>()
     private lateinit var recCourseListAdapter: CourseViewAdapter
     private lateinit var recyclerView: RecyclerView
-    private var page = 1  // 현재 페이지
+    private var page = 0  // 현재 페이지
+    private var itemFinished = false
 
 
     override fun onCreateView(
@@ -74,14 +75,16 @@ class RecCourseList : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
+
                 val lastVisibleItemPosition =
                     (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
                 val itemTotalCount = recyclerView.adapter!!.itemCount-1
 
                 // 스크롤이 끝에 도달했는지 확인
-                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
-                    recCourseListAdapter.deleteLoading()
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount && !itemFinished) {
+                    recCourseListAdapter.loadItem()
                     recCourseApiCall(++page)
+                    recCourseListAdapter.deleteLoading()
                 }
             }
         })
@@ -107,9 +110,7 @@ class RecCourseList : Fragment() {
                     }
                 }
                 RESPONSE_STATUS.NO_CONTENT -> {
-                    if (!recyclerView.canScrollVertically(1)) {
-                        recCourseListAdapter.deleteLoading()
-                    }
+                    itemFinished = true
                     Toast.makeText(this.context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {

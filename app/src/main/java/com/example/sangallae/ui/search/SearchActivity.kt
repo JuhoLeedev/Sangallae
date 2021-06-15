@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.Course
@@ -26,10 +27,13 @@ import com.example.sangallae.utils.Usage
 
 
 class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
-
     private var courseList = ArrayList<CourseItem>()
     private lateinit var courseRecyeclerViewAdapter: CourseRecyclerViewAdapter
     private lateinit var searchView: SearchView
+    private lateinit var recyclerView: RecyclerView
+    private var page = 0;
+    private var itemFinished = false
+    private var query = ""
 
     private lateinit var mySearchViewEditText: EditText
 
@@ -71,20 +75,39 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     private fun courseCollectionRecyclerViewSetting(courseList: ArrayList<CourseItem>) {
+        recyclerView = findViewById(R.id.search_course_recycler_view)
 
         this.courseRecyeclerViewAdapter = CourseRecyclerViewAdapter()
 
         this.courseRecyeclerViewAdapter.submitList(courseList)
 
-        this.findViewById<RecyclerView>(R.id.search_course_recycler_view).layoutManager =
+        recyclerView.layoutManager =
             GridLayoutManager(
                 this,
                 1,
                 GridLayoutManager.VERTICAL,
                 false
             )
-        this.findViewById<RecyclerView>(R.id.search_course_recycler_view).adapter =
-            this.courseRecyeclerViewAdapter
+        recyclerView.adapter = this.courseRecyeclerViewAdapter
+        courseRecyeclerViewAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter!!.itemCount-1
+
+                // 스크롤이 끝에 도달했는지 확인
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount && !itemFinished) {
+                    courseRecyeclerViewAdapter.loadItem()
+                    searchCourseApiCall(query, ++page)
+                    courseRecyeclerViewAdapter.deleteLoading()
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -116,7 +139,8 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
 
         if (!query.isNullOrEmpty()) {
-            this.searchCourseApiCall(query)
+            this.query = query
+            this.searchCourseApiCall(query, page)
             searchView.clearFocus()
         }
         this.findViewById<androidx.appcompat.widget.Toolbar>(R.id.search_toolbar)
@@ -125,9 +149,9 @@ class SearchActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         return true
     }
 
-    private fun searchCourseApiCall(query: String) {
+    private fun searchCourseApiCall(query: String, page: Int) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.searchCourses(keyword = query, order = "", completion = { status, list ->
+        retrofit.searchCourses(keyword = query, order = "", page, completion = { status, list ->
             when(status){
                 RESPONSE_STATUS.OKAY -> {
                     Log.d(TAG, "SearchActivity - searchCourseApiCall() called 응답 성공 / list.size : ${list?.size}")

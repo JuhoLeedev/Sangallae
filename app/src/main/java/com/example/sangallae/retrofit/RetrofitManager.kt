@@ -20,12 +20,12 @@ class RetrofitManager(usage: Usage) {
 
     // 등산로 검색 api 호출
     fun searchCourses(
-        keyword: String?, order: String?,
+        keyword: String?, order: String?, page: Int,
         completion: (RESPONSE_STATUS, ArrayList<CourseItem>?) -> Unit
     ) {
         val term = keyword ?: ""
 
-        val call = iRetrofit?.searchCourses(keyword = term, order = "") ?: return
+        val call = iRetrofit?.searchCourses(keyword = term, order = "", page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -656,13 +656,13 @@ class RetrofitManager(usage: Usage) {
                     response.body()?.let {
                         val parsedCourseDataArray = ArrayList<CourseItem>()
                         val body = it.asJsonObject
-                        val result1 = body.getAsJsonObject("data")
-                        val results = result1.getAsJsonArray("content")
                         // val results = body.getAsJsonArray("data")
                         val message = body.get("message")
 
                         when (val status = body.get("status").asString) {
                             "OK" -> {
+                                val result1 = body.getAsJsonObject("data")
+                                val results = result1.getAsJsonArray("content")
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
                                 results.forEach { resultItem ->
                                     val resultItemObject = resultItem.asJsonObject
@@ -712,9 +712,9 @@ class RetrofitManager(usage: Usage) {
 
     //인기 산 더보기
     fun hotMountainList(
-        completion: (RESPONSE_STATUS, ArrayList<Mountain>?) -> Unit
+        page: Int, completion: (RESPONSE_STATUS, ArrayList<Mountain>?) -> Unit
     ) {
-        val call = iRetrofit?.hotMountainList() ?: return
+        val call = iRetrofit?.hotMountainList(page = page) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
@@ -765,6 +765,10 @@ class RetrofitManager(usage: Usage) {
                                     parsedCourseDataArray.add(courseItem)
                                 }
                                 completion(RESPONSE_STATUS.OKAY, parsedCourseDataArray)
+                            }
+                            "NO_CONTENT" -> {
+                                Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
+                                completion(RESPONSE_STATUS.NO_CONTENT, null)
                             }
                             "BAD_REQUEST" -> {
                                 Log.d(TAG, "RetrofitManager - onResponse() called / status: $status, message: $message")
