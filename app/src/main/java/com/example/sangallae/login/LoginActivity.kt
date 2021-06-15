@@ -158,31 +158,31 @@ class LoginActivity : AppCompatActivity() {
                                 var googleToken = task.result!!.token
                                 // Send token to your backend via HTTPS
                                 if (googleToken != null) {
-                                    Log.d("googleToken",googleToken)
+                                    Log.d("token",googleToken)
 
                                     loginPost.requestLogin(googleToken).enqueue(object:
                                         Callback<LoginPostResult> {
                                         override fun onFailure(call: Call<LoginPostResult>, t: Throwable){
                                         //실패시
-                                            Log.e("LoginResult", "Response error")
+                                            Log.e("token", "Response error")
                                         }
                                         override fun onResponse(call:Call<LoginPostResult>, response: Response<LoginPostResult>){
                                         //정상응답 옴
                                             loginResult = response.body()
-                                            Log.d("LoginResult", loginResult.toString())
+                                            Log.d("token", loginResult.toString())
                                         }
                                     })
 
                                 }
                                 else{
-                                    Log.d("googleToken","null")
+                                    Log.d("token","null")
                                 }
 
 
 
                             } else {
                                 // Handle error -> task.getException();
-                                Log.e("googleToken","error")
+                                Log.e("token","error")
                             }
                         }
 
@@ -235,11 +235,11 @@ class LoginActivity : AppCompatActivity() {
             //토큰
             UserApiClient.instance.accessTokenInfo { kakaoToken, error ->
                 if (error != null) {
-                    Log.e("kakao_login_fail", "토큰 정보 보기 실패", error)
+                    Log.e("token", "토큰 정보 보기 실패", error)
                 }
                 else if (kakaoToken != null) {
 
-                    Log.d("kakaoToken", kakaoToken.toString())
+                    Log.d("token", kakaoToken.toString())
 
 //                    //23:58
 //                    loginPost.requestLogin(kakaoToken).enqueue(object:
@@ -278,7 +278,7 @@ class LoginActivity : AppCompatActivity() {
 
                 //토큰
                 var naverToken = mOAuthLoginInstance.getAccessToken(mContext)
-                Log.d("naverToken", naverToken)
+                Log.d("token", naverToken)
                 //mOAuthLoginInstance.requestApi(mContext, at, url)
 
                 startActivity(intent)
