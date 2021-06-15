@@ -80,8 +80,12 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         val stopBtn = root.findViewById<ImageButton>(R.id.stopBtn)
         stopBtn.setOnClickListener {
             //목록 fragment로 넘어가기
-            val saveName = "저장테스트_" + LocalDateTime.now().toString() + ".gpx"
-            val uploadName = "업로드테스트_" + LocalDateTime.now().toString() + ".gpx"
+            val now = LocalDateTime.now()
+            val title = "Track_"+String.format("%04d-%02d-%02d %02d:%02d:%02d", now.year, now.monthValue, now.dayOfMonth, now.hour, now.minute, now.second)
+//            val saveName = "저장테스트_" + LocalDateTime.now().toString() + ".gpx"
+//            val uploadName = "업로드테스트_" + LocalDateTime.now().toString() + ".gpx"
+            val saveName = "$title.gpx"
+            val uploadName = "$title.gpx"
 
             // 1. 휴대폰에 저장
             gg.saveGPX("/storage/emulated/0/gpxdata/" + saveName)
@@ -98,8 +102,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             stopFlag = true
 
             // 3. DB에 삽입
-            val now = LocalDateTime.now()
-            val title = "Track_"+String.format("%04d-%02d-%02d %02d:%02d:%02d", now.year, now.monthValue, now.dayOfMonth, now.hour, now.minute, now.second)
+
             val record = Record(
                 course = 1,                             // courseId 받아오는 법을 모르겠음
                 title = title,
@@ -156,6 +159,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         pauseBtn.setOnClickListener {
             if(startFlag){ //처음 시작할 때
                 // startFlag = false
+                naverMap_.locationTrackingMode = LocationTrackingMode.Follow
                 Toast.makeText(this.context,"측정을 시작합니다.", Toast.LENGTH_SHORT).show()
                 pauseBtn.setImageResource(R.drawable.ic_twotone_pause_circle_24)
                 timeUpdate()

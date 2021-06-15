@@ -197,18 +197,19 @@ class MyGPX {
 
 
         val now = LocalDateTime.now()
-        if(now.minute + left_minute > 59) {
-            left_hour++
-            left_minute %= 60
+        var hour = now.hour + left_hour
+        var min = now.minute + left_minute
+        if(min >= 60) {
+            hour++
+            min %= 60
         }
 
-        if(now.hour + left_hour > 23){
-            day++
-            left_hour %= 24
+        if(hour >= 24){
+            hour %= 24
         }
-        val ampm = if (left_hour < 12) "오전 " else "오후 "
-        left_hour = if (left_hour > 12) left_hour % 12 else left_hour
-        return ampm + left_hour + "시 " + left_minute + "분"
+        val ampm = if (hour < 12) "오전 " else "오후 "
+        hour = if (hour > 12) hour % 12 else hour
+        return ampm + hour + "시 " + min + "분"
     }
 
 //    @RequiresApi(Build.VERSION_CODES.O)
