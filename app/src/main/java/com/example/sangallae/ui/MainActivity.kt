@@ -1,13 +1,14 @@
 package com.example.sangallae.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.sangallae.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,14 +35,31 @@ class MainActivity : AppCompatActivity() {
 
     var time3: Long = 0
     override fun onBackPressed() {
+        val fragmentManager: FragmentManager = supportFragmentManager
+
         val time1 = System.currentTimeMillis()
         val time2 = time1 - time3
         if (time2 in 0..2000) {
             finish()
+
+        }
+        if (fragmentManager.getBackStackEntryCount() > 1) {
+            fragmentManager.popBackStackImmediate()
         }
         else {
+            super.onBackPressed()
             time3 = time1
             Toast.makeText(applicationContext, R.string.main_back, Toast.LENGTH_SHORT).show()
         }
+    }
+
+
+    fun showUpButton() {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        Log.d("뒤로가기 테스트", "메인에서 supportActionBar: " + supportActionBar.toString())
+    }
+
+    fun hideUpButton() {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
     }
 }

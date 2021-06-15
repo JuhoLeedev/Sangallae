@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.CourseItem
 import com.example.sangallae.retrofit.models.Mountain
+import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -129,8 +130,16 @@ class HotMountainList : Fragment() {
             }
         })
     }
-
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        activity?.showUpButton()
+    }
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        android.R.id.home -> {
+            (activity as MainActivity?)!!.onBackPressed()
+            true
+        }
         R.id.main_menu_search -> {
             findNavController().navigate(R.id.action_navigation_home_to_searchActivity)
             true

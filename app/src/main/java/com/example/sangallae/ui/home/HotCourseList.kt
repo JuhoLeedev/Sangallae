@@ -1,18 +1,20 @@
 package com.example.sangallae.ui.home
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
@@ -65,8 +67,8 @@ class HotCourseList : Fragment() {
         this.hotCourseListAdapter.submitList(courseList)
         hotCourseListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
 
-        hotCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener{
-            override fun onItemClick(v: View, data: Int, pos : Int) {
+        hotCourseListAdapter.setOnItemClickListener(object : CourseViewAdapter.OnItemClickListener {
+            override fun onItemClick(v: View, data: Int, pos: Int) {
                 Intent(activity, CourseDetailActivity::class.java).apply {
                     putExtra("id", data)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -74,13 +76,13 @@ class HotCourseList : Fragment() {
             }
         })
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val lastVisibleItemPosition =
                     (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
-                val itemTotalCount = recyclerView.adapter!!.itemCount-1
+                val itemTotalCount = recyclerView.adapter!!.itemCount - 1
 
                 // 스크롤이 끝에 도달했는지 확인
                 if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount && !itemFinished) {
@@ -94,7 +96,13 @@ class HotCourseList : Fragment() {
         return root
     }
 
-    private fun hotCourseApiCall(page : Int) {
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        activity?.showUpButton()
+    }
+
+    private fun hotCourseApiCall(page: Int) {
         val retrofit = RetrofitManager(Usage.ACCESS)
         retrofit.hotCourseList(page, completion = { status, list ->
             when (status) {
@@ -127,6 +135,10 @@ class HotCourseList : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        android.R.id.home -> {
+            (activity as MainActivity?)!!.onBackPressed()
+            true
+        }
         R.id.main_menu_search -> {
             findNavController().navigate(R.id.action_navigation_home_to_searchActivity)
             true
@@ -135,6 +147,9 @@ class HotCourseList : Fragment() {
             super.onOptionsItemSelected(item)
         }
     }
+
+
+
 //
 //    override fun onAttach(context: Context) {
 //        super.onAttach(context)

@@ -24,10 +24,7 @@ import com.example.sangallae.utils.S3FileManager
 import com.example.sangallae.utils.Usage
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.*
 import com.naver.maps.map.overlay.LocationOverlay
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
@@ -202,7 +199,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
 
         val locationOverlay = naverMap.locationOverlay
         locationOverlay.isVisible = true
-        naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
+        //naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
 
         val path = PathOverlay() // 따라갈 경로 그리기
 
@@ -238,12 +235,26 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         //locationOverlay.position = LatLng(course[0].latitude.toDouble(), course[0].longitude.toDouble())
         //naverMap.locationTrackingMode = LocationTrackingMode.Face
 
+        var minLat = 999.0
+        var minLon = 999.0
+        var maxLat = -1.0
+        var maxLon = -1.0
         course.forEach { track->
             val lat = track.latitude.toDouble()
             val lon = track.longitude.toDouble()
             coords.add(LatLng(lat, lon))
+            if(lat > maxLat)
+                maxLat = lat
+            if(lon > maxLon)
+                maxLon = lon
+            if(lat < minLat)
+                minLat = lat
+            if(lon < minLon)
+                minLon = lon
         }
         //path.coords = gg.getWayPoints()
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng((minLat + maxLat)/2, (minLon + maxLon)/2))
+        naverMap.moveCamera(cameraUpdate)
         path.coords = coords
         path.map = naverMap
         path.width = 10

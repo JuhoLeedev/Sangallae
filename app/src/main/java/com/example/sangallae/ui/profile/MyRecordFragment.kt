@@ -1,27 +1,21 @@
 package com.example.sangallae.ui.profile
 
-import android.content.Intent
+import android.app.ActionBar
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
-import com.example.sangallae.databinding.ActivityCourseDetailBinding
-import com.example.sangallae.databinding.CourseDetailFragmentBinding
 import com.example.sangallae.databinding.FragmentMyrecordBinding
-import com.example.sangallae.retrofit.models.CourseItem
 import com.example.sangallae.retrofit.models.RecordItem
-import com.example.sangallae.ui.detail.CourseDetailActivity
-import com.example.sangallae.ui.home.CourseViewAdapter
-import com.example.sangallae.ui.home.HomeViewModel
+import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
 import com.example.sangallae.utils.Usage
@@ -57,7 +51,7 @@ class MyRecordFragment : Fragment() {
             )
         binding.myRecord.adapter =
             this.recordViewAdapter
-        binding.myRecord.addItemDecoration(DividerItemDecoration(context,1))
+        binding.myRecord.addItemDecoration(DividerItemDecoration(context, 1))
 
         recordApiCall()
 
@@ -75,7 +69,7 @@ class MyRecordFragment : Fragment() {
                         this.courseList = list
                         recordViewAdapter.submitList(this.courseList)
                         recordViewAdapter.notifyDataSetChanged()
-                        Log.d(Constants.TAG,"여기까지 됨 $courseList")
+                        Log.d(Constants.TAG, "여기까지 됨 $courseList")
                         //
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()
@@ -91,8 +85,23 @@ class MyRecordFragment : Fragment() {
             }
         })
     }
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        val ab: ActionBar? = requireActivity().actionBar
+        ab?.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD)
+        ab?.setDisplayHomeAsUpEnabled(true)
+        ab?.setDisplayShowHomeEnabled(true)
+//        activity?.showUpButton()
+        Log.d("뒤로가기 테스트", "activity: " + activity.toString())
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        android.R.id.home -> {
+            (activity as MainActivity?)!!.onBackPressed()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }

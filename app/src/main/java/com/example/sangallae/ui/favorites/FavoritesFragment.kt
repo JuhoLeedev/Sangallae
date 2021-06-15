@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sangallae.R
 import com.example.sangallae.retrofit.models.CourseItem
+import com.example.sangallae.ui.MainActivity
 import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.ui.home.RecommendedCourseAdapter
 import com.example.sangallae.ui.search.CourseRecyclerViewAdapter
@@ -86,7 +87,11 @@ class FavoritesFragment : Fragment() {
             super.onOptionsItemSelected(item)
         }
     }
-
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity?
+        activity?.hideUpButton()
+    }
     private fun favoritesCourseApiCall() {
         val retrofit = RetrofitManager(Usage.ACCESS)
         retrofit.favoriteCourses(completion = { status, list ->
