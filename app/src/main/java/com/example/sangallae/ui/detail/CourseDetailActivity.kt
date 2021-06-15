@@ -189,7 +189,7 @@ class CourseDetailActivity : AppCompatActivity() {
             Toast.makeText(this, "Gpx가 저장되었습니다.", Toast.LENGTH_SHORT).show()
         }
         else {
-            Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
 //        }
     }

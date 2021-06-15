@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,12 +21,13 @@ import com.example.sangallae.ui.detail.CourseDetailActivity
 import com.example.sangallae.utils.Constants
 import com.example.sangallae.utils.RESPONSE_STATUS
 import com.example.sangallae.utils.Usage
+import com.google.android.material.appbar.MaterialToolbar
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 
 class HotCourseList : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
-    private lateinit var hToolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var mToolbar: Toolbar
     private var courseList = ArrayList<CourseItem>()
     private lateinit var hotCourseListAdapter: CourseViewAdapter
     private lateinit var recyclerView: RecyclerView
@@ -42,9 +45,12 @@ class HotCourseList : Fragment() {
         //val textView: TextView = root.findViewById(R.id.text_home)
         //homeViewModel.text.observe(viewLifecycleOwner, Observer { textView.text = it })
 
-//        hToolbar = root.findViewById(R.id.home_toolbar)
-//        (activity as AppCompatActivity).setSupportActionBar(hToolbar)
-        //hToolbar?.elevation = 0f
+        mToolbar = root.findViewById(R.id.app_toolbar)
+        (activity as AppCompatActivity).setSupportActionBar(mToolbar)
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        mToolbar.setNavigationOnClickListener {
+            (activity as MainActivity?)!!.onBackPressed()
+        }
 
         setHasOptionsMenu(true)
 

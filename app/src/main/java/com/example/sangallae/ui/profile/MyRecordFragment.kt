@@ -8,7 +8,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +24,7 @@ import com.example.sangallae.utils.Usage
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 
 class MyRecordFragment : Fragment() {
+    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var recordViewModel: MyRecordViewModel
     private lateinit var recordViewAdapter: MyRecordViewAdapter
     private var courseList = ArrayList<RecordItem>()
@@ -38,6 +41,11 @@ class MyRecordFragment : Fragment() {
         val view = binding.root
         binding.myRecordToolbar.inflateMenu(R.menu.profile_menu)
         setHasOptionsMenu(true)
+        binding.myRecordToolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        binding.myRecordToolbar.setNavigationOnClickListener {
+            (activity as MainActivity?)!!.onBackPressed()
+        }
+
 
         this.recordViewAdapter = MyRecordViewAdapter()
         this.recordViewAdapter.submitList(courseList)
@@ -84,16 +92,6 @@ class MyRecordFragment : Fragment() {
                 }
             }
         })
-    }
-    override fun onResume() {
-        super.onResume()
-        val activity = activity as MainActivity?
-        val ab: ActionBar? = requireActivity().actionBar
-        ab?.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD)
-        ab?.setDisplayHomeAsUpEnabled(true)
-        ab?.setDisplayShowHomeEnabled(true)
-//        activity?.showUpButton()
-        Log.d("뒤로가기 테스트", "activity: " + activity.toString())
     }
 
 
