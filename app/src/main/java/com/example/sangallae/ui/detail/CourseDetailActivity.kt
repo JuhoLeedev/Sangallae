@@ -112,8 +112,8 @@ class CourseDetailActivity : AppCompatActivity() {
             override fun run() {
                 try {
                     val awsCredentials: AWSCredentials = BasicAWSCredentials(
-                        Info.AWS_ACCESS_KEY,
-                        Info.AWS_SECRET_KEY
+                        API.AWS_ACCESS_KEY,
+                        API.AWS_SECRET_KEY
                     )
                     val s3Client = AmazonS3Client(
                         awsCredentials,
