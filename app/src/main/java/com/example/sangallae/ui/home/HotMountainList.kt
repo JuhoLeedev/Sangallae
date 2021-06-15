@@ -27,6 +27,8 @@ class HotMountainList : Fragment() {
     private var courseList = ArrayList<Mountain>()
     private lateinit var hotMountainListAdapter: MountainViewAdapter
     //private lateinit var callback: OnBackPressedCallback
+    private var itemFinished = false
+    private var page = 0;
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,20 +46,26 @@ class HotMountainList : Fragment() {
 
         setHasOptionsMenu(true)
 
+        hotMountainApiCall(page)
+
         // 추천 화면 갱신
         //refreshHome()
+        val recyclerView = root.findViewById<RecyclerView>(R.id.hot_mountain_recycler_view)
         this.hotMountainListAdapter = MountainViewAdapter()
         this.hotMountainListAdapter.submitList(courseList)
 
         //root activity view context this.context 중에 root만 되네
-        root.findViewById<RecyclerView>(R.id.hot_mountain_recycler_view)?.layoutManager =
+        recyclerView.layoutManager =
             LinearLayoutManager(
                 context, //activity?
                 RecyclerView.VERTICAL,
                 false
             )
-        root.findViewById<RecyclerView>(R.id.hot_mountain_recycler_view)?.adapter =
-            this.hotMountainListAdapter
+        this.hotMountainListAdapter = MountainViewAdapter()
+        recyclerView.adapter = this.hotMountainListAdapter
+
+        this.hotMountainListAdapter.submitList(courseList)
+        hotMountainListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
 
 //        hotMountainListAdapter.setOnItemClickListener(object : MountainViewAdapter.OnItemClickListener{
 //            override fun onItemClick(v: View, data: Int, pos : Int) {
@@ -68,14 +76,31 @@ class HotMountainList : Fragment() {
 //            }
 //        })
 
-        hotMountainApiCall()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter!!.itemCount-1
+
+                // 스크롤이 끝에 도달했는지 확인
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount && !itemFinished) {
+                    hotMountainListAdapter.loadItem()
+                    hotMountainApiCall(++page)
+                    hotMountainListAdapter.deleteLoading()
+                }
+            }
+        })
+
+
 
         return root
     }
 
-    private fun hotMountainApiCall() {
+    private fun hotMountainApiCall(page : Int) {
         val retrofit = RetrofitManager(Usage.ACCESS)
-        retrofit.hotMountainList(completion = { status, list ->
+        retrofit.hotMountainList(page, completion = { status, list ->
             when (status) {
                 RESPONSE_STATUS.OKAY -> {
                     //Log.d(Constants.TAG, "PhotoCollectionActivity - searchPhotoApiCall() called 응답 성공 / list.size : ${list?.size}")
@@ -89,6 +114,10 @@ class HotMountainList : Fragment() {
 //                        popularCourseAdapter.submitList(this.recCourseList)
 //                        popularCourseAdapter.notifyDataSetChanged()
                     }
+                }
+                RESPONSE_STATUS.NO_CONTENT -> {
+                    itemFinished = true
+                    Toast.makeText(this.context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     Log.d(

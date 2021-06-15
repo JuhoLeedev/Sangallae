@@ -26,7 +26,8 @@ class HotCourseList : Fragment() {
     private var courseList = ArrayList<CourseItem>()
     private lateinit var hotCourseListAdapter: CourseViewAdapter
     private lateinit var recyclerView: RecyclerView
-    private var page = 1;
+    private var page = 0;
+    private var itemFinished = false
     //private lateinit var callback: OnBackPressedCallback
 
     override fun onCreateView(
@@ -47,7 +48,7 @@ class HotCourseList : Fragment() {
 
         // 추천 화면 갱신
         //refreshHome()
-        hotCourseApiCall()
+        hotCourseApiCall(page)
 
         recyclerView = root.findViewById(R.id.hot_course_recycler_view)
 
@@ -60,6 +61,7 @@ class HotCourseList : Fragment() {
             )
         this.hotCourseListAdapter = CourseViewAdapter()
         recyclerView.adapter = this.hotCourseListAdapter
+
         this.hotCourseListAdapter.submitList(courseList)
         hotCourseListAdapter.notifyItemRangeChanged((page - 1) * 20, 20)
 
@@ -81,14 +83,13 @@ class HotCourseList : Fragment() {
                 val itemTotalCount = recyclerView.adapter!!.itemCount-1
 
                 // 스크롤이 끝에 도달했는지 확인
-                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
-                    hotCourseListAdapter.deleteLoading()
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount && !itemFinished) {
+                    hotCourseListAdapter.loadItem()
                     hotCourseApiCall(++page)
+                    hotCourseListAdapter.deleteLoading()
                 }
             }
         })
-
-
 
         return root
     }
@@ -111,9 +112,7 @@ class HotCourseList : Fragment() {
                     }
                 }
                 RESPONSE_STATUS.NO_CONTENT -> {
-                    if (!recyclerView.canScrollVertically(1)) {
-                        hotCourseListAdapter.deleteLoading()
-                    }
+                    itemFinished = true
                     Toast.makeText(this.context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
                 }
                 else -> {

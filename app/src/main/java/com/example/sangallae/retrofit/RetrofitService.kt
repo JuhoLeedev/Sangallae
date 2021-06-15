@@ -22,7 +22,7 @@ interface RetrofitService {
     fun requestKakaoLogin(@Body body: KakaoLogin): Call<JsonElement>
 
     @GET(API.SEARCH_COURSE)
-    fun searchCourses(@Query("keyword") keyword: String, @Query("order") order: String): Call<JsonElement>
+    fun searchCourses(@Query("keyword") keyword: String, @Query("order") order: String, @Query("page") page: Int): Call<JsonElement>
 
     @GET(API.PROFILE_LOAD)
     fun profileLoad(): Call<JsonElement>
@@ -56,7 +56,7 @@ interface RetrofitService {
     fun hotCourseList(@Query("page") page: Int): Call<JsonElement>
 
     @GET(API.HOT_MOUNTAIN_LIST)
-    fun hotMountainList(): Call<JsonElement>
+    fun hotMountainList(@Query("page") page: Int): Call<JsonElement>
 
     @GET(API.RECORD)
     fun recordList(): Call<JsonElement>

@@ -45,7 +45,7 @@ class CourseViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     // progress bar item이 들어가는 경우
-    inner class LoadingViewHolder(private val binding: LayoutLoadingItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class LoadingViewHolder(binding: LayoutLoadingItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     interface OnItemClickListener{
         fun onItemClick(v:View, data: Int, pos : Int)
@@ -84,6 +84,9 @@ class CourseViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun submitList(courseList: ArrayList<CourseItem>){
         items.addAll(courseList)
+    }
+
+    fun loadItem(){
         items.add(CourseItem(-1, " ", " ", " ", " ", " ", " "))
     }
 
