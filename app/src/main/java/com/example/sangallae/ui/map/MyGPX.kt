@@ -40,6 +40,10 @@ class MyGPX {
     var prevEle: Double = 0.0
     var upHill:Double = 0.0
     var downHill:Double = 0.0
+    var minLat: Double = 0.0
+    var maxLat: Double = 0.0
+    var minLon: Double = 0.0
+    var maxLon: Double = 0.0
 
     /**
      * GPX File Functions
@@ -75,10 +79,6 @@ class MyGPX {
             prevEle = ele
             val lastWayPoint = wayPointsWrite[wayPointsWrite.size - 1]
             movingDistance += Geoid.WGS84.distance(lastWayPoint, newWayPoint).toDouble()
-            if(ele > maxEle)
-                maxEle = ele
-            if(ele < minEle)
-                minEle = ele
         }
 
         // 좌표 추가
@@ -186,32 +186,30 @@ class MyGPX {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getExpectedTime(): String {
-        var second = Math.round(getLeftTime())
-        var hour = second / 3600
-        second %= 3600
-        var minute = second / 60
-        second %= 60
+        // 남은 시간
+        var left_second = Math.round(getLeftTime())
+        var left_hour = left_second / 3600
+        left_second %= 3600
+        var left_minute = left_second / 60
+        left_second %= 60
 
         var day: Long = 0
 
 
         val now = LocalDateTime.now()
-        if(now.minute + minute > 59) {
+        var hour = now.hour + left_hour
+        var min = now.minute + left_minute
+        if(min >= 60) {
             hour++
-            minute %= 60
+            min %= 60
         }
 
-        if(now.hour + hour > 23){
-            day++
+        if(hour >= 24){
             hour %= 24
         }
-//        val localDateTime = now.plusDays(day).plusHours(hour).plusMinutes(minute)
-//
-//        var hour1 = localDateTime.hour
-//        val minute1 = localDateTime.minute
         val ampm = if (hour < 12) "오전 " else "오후 "
         hour = if (hour > 12) hour % 12 else hour
-        return ampm + hour + "시 " + minute + "분"
+        return ampm + hour + "시 " + min + "분"
     }
 
 //    @RequiresApi(Build.VERSION_CODES.O)

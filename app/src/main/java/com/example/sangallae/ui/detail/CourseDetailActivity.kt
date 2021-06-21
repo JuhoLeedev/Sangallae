@@ -178,7 +178,7 @@ class CourseDetailActivity : AppCompatActivity() {
     }
     private fun download(url: String){
 //        if(PermissionUtils.requestPermission(this,WRITE_STORAGE_PERMISSIONS_REQUEST,
-//                Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
         Log.d("test","여기는 다운로드")
 
 
@@ -189,7 +189,7 @@ class CourseDetailActivity : AppCompatActivity() {
             Toast.makeText(this, "Gpx가 저장되었습니다.", Toast.LENGTH_SHORT).show()
         }
         else {
-            Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "파일을 다운로드 할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
 //        }
     }
