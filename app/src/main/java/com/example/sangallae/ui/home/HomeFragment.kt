@@ -1,5 +1,6 @@
 package com.example.sangallae.ui.home
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -236,9 +237,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun getLatLon(){
-//        if(PermissionUtils.requestPermission(requireActivity(),
-//                API.LOCATION_PERMISSION_REQUEST_CODE,
-//                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)){
+        if(PermissionUtils.requestPermission(requireActivity(),
+                API.LOCATION_PERMISSION_REQUEST_CODE,
+                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)){
             try {
                 Log.d("gps", "여기는 try")
                 locationManager.requestLocationUpdates(
@@ -270,7 +271,7 @@ class HomeFragment : Fragment() {
             } catch (e: SecurityException) {
                 Toast.makeText(this.context, "GPS 권한이 없습니다", Toast.LENGTH_SHORT).show()
             }
- //       }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
