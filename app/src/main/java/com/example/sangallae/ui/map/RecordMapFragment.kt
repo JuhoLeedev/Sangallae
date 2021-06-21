@@ -1,5 +1,6 @@
 package com.example.sangallae.ui.map
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -88,14 +89,14 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             val uploadName = "$title.gpx"
 
             // 1. 휴대폰에 저장
-            gg.saveGPX("/storage/emulated/0/gpxdata/" + saveName)
+
+            gg.saveGPX(this.context?.getFilesDir()?.getPath() + "/gpxdata/" + saveName)
             Log.d(Constants.TAG, "저장완료~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
             // 2. S3에 업로드
-            S3FileManager().uploadGPX("/storage/emulated/0/gpxdata/" + saveName, uploadName)
+            S3FileManager().uploadGPX(this.context?.getFilesDir()?.getPath() + "/gpxdata/" + saveName, uploadName)
             Log.d(Constants.TAG, "업로드완료~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             Toast.makeText(this.context,"기록이 저장되었습니다.", Toast.LENGTH_SHORT).show()
-
 
             //naverMap_.removeOnLocationChangeListener(locationListener) //리스너 해제
             listenerFlag = false
@@ -104,7 +105,7 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
             // 3. DB에 삽입
 
             val record = Record(
-                course = 1,                             // courseId 받아오는 법을 모르겠음
+                course = 1,
                 title = title,
                 filename = uploadName,
                 distance = round(gg.movingDistance*100) / 100.0,
@@ -122,8 +123,8 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
                 ele_dif = (gg.maxEle.toInt() - gg.minEle.toInt()),
                 total_uphill = gg.upHill.toInt(),
                 total_downhill =gg.downHill.toInt(),
-                difficulty = "중",                       // 난이도 일단 "중"으로
-                calorie = 100,                          // 칼로리 일단 100으로
+                difficulty = "중",
+                calorie = 100,
                 date = gg.getStartTime().toString(),
                 gpx_url = S3_UPLOADURL + uploadName,
                 thumbnail = S3_THUMBNAILURL
@@ -206,22 +207,11 @@ class RecordMapFragment : Fragment(), OnMapReadyCallback {
         //naverMap.locationTrackingMode = LocationTrackingMode.Face //위치 추적 모드
 
         val path = PathOverlay() // 따라갈 경로 그리기
-
-//        fileName = arguments?.getString("name")
-//        val dir = GPX_DIR + fileName
-//        if(fileName != null) {
-//            drawFullCourse(
-//                gg,
-//                dir,
-//                path,
-//                naverMap,
-//                locationOverlay
-//            )
-//        }
         val fileName by lazy { requireArguments().getString("name") }
 
 
-        var filePath = "/storage/emulated/0/gpxdata/"
+        //var filePath = "/storage/emulated/0/gpxdata/"
+        var filePath = this.context?.getFilesDir()?.getPath() + "/gpxdata/"
         Log.d(Constants.TAG, "경로 + 파일명?: " +filePath+fileName)
         drawFullCourse(gg,filePath+fileName, path, naverMap, locationOverlay)
 //        drawFullCourse(gg,"/storage/emulated/0/gpxdata/해오름동산.gpx", path, naverMap, locationOverlay)

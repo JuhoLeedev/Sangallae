@@ -1,7 +1,9 @@
 package com.example.sangallae.ui.map
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import com.example.sangallae.utils.Constants
 import io.jenetics.jpx.WayPoint
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Track
@@ -51,6 +53,7 @@ class MyGPX {
     @Throws(IOException::class)
     fun read(path: String?) {
         courseGPX = GPX.read(path)
+        Log.d(Constants.TAG,"read")
     }
 
     fun getGPX(): GPX {
@@ -94,7 +97,6 @@ class MyGPX {
                     .addSegment { segment: TrackSegment.Builder -> segment.points(wayPointsWrite) }
             }
             .build()
-
 
         GPX.write(gpx, Paths.get(path))
     }

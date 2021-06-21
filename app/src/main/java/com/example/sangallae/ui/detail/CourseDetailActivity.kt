@@ -151,7 +151,11 @@ class CourseDetailActivity : AppCompatActivity() {
                         fileName = s3URI.key.split("/")[1]
                         Log.d(Constants.TAG, "savepath는?" + savepath)
                         Log.d(Constants.TAG, "파일명은?"+fileName!!)
-                        val file = File(savepath+fileName)
+                        val path = File(filesDir, "gpxdata")
+                        if(!path.exists()){
+                            path.mkdirs()
+                        }
+                        val file = File(path, fileName)
                         val writer: Writer = OutputStreamWriter(FileOutputStream(file))
 
                         while (true) {
@@ -165,7 +169,7 @@ class CourseDetailActivity : AppCompatActivity() {
                         }
 
                         writer.close()
-                        Log.d(Constants.TAG, "성공적으로 저장되었습니다.")
+                        Log.d(Constants.TAG, "성공적으로 저장되었습니다. $path, $file")
                         //displayTextInputStream(s3Object.objectContent);
                     } catch (e: AmazonServiceException) {
                         System.err.println(e.errorMessage)
@@ -180,7 +184,6 @@ class CourseDetailActivity : AppCompatActivity() {
 //        if(PermissionUtils.requestPermission(this,WRITE_STORAGE_PERMISSIONS_REQUEST,
 //                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
         Log.d("test","여기는 다운로드")
-
 
         downloadGPX(url, GPX_DIR)
         Log.d("test","다운로드 성공~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
